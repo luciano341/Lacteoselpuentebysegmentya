@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmaFull — Templates de Email · Hot Sale 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --blue:#4DC8E8; --black:#1A1A1A; --orange:#FC5B31;
+  --border:#EBEBEB; --muted:#999; --light:#F8F8F8;
+  --c-design:#E53935; --c-copy:#D97706; --c-auto:#2563EB;
+}
+
+body{
+  font-family:'Geist','Helvetica Neue',Helvetica,Arial,sans-serif;
+  background:#0C0C0C; height:100vh; overflow:hidden;
+  display:flex; flex-direction:column; color:#fff;
+}
+
+/* ── APP BAR ── */
+.app-bar{
+  height:50px; background:#111; border-bottom:1px solid #1E1E1E;
+  display:flex; align-items:center; flex-shrink:0; padding:0 0 0 20px;
+}
+.app-brand{
+  display:flex; align-items:center; gap:8px;
+  padding-right:18px; border-right:1px solid #1E1E1E; flex-shrink:0;
+}
+.ab-ico{width:26px;height:26px;background:var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center}
+.ab-ico span{font-size:13px;font-weight:900;color:#fff}
+.ab-name{font-size:12px;font-weight:600;color:#fff;white-space:nowrap}
+.ab-name em{color:var(--blue);font-style:normal}
+.tab-row{display:flex;flex:1;height:100%;overflow-x:auto}
+.tab-row::-webkit-scrollbar{display:none}
+.cat-tab{
+  display:flex;align-items:center;gap:7px;padding:0 18px;
+  cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.3px;
+  color:#333;border:none;background:none;border-bottom:2px solid transparent;
+  border-right:1px solid #1A1A1A;height:100%;transition:color .12s;
+  font-family:inherit;white-space:nowrap;
+}
+.cat-tab:hover{color:#888;background:#0E0E0E}
+.cat-tab.on{color:#fff}
+.cat-tab .pip{width:6px;height:6px;border-radius:50%}
+.cat-tab .tnum{font-size:9px;color:#333;font-weight:500}
+.cat-tab.on .tnum{color:#666}
+.app-r{
+  display:flex;align-items:center;gap:7px;
+  padding:0 16px;border-left:1px solid #1E1E1E;flex-shrink:0;height:100%;
+}
+.cbtn{
+  background:#1A1A1A;border:1px solid #2A2A2A;color:#555;
+  font-size:10px;font-weight:600;padding:5px 10px;border-radius:4px;
+  cursor:pointer;font-family:inherit;transition:all .12s;white-space:nowrap;
+}
+.cbtn:hover{color:#aaa;border-color:#444}
+.cbtn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.cbtn.lbl-on{background:#1E1E1E;color:#fff;border-color:#555}
+.ebtn{
+  background:var(--black);color:#fff;font-size:10px;font-weight:700;
+  padding:6px 14px;border-radius:4px;border:none;cursor:pointer;
+  font-family:inherit;white-space:nowrap;
+}
+
+/* ── LEGEND BAR ── */
+.legend-bar{
+  display:none; background:#090909; border-bottom:1px solid #1A1A1A;
+  padding:0 20px; height:36px; align-items:center; gap:0; flex-shrink:0;
+}
+body.show-labels .legend-bar{display:flex}
+.lg-item{display:flex;align-items:center;gap:6px;padding:0 16px;border-right:1px solid #1A1A1A}
+.lg-item:first-child{padding-left:0}
+.lg-item:last-child{border-right:none}
+.lg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.lg-txt{font-size:10px;font-weight:500;color:#555}
+
+/* ── PREVIEW ── */
+.preview-area{
+  flex:1;overflow-y:auto;background:#181818;
+  display:flex;justify-content:center;padding:28px 16px;
+}
+.email-frame{
+  background:#fff;
+  font-family:'Geist','Helvetica Neue',Helvetica,Arial,sans-serif;
+  transition:width .22s; box-shadow:0 8px 40px rgba(0,0,0,.5);
+}
+.email-frame.desk{width:620px;max-width:100%}
+.email-frame.mob{width:390px;max-width:100%}
+
+/* ══════════════════════════════════════
+   BLOCK ANNOTATION SYSTEM
+══════════════════════════════════════ */
+.blk{position:relative}
+.blk-lbl{
+  display:none;
+  position:absolute;top:0;left:0;z-index:30;
+  font-family:'Courier New',monospace;
+  font-size:8.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 9px 3px 7px;border-bottom-right-radius:5px;
+  line-height:1;pointer-events:none;
+  box-shadow:1px 1px 6px rgba(0,0,0,.25);
+  display:none;
+}
+.blk-lbl .lt{display:block;font-size:7px;font-weight:500;opacity:.72;margin-top:2px;letter-spacing:.3px}
+.blk-lbl .lt-size{display:block;font-size:7px;font-weight:600;opacity:.55;margin-top:1px;letter-spacing:.4px;font-family:"Courier New",monospace}
+body.show-labels .blk-lbl{display:block}
+body.show-labels .blk{outline:1px dashed rgba(0,0,0,.1);outline-offset:-1px}
+.lbl-d{background:var(--c-design);color:#fff}  /* 🎨 Diseño gráfico */
+.lbl-c{background:var(--c-copy);color:#fff}    /* ✏️ Texto editable */
+.lbl-a{background:var(--c-auto);color:#fff}    /* ⚡ Automático */
+
+/* ══════════════════════════════════════
+   EMAIL STYLES — FarmaFull
+══════════════════════════════════════ */
+
+/* Header */
+.em-hdr{
+  background:#fff;padding:15px 22px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.em-logo{display:flex;align-items:center;gap:8px}
+.em-logo .lic{width:28px;height:28px;background:var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center}
+.em-logo .lic span{font-size:14px;font-weight:900;color:#fff}
+.em-logo .lw .l1{font-size:20px;font-weight:700;color:var(--black);letter-spacing:-.4px}
+.em-logo .lw .l2{font-size:20px;font-weight:700;color:var(--blue);letter-spacing:-.4px}
+.em-nav a{font-size:10px;font-weight:600;color:var(--black);letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;padding:0 9px;border-right:1px solid var(--border)}
+.em-nav a:last-child{border-right:none;padding-right:0}
+
+/* Top strips */
+.em-strip-envio{background:var(--black);padding:7px 20px;text-align:center;font-size:10px;color:#777;letter-spacing:.3px}
+.em-strip-envio strong{color:#ddd}
+
+/* Beauty Club */
+.em-bc{
+  background:#fff;padding:11px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1.5px solid var(--border);flex-wrap:wrap;gap:8px;
+}
+.bc-l{display:flex;align-items:center;gap:10px}
+.bc-heart{font-size:22px;color:#E91E8C}
+.bc-title{font-size:13px;font-weight:700;color:var(--black)}
+.bc-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.bc-pts{font-size:11px;font-weight:600;color:var(--blue)}
+.bc-btn{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:5px 14px;border-radius:20px}
+
+/* Cuotas */
+.em-cuotas{background:#fff;padding:12px 20px;border-bottom:1.5px solid var(--border)}
+.cq-inner{background:#EFF8FF;border-radius:8px;padding:11px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cq-num{background:var(--black);color:#fff;font-size:30px;font-weight:900;padding:4px 12px;border-radius:5px;line-height:1;flex-shrink:0}
+.cq-txt .ct1{font-size:12px;font-weight:700;color:var(--black)}
+.cq-txt .ct2{font-size:10px;color:var(--muted);margin-top:1px}
+.cq-cards{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.cc{font-size:8px;font-weight:700;color:#fff;padding:3px 7px;border-radius:3px;letter-spacing:.4px}
+.cc-v{background:#1A1A6E}.cc-m{background:#8B0000}.cc-n{background:var(--orange)}.cc-c{background:#006400}
+
+/* Section label */
+.em-sec{padding:17px 20px 9px;background:#fff}
+.em-sec h2{font-size:10px;font-weight:700;color:#BBB;letter-spacing:2.5px;text-transform:uppercase}
+
+/* ── HERO TYPES ── */
+/* A — izquierda (dermo) */
+.hero-a{min-height:240px;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+.ha-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end}
+.ha-shape{width:55%;height:100%;display:flex;align-items:center;justify-content:center;font-size:96px;opacity:.16}
+.ha-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.06) 100%)}
+.ha-cnt{position:relative;z-index:2;padding:24px}
+
+/* B — centrado oscuro (supl) */
+.hero-b{min-height:260px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center}
+.hb-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:160px;opacity:.07}
+.hb-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.65) 100%)}
+.hb-cnt{position:relative;z-index:2;padding:28px 24px}
+.hb-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.hb-title{font-size:clamp(24px,5vw,36px);font-weight:900;color:#fff;line-height:1.0;letter-spacing:-.5px;margin-bottom:8px;text-transform:uppercase}
+.hb-sub{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:18px;line-height:1.5}
+
+/* C — split (cuidado) */
+.hero-c{min-height:220px;display:flex}
+.hc-l{flex:1;padding:24px;display:flex;flex-direction:column;justify-content:center}
+.hc-r{flex:0 0 150px;display:flex;align-items:center;justify-content:center;font-size:80px}
+
+/* D — editorial (frag) */
+.hero-d{min-height:260px;position:relative;overflow:hidden;display:flex;align-items:center}
+.hd-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end}
+.hd-stripe{width:42%;height:100%;display:flex;align-items:center;justify-content:center;font-size:96px}
+.hd-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,6,10,.96) 0%,rgba(8,6,10,.72) 56%,rgba(8,6,10,.1) 100%)}
+.hd-cnt{position:relative;z-index:2;padding:28px 24px}
+.hd-tag{font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.hd-title{font-size:clamp(18px,3.8vw,26px);font-weight:300;color:#fff;line-height:1.25;letter-spacing:.3px;margin-bottom:8px;font-style:italic;max-width:280px}
+.hd-rule{width:28px;height:1px;background:rgba(255,255,255,.2);margin:10px 0 12px}
+.hd-sub{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+
+/* Shared hero elements */
+.hs-pill{display:inline-flex;align-items:center;gap:5px;background:var(--orange);border-radius:3px;padding:3px 10px;margin-bottom:10px}
+.hs-pill .hp1{font-size:9px;font-weight:900;color:#fff}
+.hs-pill .hpsep{width:1px;height:10px;background:rgba(255,255,255,.3)}
+.hs-pill .hp2{font-size:8px;color:rgba(255,255,255,.72);letter-spacing:.5px}
+.h-title{font-size:clamp(18px,4vw,24px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:6px}
+.h-body{font-size:11px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:14px;max-width:300px}
+.h-cta{display:inline-block;color:#fff;font-size:12px;font-weight:700;padding:10px 22px;border-radius:20px;min-height:40px;line-height:1.4}
+.h-off{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:5px 12px;border-radius:3px;margin-left:8px;letter-spacing:.4px}
+
+/* Stats (supl) */
+.em-stats{display:flex;background:var(--black);border-top:1px solid #222}
+.stat{flex:1;text-align:center;padding:13px 8px;border-right:1px solid #222}
+.stat:last-child{border-right:none}
+.stat-n{font-size:22px;font-weight:900;color:var(--orange);line-height:1}
+.stat-l{font-size:8px;font-weight:700;color:#444;letter-spacing:.8px;text-transform:uppercase;margin-top:3px;line-height:1.3}
+
+/* Skin guide (dermo) */
+.skin-guide{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.sg{background:#fff;padding:14px 16px;display:flex;gap:11px;align-items:flex-start}
+.sg-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.sg h4{font-size:12px;font-weight:700;color:var(--black);margin-bottom:2px}
+.sg p{font-size:10px;color:var(--muted);line-height:1.5}
+.sg-lnk{font-size:10px;font-weight:700;color:var(--blue);margin-top:3px}
+
+/* Featured horizontal */
+.em-feat{display:flex;gap:1px;background:var(--border)}
+.feat-img{flex:0 0 148px;min-height:168px;display:flex;align-items:center;justify-content:center;font-size:54px}
+.feat-body{flex:1;background:#fff;padding:16px}
+.feat-badge{display:inline-block;background:var(--orange);color:#fff;font-size:8px;font-weight:700;padding:2px 8px;border-radius:2px;letter-spacing:.5px;margin-bottom:7px;text-transform:uppercase}
+.feat-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.feat-name{font-size:15px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:8px}
+.feat-notes{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
+.feat-note{font-size:9px;color:#888;background:#F5F5F5;padding:2px 7px;border-radius:2px}
+.feat-prices{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.feat-old{font-size:11px;color:#CCC;text-decoration:line-through}
+.feat-new{font-size:24px;font-weight:900;color:var(--black)}
+.feat-cuota{font-size:10px;font-weight:700;color:var(--blue);margin-bottom:12px}
+.feat-btn{display:inline-block;background:var(--blue);color:#fff;font-size:12px;font-weight:700;padding:9px 20px;border-radius:20px}
+
+/* Product grid 2×2 */
+.prods-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);align-items:start}
+.pc{background:#fff;padding:14px}
+.pc-img{width:100%;aspect-ratio:1;border-radius:6px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:44px}
+.pc-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.pc-name{font-size:12px;font-weight:600;color:var(--black);line-height:1.35;margin-bottom:6px;min-height:32px}
+.pc-old{font-size:10px;color:#CCC;text-decoration:line-through;margin-bottom:1px}
+.pc-new{font-size:18px;font-weight:900;color:var(--black);margin-bottom:2px}
+.pc-cuota{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:10px}
+.pc-btn{display:block;background:var(--blue);color:#fff;font-size:11px;font-weight:700;text-align:center;padding:9px;border-radius:20px;min-height:36px;line-height:1.4}
+
+/* Product list horizontal (supl) */
+.prods-list{background:#fff}
+.pli{display:flex;border-bottom:1px solid #F2F2F2}
+.pli:last-child{border-bottom:none}
+.pli-img{flex:0 0 88px;display:flex;align-items:center;justify-content:center;font-size:36px;min-height:100px}
+.pli-body{flex:1;padding:12px 12px 12px 0}
+.pli-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.pli-name{font-size:13px;font-weight:700;color:var(--black);line-height:1.3;margin-bottom:4px}
+.pli-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.pli-tag{font-size:8px;font-weight:700;color:#888;background:#F0F0F0;padding:2px 6px;border-radius:2px}
+.pli-r{flex-shrink:0;padding:12px 14px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:96px}
+.pli-old{font-size:10px;color:#CCC;text-decoration:line-through}
+.pli-new{font-size:17px;font-weight:900;color:var(--black);line-height:1}
+.pli-cuota{font-size:9px;font-weight:700;color:var(--blue);margin:2px 0 8px}
+.pli-btn{display:inline-block;background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:7px 14px;border-radius:20px;white-space:nowrap}
+
+/* Cat 2×2 (cuidado) */
+.cat-2x2{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border)}
+.ct{min-height:88px;padding:16px 14px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.ct-ico{font-size:30px;margin-bottom:8px;line-height:1}
+.ct-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:.2px}
+.ct-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+
+/* Needs list (cuidado) */
+.needs-list{background:#fff}
+.need{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #F5F5F5}
+.need:last-child{border-bottom:none}
+.need-ico{font-size:22px;flex-shrink:0;width:32px;text-align:center}
+.need-body{flex:1}
+.need-body h4{font-size:12px;font-weight:700;color:var(--black);margin-bottom:1px}
+.need-body p{font-size:10px;color:var(--muted)}
+.need-lnk{font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0}
+
+/* Notas strip (frag) */
+.notas-strip{background:var(--black);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid #1A1A1A}
+.notas-lbl{font-size:8px;font-weight:700;color:#333;letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
+.nota-tag{font-size:9px;color:#666;background:#1E1E1E;padding:3px 9px;border-radius:2px}
+
+/* Asymmetric grid (frag) */
+.asym{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.asym-big{background:#fff;padding:16px;display:flex;gap:12px;align-items:center}
+.ab-img{flex:0 0 100px;height:118px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:44px}
+.ab-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.ab-name{font-size:14px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:6px}
+.ab-prices{display:flex;align-items:baseline;gap:7px;margin-bottom:2px}
+.ab-old{font-size:10px;color:#CCC;text-decoration:line-through}
+.ab-new{font-size:19px;font-weight:900;color:var(--black)}
+.ab-cuota{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:10px}
+.ab-btn{display:inline-block;background:var(--black);color:#fff;font-size:10px;font-weight:700;padding:7px 14px;border-radius:20px}
+.asym-smalls{display:flex;flex-direction:column;gap:1px;background:var(--border);flex:1}
+.as{background:#fff;padding:12px;flex:1;display:flex;flex-direction:column}
+.as-img{width:100%;aspect-ratio:1;border-radius:4px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:34px}
+.as-brand{font-size:8px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.as-name{font-size:11px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:5px}
+.as-price{font-size:15px;font-weight:900;color:var(--black);margin-bottom:2px}
+.as-cuota{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:8px}
+.as-btn{display:block;background:var(--blue);color:#fff;font-size:10px;font-weight:700;text-align:center;padding:7px;border-radius:20px;margin-top:auto}
+
+/* Stack CTA (supl) */
+.em-stack{background:var(--black);padding:16px 20px;text-align:center}
+.em-stack h3{font-size:12px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:4px}
+.em-stack p{font-size:10px;color:#444;margin-bottom:12px}
+.em-stack a{display:inline-block;background:var(--orange);color:#fff;font-size:12px;font-weight:700;padding:10px 24px;border-radius:20px;letter-spacing:.3px}
+
+/* CTA block */
+.em-cta{padding:20px;text-align:center;background:#fff;border-top:1px solid var(--border)}
+.em-cta a{display:inline-block;color:#fff;font-size:12px;font-weight:700;padding:12px 32px;border-radius:20px;min-height:42px;line-height:1.5;letter-spacing:.3px}
+
+/* Benefits */
+.em-bene{display:flex;background:var(--light);flex-wrap:wrap}
+.be{flex:1;min-width:80px;text-align:center;padding:13px 8px;border-right:1px solid var(--border)}
+.be:last-child{border-right:none}
+.be-ico{font-size:15px;display:block;margin-bottom:4px}
+.be-txt{font-size:9px;font-weight:700;color:#BBB;letter-spacing:.3px;text-transform:uppercase;line-height:1.4}
+
+/* Footer */
+.em-foot{background:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:2px solid var(--border)}
+.ef-l{display:flex;align-items:center;gap:8px}
+.ef-hrt{font-size:18px;color:#E91E8C}
+.ef-t{font-size:11px;font-weight:700;color:var(--black)}
+.ef-s{font-size:9px;color:var(--muted)}
+.ef-pts{font-size:10px;font-weight:700;color:var(--blue)}
+.ef-tags{display:flex;gap:5px}
+.ef-tag{background:var(--light);color:#888;font-size:9px;font-weight:600;padding:2px 9px;border-radius:10px}
+.em-foot-soc{background:#fff;padding:8px 20px 10px;text-align:center;border-top:1px solid #F5F5F5}
+.em-foot-soc span{font-size:10px;color:#CCC;margin:0 6px}
+.em-foot-legal{background:var(--light);padding:12px 20px;text-align:center;border-top:1px solid var(--border)}
+.em-foot-legal p{font-size:8px;color:#CCC;line-height:1.7;margin:0 0 3px}
+.em-foot-legal a{color:#AAA}
+
+@media(max-width:480px){
+  .asym{grid-template-columns:1fr}
+  .hero-c{flex-direction:column}
+  .hc-r{flex:0 0 100px;width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="app-bar">
+  <div class="app-brand">
+    <div class="ab-ico"><span>F</span></div>
+    <div class="ab-name">FARMA<em>full</em> · Templates Email</div>
+  </div>
+  <div class="tab-row" id="tab-row"></div>
+  <div class="app-r">
+    <button class="cbtn on"  id="vd" onclick="sv('desk')">🖥 Desktop</button>
+    <button class="cbtn"     id="vm" onclick="sv('mob')">📱 Mobile</button>
+    <button class="cbtn" id="lbl-btn" onclick="toggleLabels()">🏷 Etiquetas</button>
+    <button class="ebtn" onclick="dl()">⬇ Exportar</button>
+  </div>
+</div>
+
+<div class="legend-bar">
+  <div class="lg-item">
+    <div class="lg-dot" style="background:var(--c-design)"></div>
+    <div class="lg-txt">🎨 Diseño gráfico — requiere producción de imagen</div>
+  </div>
+  <div class="lg-item">
+    <div class="lg-dot" style="background:var(--c-copy)"></div>
+    <div class="lg-txt">✏️ Texto editable — se carga desde la plantilla</div>
+  </div>
+  <div class="lg-item">
+    <div class="lg-dot" style="background:var(--c-auto)"></div>
+    <div class="lg-txt">⚡ Automático — imagen · precio · botón vienen del ESP</div>
+  </div>
+</div>
+
+<div class="preview-area">
+  <div class="email-frame desk" id="out"></div>
+</div>
+
+<script>
+const URL = 'https://www.farmafullweb.com.ar';
+
+/* ── BLOCK LABEL HELPER ── */
+function blk(html, name, type, note, size) {
+  const cfg = {
+    d: { cls:'lbl-d', ico:'🎨', label:'Diseño gráfico' },
+    c: { cls:'lbl-c', ico:'✏️',  label:'Texto editable' },
+    a: { cls:'lbl-a', ico:'⚡', label:'Automático · ESP' },
+  }[type];
+  const noteHtml = note ? `<span style="font-weight:400;opacity:.7"> · ${note}</span>` : '';
+  const sizeHtml = size ? `<span class="lt-size">${size}</span>` : '';
+  return `<div class="blk">`
+    + `<div class="blk-lbl ${cfg.cls}">${cfg.ico} ${name}${noteHtml}<span class="lt">${cfg.label}</span>${sizeHtml}</div>`
+    + html
+    + `</div>`;
+}
+
+/* ── DATA ── */
+const PRODS = {
+  dermo:[
+    {brand:'La Roche-Posay',name:'Anthelios UV Mineral SPF50+ 50ml',old:'$ 59.842',price:'$ 41.890',cuota:'12 cuotas de $ 3.490',bg:'#D8EEF8',ico:'☀️'},
+    {brand:'Bioderma',name:'Sensibio H2O Micellar 250ml',old:'$ 28.500',price:'$ 19.950',cuota:'12 cuotas de $ 1.662',bg:'#D8F0E8',ico:'💧'},
+    {brand:'Isdin',name:'Eryfotona Ageless SPF100+ 50ml',old:'$ 72.000',price:'$ 36.000',cuota:'12 cuotas de $ 3.000',bg:'#FFF3D8',ico:'🧴'},
+    {brand:'Vichy',name:'Minéral 89 Booster Sérum 50ml',old:'$ 38.000',price:'$ 19.000',cuota:'12 cuotas de $ 1.583',bg:'#F0D8F0',ico:'✨'},
+    {brand:'Neutrogena',name:'Sérum Retinol 0.3% 30ml',old:'$ 42.000',price:'$ 29.400',cuota:'12 cuotas de $ 2.450',bg:'#E8F4D8',ico:'🌿'},
+  ],
+  supl:[
+    {brand:'ENA Sport',name:'Creatina Micronizada x300gr',old:'$ 32.000',price:'$ 19.200',cuota:'12 cuotas de $ 1.600',tags:['300g','micronizada'],bg:'#D8E4F8',ico:'💊'},
+    {brand:'ENA',name:'Carnitina 1500mg 60 cápsulas',old:'$ 18.500',price:'$ 11.100',cuota:'12 cuotas de $ 925',tags:['60 caps','fat burner'],bg:'#F8DDD8',ico:'🏋️'},
+    {brand:'By Derm',name:'Kollagen Full Life Colágeno 250gr',old:'$ 26.000',price:'$ 15.600',cuota:'12 cuotas de $ 1.300',tags:['colágeno','vit C'],bg:'#D8F8E4',ico:'🌿'},
+    {brand:'GOOM Nutrition',name:'Gomitas Vinagre de Sidra x30',old:'$ 14.000',price:'$ 8.400',cuota:'12 cuotas de $ 700',tags:['gomitas','digestión'],bg:'#F8F4D8',ico:'🍏'},
+  ],
+  cuidado:[
+    {brand:'Dove',name:'Mascara Bond Intense Repair 250gr',old:'$ 18.500',price:'$ 9.250',cuota:'12 cuotas de $ 770',bg:'#D8EEF8',ico:'🫧'},
+    {brand:'Dove',name:'Acondicionador Bond Intense 250ml',old:'$ 14.200',price:'$ 7.100',cuota:'12 cuotas de $ 591',bg:'#D8F0E8',ico:'💆'},
+    {brand:'TRESemmé',name:'Shampoo Hidratación Profunda 750ml',old:'$ 9.800',price:'$ 4.900',cuota:'12 cuotas de $ 408',bg:'#F8EAD8',ico:'🧴'},
+    {brand:'Elvive',name:'Kit Sérum Dream Liso x2',old:'$ 28.000',price:'$ 14.000',cuota:'12 cuotas de $ 1.166',bg:'#EEF8D8',ico:'✨'},
+  ],
+  frag:[
+    {brand:'Chloé',name:'EDP Rocket 100ml',old:'$ 48.990',price:'$ 34.290',cuota:'12 cuotas de $ 2.857',notes:['floral','fresco','almizcle'],bg:'#F5E8F5',ico:'🌸'},
+    {brand:'YSL',name:'Libre EDP 50ml',old:'$ 55.000',price:'$ 38.500',cuota:'12 cuotas de $ 3.208',bg:'#E8EEF8',ico:'🌿'},
+    {brand:'Armani',name:'Acqua di Gioia EDP 100ml',old:'$ 68.000',price:'$ 47.600',cuota:'12 cuotas de $ 3.966',bg:'#D8F0F4',ico:'🌊'},
+    {brand:'Narciso R.',name:'For Her EDP 100ml',old:'$ 72.000',price:'$ 50.400',cuota:'12 cuotas de $ 4.200',bg:'#F8E8EE',ico:'🌺'},
+  ],
+};
+
+/* ── SHARED BLOCKS ── */
+function hsBadge(){
+  return `<div class="hs-pill"><span class="hp1">hot sale</span><span class="hpsep"></span><span class="hp2">11 AL 13 DE MAYO</span></div>`;
+}
+
+function emHeader(){
+  return blk(`<div class="em-hdr">
+    <div class="em-logo">
+      <div class="lic"><span>F</span></div>
+      <div class="lw"><span class="l1">FARMA</span><span class="l2">full</span></div>
+    </div>
+    <div class="em-nav">
+      <a href="${URL}">DERMO</a><a href="${URL}">PERFUMERÍA</a><a href="${URL}">MAKEUP</a>
+    </div>
+  </div>`,'Header · Logo + Nav','c','Fijo de marca','620 × 60 px')
+  + blk(`<div class="em-strip-envio">📦 <strong>Envío gratis</strong> dentro de Entre Ríos · Hasta $170.000</div>`,'Strip de envío','c','Texto editable por campaña','620 × 28 px');
+}
+
+function bcBar(){
+  return blk(`<div class="em-bc">
+    <div class="bc-l">
+      <span class="bc-heart">♥</span>
+      <div><div class="bc-title">BEAUTY CLUB</div><div class="bc-sub">Sumá puntos con cada compra</div></div>
+    </div>
+    <div>
+      <div class="bc-pts">✦ Doble puntos en Hot Sale</div>
+      <span class="bc-btn">Ver mis puntos</span>
+    </div>
+  </div>`,'Beauty Club','c','Puntos se calculan automáticamente','620 × 52 px');
+}
+
+function cuotasBar(){
+  return blk(`<div class="em-cuotas">
+    <div class="cq-inner">
+      <div class="cq-num">12</div>
+      <div class="cq-txt"><div class="ct1">CUOTAS SIN INTERÉS</div><div class="ct2">Todos los días · Con tarjetas participantes</div></div>
+      <div class="cq-cards">
+        <span class="cc cc-v">VISA</span><span class="cc cc-m">MC</span>
+        <span class="cc cc-n">NARANJA</span><span class="cc cc-c">CABAL</span>
+      </div>
+    </div>
+  </div>`,'12 Cuotas sin interés','c','Número de cuotas y tarjetas editables','620 × 68 px');
+}
+
+function secLabel(txt){
+  return blk(`<div class="em-sec"><h2>${txt}</h2></div>`,`Título de sección`,'c','Texto editable','620 × 44 px');
+}
+
+function prodGrid(prods){
+  return blk(`<div class="prods-grid">${prods.map(p=>`
+    <div class="pc">
+      <div class="pc-img" style="background:${p.bg}">${p.ico}</div>
+      <div class="pc-brand">${p.brand}</div>
+      <div class="pc-name">${p.name}</div>
+      <div class="pc-old">${p.old}</div>
+      <div class="pc-new">${p.price}</div>
+      <div class="pc-cuota">${p.cuota}</div>
+      <a class="pc-btn" href="${URL}">Comprar</a>
+    </div>`).join('')}</div>`,'Grilla de productos (2 col)','a','Imagen · nombre · precio · cuota · botón desde ESP','Card: 310 × auto · img: 310 × 310 px');
+}
+
+function ctaBlock(txt, color){
+  return blk(`<div class="em-cta"><a href="${URL}" style="background:${color||'#1A1A1A'}">${txt}</a></div>`,`CTA: ${txt}`,'c','Texto y color editables','620 × 64 px');
+}
+
+function beneRow(){
+  return blk(`<div class="em-bene">
+    <div class="be"><span class="be-ico">🚚</span><div class="be-txt">Envío gratis<br>Entre Ríos</div></div>
+    <div class="be"><span class="be-ico">📦</span><div class="be-txt">Gratis al país<br>+$70.000</div></div>
+    <div class="be"><span class="be-ico">🏪</span><div class="be-txt">Retiro<br>3 horas</div></div>
+    <div class="be"><span class="be-ico">🔒</span><div class="be-txt">Pago<br>seguro</div></div>
+  </div>`,'Beneficios logísticos','c','Íconos y textos editables','620 × 64 px');
+}
+
+function footerFull(){
+  return blk(`<div class="em-foot">
+    <div class="ef-l"><span class="ef-hrt">♥</span><div><div class="ef-t">BEAUTY CLUB</div><div class="ef-s">Cada compra suma puntos</div></div></div>
+    <div class="ef-pts">⭐ Doble puntos en Hot Sale</div>
+    <div class="ef-tags"><span class="ef-tag">{{mensaje}}</span><span class="ef-tag">Suma puntos</span></div>
+  </div>
+  <div class="em-foot-soc"><span>📘 Facebook</span><span>📷 Instagram</span></div>
+  <div class="em-foot-legal">
+    <p>Precios válidos del 11 al 13 de mayo de 2026. Sujetos a disponibilidad de stock.<br>Cuotas sin interés con tarjetas participantes. Consultar condiciones.</p>
+    <p><a href="#">Cancelar suscripción</a> · <a href="#">Privacidad</a> · © 2026 FarmaFull</p>
+  </div>`,'Footer · Beauty Club + Legales','c','Texto legal y redes editables','620 × 110 px');
+}
+
+/* ════════════════
+   TEMPLATE 01 — DERMOCOSMÉICA
+   Bloques: header · bc · cuotas · hero-A ·
+   guía tipo piel · featured · grilla 2×2 · cta · bene · footer
+════════════════ */
+function tDermo(){
+  const p = PRODS.dermo;
+  return emHeader() + bcBar() + cuotasBar()
+    + blk(`<div class="hero-a" style="background:#1A3D52">
+        <div class="ha-bg" style="background:linear-gradient(135deg,#1A3D52 60%,#2A6080 100%)">
+          <div class="ha-shape" style="color:var(--blue)">🧴</div>
+        </div>
+        <div class="ha-overlay"></div>
+        <div class="ha-cnt">
+          ${hsBadge()}
+          <div class="h-title" style="margin-top:9px">Aprendé a cuidar<br>tu piel</div>
+          <div class="h-body">Con nuestras soluciones dermatológicas seleccionadas por especialistas.</div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <a class="h-cta" href="${URL}" style="background:var(--blue)">Ver skincare →</a>
+            <span class="h-off">HASTA 50% OFF</span>
+          </div>
+        </div>
+      </div>`,'Banner principal','d','Imagen de fondo a reemplazar · texto superpuesto','620 × 280 px')
+    + secLabel('GUÍA RÁPIDA POR TIPO DE PIEL')
+    + blk(`<div class="skin-guide">
+        <div class="sg"><span class="sg-ico">💊</span><div><h4>Piel con Arrugas</h4><p>Retinol + Ácido Hialurónico</p><div class="sg-lnk">→ Ver productos</div></div></div>
+        <div class="sg"><span class="sg-ico">🔬</span><div><h4>Piel con Poros</h4><p>Ácido Salicílico + Niacinamida</p><div class="sg-lnk">→ Ver productos</div></div></div>
+        <div class="sg"><span class="sg-ico">✨</span><div><h4>Piel Apagada</h4><p>Vitamina C + SPF diario</p><div class="sg-lnk">→ Ver productos</div></div></div>
+        <div class="sg"><span class="sg-ico">💧</span><div><h4>Flacidez</h4><p>Péptidos + Ácido Hialurónico</p><div class="sg-lnk">→ Ver productos</div></div></div>
+      </div>`,'Guía tipo de piel (2×2)','c','Título + ingrediente activo + link editables','Celda: 310 × 90 px')
+    + secLabel('PRODUCTO DESTACADO')
+    + blk(`<div class="em-feat">
+        <div class="feat-img" style="background:#D8EEF8">☀️</div>
+        <div class="feat-body">
+          <div class="feat-badge">MÁS VENDIDO</div>
+          <div class="feat-brand">La Roche-Posay</div>
+          <div class="feat-name">Anthelios UV Mineral SPF50+ 50ml</div>
+          <div class="feat-prices"><span class="feat-old">$ 59.842</span><span class="feat-new">$ 41.890</span></div>
+          <div class="feat-cuota">12 cuotas de $ 3.490</div>
+          <a class="feat-btn" href="${URL}">Comprar →</a>
+        </div>
+      </div>`,'Producto featured (horizontal)','a','Imagen · nombre · precio · cuota · botón desde ESP','img: 148 × 170 px')
+    + secLabel('MÁS PRODUCTOS SELECCIONADOS')
+    + prodGrid(p.slice(1,5))
+    + ctaBlock('VER TODO EL SKINCARE →','#4DC8E8')
+    + beneRow() + footerFull();
+}
+
+/* ════════════════
+   TEMPLATE 02 — SUPLEMENTOS DEPORTIVOS
+   Bloques: header · bc · cuotas · hero-B ·
+   stats · lista horizontal · stack CTA · bene · footer
+════════════════ */
+function tSupl(){
+  const p = PRODS.supl;
+  return emHeader() + bcBar() + cuotasBar()
+    + blk(`<div class="hero-b" style="background:#0E1A2E">
+        <div class="hb-bg">💪</div>
+        <div class="hb-overlay"></div>
+        <div class="hb-cnt">
+          ${hsBadge()}
+          <div class="hb-eyebrow" style="color:var(--orange);margin-top:10px">SUPLEMENTOS DEPORTIVOS</div>
+          <div class="hb-title">POTENCIÁ<br>TU RUTINA</div>
+          <div class="hb-sub">Creatina, proteínas y colágeno al mejor precio del año.</div>
+          <div style="display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap">
+            <a class="h-cta" href="${URL}" style="background:var(--orange)">Ver suplementos →</a>
+            <span class="h-off">HASTA 40% OFF</span>
+          </div>
+        </div>
+      </div>`,'Banner principal','d','Imagen de fondo a reemplazar · texto superpuesto','620 × 280 px')
+    + blk(`<div class="em-stats">
+        <div class="stat"><div class="stat-n">40%</div><div class="stat-l">OFF creatina</div></div>
+        <div class="stat"><div class="stat-n">30%</div><div class="stat-l">OFF proteínas</div></div>
+        <div class="stat"><div class="stat-n">12</div><div class="stat-l">cuotas s/int.</div></div>
+        <div class="stat"><div class="stat-n">24hs</div><div class="stat-l">despacho</div></div>
+      </div>`,'Fila de estadísticas','c','Números y etiquetas editables','620 × 62 px')
+    + secLabel('SUPLEMENTOS EN OFERTA')
+    + blk(`<div class="prods-list">${p.map(pr=>`
+        <div class="pli">
+          <div class="pli-img" style="background:${pr.bg}">${pr.ico}</div>
+          <div class="pli-body">
+            <div class="pli-brand">${pr.brand}</div>
+            <div class="pli-name">${pr.name}</div>
+            <div class="pli-tags">${pr.tags.map(t=>`<span class="pli-tag">${t}</span>`).join('')}</div>
+          </div>
+          <div class="pli-r">
+            <div class="pli-old">${pr.old}</div>
+            <div class="pli-new">${pr.price}</div>
+            <div class="pli-cuota">${pr.cuota}</div>
+            <a class="pli-btn" href="${URL}">Comprar →</a>
+          </div>
+        </div>`).join('')}</div>`,'Lista de productos (horizontal)','a','Imagen · nombre · tags · precio · cuota · botón desde ESP','img: 88 × 100 px por fila')
+    + blk(`<div class="em-stack">
+        <h3>ARMÁ TU STACK COMPLETO</h3>
+        <p>Creatina + Proteína + Colágeno + Carnitina. Resultados reales.</p>
+        <a href="${URL}">Ver todos los suplementos →</a>
+      </div>`,'Stack CTA agrupador','c','Título · descripción · texto botón editables','620 × 80 px')
+    + beneRow() + footerFull();
+}
+
+/* ════════════════
+   TEMPLATE 03 — CUIDADO PERSONAL
+   Bloques: header · bc · cuotas · hero-C (split) ·
+   cat 2×2 · lista necesidades · grilla 2×2 · cta · bene · footer
+════════════════ */
+function tCuidado(){
+  const p = PRODS.cuidado;
+  return emHeader() + bcBar() + cuotasBar()
+    + blk(`<div class="hero-c" style="background:#1E3A2A">
+        <div class="hc-l">
+          ${hsBadge()}
+          <div class="h-title" style="margin-top:9px;color:#fff">Todo lo que tu<br>rutina necesita</div>
+          <div class="h-body" style="color:rgba(255,255,255,.62)">Capilar, higiene personal y más hasta 50% OFF.</div>
+          <a class="h-cta" href="${URL}" style="background:#7DBA7B">Ver cuidado personal →</a>
+        </div>
+        <div class="hc-r" style="background:#2A4E38">💆</div>
+      </div>`,'Banner principal (split)','d','Imagen lado derecho · copy lado izquierdo','620 × 220 px')
+    + secLabel('EXPLORÁ POR CATEGORÍA')
+    + blk(`<div class="cat-2x2">
+        <div class="ct" style="background:#2A5C8A"><div class="ct-ico">🧴</div><div class="ct-name">Dermo-cosmética</div><div class="ct-sub">Hasta 50% OFF</div></div>
+        <div class="ct" style="background:#2A7A4A"><div class="ct-ico">💆</div><div class="ct-name">Capilar</div><div class="ct-sub">Hasta 50% OFF</div></div>
+        <div class="ct" style="background:#7A4A2A"><div class="ct-ico">🌸</div><div class="ct-name">Higiene personal</div><div class="ct-sub">Productos seleccionados</div></div>
+        <div class="ct" style="background:#1A4A6A"><div class="ct-ico">👶</div><div class="ct-name">Bebé</div><div class="ct-sub">Pampers · Nutrilon</div></div>
+      </div>`,'Grilla de categorías (2×2)','d','Imagen de fondo por tile · nombre · descuento','Tile: 309 × 88 px')
+    + secLabel('ENCONTRÁ LO QUE NECESITÁS')
+    + blk(`<div class="needs-list">
+        <div class="need"><span class="need-ico">💆</span><div class="need-body"><h4>Pelo dañado o seco</h4><p>Dove Bond Intense, Elvive Dream Liso</p></div><span class="need-lnk">Ver →</span></div>
+        <div class="need"><span class="need-ico">🧼</span><div class="need-body"><h4>Piel sensible</h4><p>Jabones dermatológicos, gel neutro</p></div><span class="need-lnk">Ver →</span></div>
+        <div class="need"><span class="need-ico">🌸</span><div class="need-body"><h4>Higiene femenina</h4><p>Líneas especializadas seleccionadas</p></div><span class="need-lnk">Ver →</span></div>
+        <div class="need"><span class="need-ico">👶</span><div class="need-body"><h4>Bebé</h4><p>Pampers, ACF Baby Care, Nutrilon</p></div><span class="need-lnk">Ver →</span></div>
+      </div>`,'Lista de necesidades / problemas','c','Ícono · título · descripción · link editables','Fila: 620 × 52 px')
+    + secLabel('PRODUCTOS EN OFERTA')
+    + prodGrid(p)
+    + ctaBlock('VER CUIDADO PERSONAL →','#7DBA7B')
+    + beneRow() + footerFull();
+}
+
+/* ════════════════
+   TEMPLATE 04 — FRAGANCIAS
+   Bloques: header · bc · cuotas · hero-D (editorial) ·
+   familias olfativas · featured · asimétrico · cta · bene · footer
+════════════════ */
+function tFrag(){
+  const p = PRODS.frag;
+  const fp = p[0];
+  return emHeader() + bcBar() + cuotasBar()
+    + blk(`<div class="hero-d" style="background:#0A080C">
+        <div class="hd-bg">
+          <div class="hd-stripe" style="background:linear-gradient(135deg,#2A1A3A,#1A0E22)">🌸</div>
+        </div>
+        <div class="hd-overlay"></div>
+        <div class="hd-cnt">
+          ${hsBadge()}
+          <div class="hd-tag" style="margin-top:12px">FRAGANCIAS · HOT SALE 2026</div>
+          <div class="hd-title">"Tu perfume de<br>este otoño<br>está acá"</div>
+          <div class="hd-rule"></div>
+          <div class="hd-sub">Fragancias selectivas · hasta 25% OFF</div>
+          <a class="h-cta" href="${URL}" style="border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;padding:9px 20px">Descubrí la colección</a>
+        </div>
+      </div>`,'Banner principal (editorial)','d','Imagen de fondo · quote en itálica · tono oscuro','620 × 280 px')
+    + blk(`<div class="notas-strip">
+        <span class="notas-lbl">Familias</span>
+        ${['Floral','Oriental','Amaderado','Fresco','Cítrico','Aromático'].map(n=>`<span class="nota-tag">${n}</span>`).join('')}
+      </div>`,'Strip de familias olfativas','c','Tags editables','620 × 38 px')
+    + secLabel('SELECCIÓN DE LA SEMANA')
+    + blk(`<div class="em-feat">
+        <div class="feat-img" style="background:${fp.bg}">${fp.ico}</div>
+        <div class="feat-body">
+          <div class="feat-badge">SELECCIÓN</div>
+          <div class="feat-brand">${fp.brand}</div>
+          <div class="feat-name">${fp.name}</div>
+          <div class="feat-notes">${fp.notes.map(n=>`<span class="feat-note">${n}</span>`).join('')}</div>
+          <div class="feat-prices"><span class="feat-old">${fp.old}</span><span class="feat-new">${fp.price}</span></div>
+          <div class="feat-cuota">${fp.cuota}</div>
+          <a class="feat-btn" href="${URL}">Comprar →</a>
+        </div>
+      </div>`,'Producto featured (horizontal)','a','Imagen · nombre · notas · precio · cuota · botón desde ESP','img: 148 × 170 px')
+    + secLabel('MÁS FRAGANCIAS EN OFERTA')
+    + blk(`<div class="asym">
+        <div class="asym-big">
+          <div class="ab-img" style="background:${p[1].bg}">${p[1].ico}</div>
+          <div>
+            <div class="ab-brand">${p[1].brand}</div>
+            <div class="ab-name">${p[1].name}</div>
+            <div class="ab-prices"><span class="ab-old">${p[1].old}</span><span class="ab-new">${p[1].price}</span></div>
+            <div class="ab-cuota">${p[1].cuota}</div>
+            <a class="ab-btn" href="${URL}">Comprar</a>
+          </div>
+        </div>
+        <div class="asym-smalls">
+          ${p.slice(2).map(pr=>`
+          <div class="as">
+            <div class="as-img" style="background:${pr.bg}">${pr.ico}</div>
+            <div class="as-brand">${pr.brand}</div>
+            <div class="as-name">${pr.name}</div>
+            <div class="as-price">${pr.price}</div>
+            <div class="as-cuota">${pr.cuota}</div>
+            <a class="as-btn" href="${URL}">Comprar</a>
+          </div>`).join('')}
+        </div>
+      </div>`,'Grilla asimétrica (1 grande + 2 chicos)','a','Imagen · nombre · precio · cuota · botón desde ESP','Grande img: 100 × 118 px · Chicos img: 310 × 310 px')
+    + ctaBlock('VER TODA LA COLECCIÓN →','#0A080C')
+    + beneRow() + footerFull();
+}
+
+/* ════════════════
+   UI
+════════════════ */
+const TABS = [
+  {id:'dermo',   label:'Dermocosméica',   color:'#4DC8E8', num:'01', fn:tDermo},
+  {id:'supl',    label:'Suplementos',      color:'#FC5B31', num:'02', fn:tSupl},
+  {id:'cuidado', label:'Cuidado personal', color:'#7DBA7B', num:'03', fn:tCuidado},
+  {id:'frag',    label:'Fragancias',       color:'#C8A97A', num:'04', fn:tFrag},
+];
+let cur='dermo', view='desk';
+
+function buildTabs(){
+  const row=document.getElementById('tab-row');
+  TABS.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='cat-tab'+(t.id===cur?' on':'');
+    b.id='tab-'+t.id;
+    b.style.borderBottomColor=t.id===cur?t.color:'transparent';
+    b.innerHTML=`<span class="pip" style="background:${t.color}"></span>${t.label}<span class="tnum">${t.num}</span>`;
+    b.onclick=()=>selTab(t.id);
+    row.appendChild(b);
+  });
+}
+
+function selTab(id){
+  cur=id;
+  TABS.forEach(t=>{
+    const b=document.getElementById('tab-'+t.id);
+    b.classList.toggle('on',t.id===id);
+    b.style.borderBottomColor=t.id===id?t.color:'transparent';
+  });
+  render();
+}
+
+function render(){
+  const t=TABS.find(x=>x.id===cur);
+  document.getElementById('out').innerHTML=t.fn();
+}
+
+function sv(v){
+  view=v;
+  document.getElementById('out').className='email-frame '+v;
+  document.getElementById('vd').classList.toggle('on',v==='desk');
+  document.getElementById('vm').classList.toggle('on',v==='mob');
+}
+
+function toggleLabels(){
+  const on=document.body.classList.toggle('show-labels');
+  document.getElementById('lbl-btn').classList.toggle('lbl-on',on);
+  document.getElementById('lbl-btn').textContent=on?'🏷 Ocultar etiquetas':'🏷 Etiquetas';
+}
+
+function dl(){
+  const t=TABS.find(x=>x.id===cur);
+  const css=document.querySelector('style').textContent;
+  const html=`<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FarmaFull — ${t.label} · Hot Sale 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;padding:24px;background:#E8E8E8;font-family:'Geist','Helvetica Neue',Helvetica,Arial,sans-serif}
+.wrap{max-width:620px;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.1)}
+.blk-lbl{display:none}
+${css}</style></head>
+<body><div class="wrap">${document.getElementById('out').innerHTML}</div></body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`farmafull_template_${t.id}.html`;
+  a.click();
+}
+
+buildTabs();
+render();
+</script>
+</body>
+</html>
