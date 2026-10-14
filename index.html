@@ -1,798 +1,1478 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FarmaFull — Templates de Email · Hot Sale 2026</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lácteos El Puente · Dashboard CRM — Segmentya</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --blue:#4DC8E8; --black:#1A1A1A; --orange:#FC5B31;
-  --border:#EBEBEB; --muted:#999; --light:#F8F8F8;
-  --c-design:#E53935; --c-copy:#D97706; --c-auto:#2563EB;
+  --naranja:#E8551F; --naranja-osc:#B23F12; --texto:#241A11; --texto-2:#8A7A6E;
+  --nota:#8A8A8A; --fondo:#FFFFFF; --tinte:#FCEEE9; --crema:#FBF6F0;
+  --borde:#ECDFD3; --pos:#2E9E5B; --neg:#C0392B; --gris-fila:#F7F5F3;
 }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--fondo);color:var(--texto);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px 64px}
 
-body{
-  font-family:'Geist','Helvetica Neue',Helvetica,Arial,sans-serif;
-  background:#0C0C0C; height:100vh; overflow:hidden;
-  display:flex; flex-direction:column; color:#fff;
+.topbar{border-bottom:1px solid var(--borde);background:#fff;position:sticky;top:0;z-index:50}
+.topbar-in{max-width:1280px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.marca{display:flex;align-items:center;gap:11px}
+.marca .logo{height:26px;width:auto;display:block}
+.marca .sub{font-weight:500;color:var(--texto-2);font-size:13px;border-left:1px solid var(--borde);padding-left:11px;letter-spacing:-.01em}
+@media (max-width:560px){ .marca .logo{height:22px} }
+.topbar .spacer{flex:1}
+.estado{font-size:11.5px;color:var(--nota);font-style:italic}
+
+.controles{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:20px 0 8px}
+.campo{display:flex;flex-direction:column;gap:5px}
+.campo label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--naranja)}
+select,input[type=date],input[type=search]{font-family:inherit;font-size:13px;color:var(--texto);
+  border:1px solid var(--borde);border-radius:7px;padding:7px 10px;background:#fff}
+select:focus,input:focus{outline:2px solid var(--naranja);outline-offset:1px;border-color:var(--naranja)}
+.chk{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--texto-2);padding-bottom:8px}
+.chk input{accent-color:var(--naranja);width:15px;height:15px}
+.rango-info{font-size:12px;color:var(--nota);padding:2px 0 18px;font-style:italic}
+
+section{margin-top:38px}
+.kicker{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--naranja);margin:0 0 4px}
+h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0 0 3px}
+.bajada{font-size:13.5px;font-style:italic;color:var(--texto-2);margin:0 0 18px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{border:1px solid var(--borde);border-radius:11px;background:var(--crema);padding:14px 15px}
+.kpi .rot{font-size:11px;font-weight:600;color:var(--texto-2);text-transform:uppercase;letter-spacing:.05em}
+.kpi .val{font-size:29px;font-weight:700;color:var(--naranja);letter-spacing:-.03em;line-height:1.15;margin-top:5px;font-variant-numeric:tabular-nums}
+.kpi .delta{font-size:12px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums}
+.kpi .delta small{font-weight:400;color:var(--nota);font-size:11px}
+.up{color:var(--pos)}.down{color:var(--neg)}.flat{color:var(--nota)}
+
+.panel{border:1px solid var(--borde);border-radius:11px;padding:16px 18px 10px;background:#fff}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tab{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--borde);background:#fff;color:var(--texto-2);
+  padding:5px 11px;border-radius:99px;cursor:pointer;transition:.13s}
+.tab:hover{border-color:var(--naranja);color:var(--naranja)}
+.tab[aria-selected=true]{background:var(--naranja);border-color:var(--naranja);color:#fff}
+.chart-box{position:relative}
+svg.chart{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--borde);border-radius:8px;
+  padding:7px 10px;font-size:12px;box-shadow:0 6px 20px rgba(36,26,17,.12);opacity:0;transition:opacity .1s;white-space:nowrap;z-index:20}
+.tip b{color:var(--naranja);font-variant-numeric:tabular-nums}
+.tip .t-fecha{font-size:11px;color:var(--nota);display:block;margin-bottom:2px}
+
+.tabla-wrap{border:1px solid var(--borde);border-radius:11px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:760px}
+thead th{background:var(--naranja);color:#fff;font-weight:600;text-align:right;padding:9px 11px;white-space:nowrap;
+  position:sticky;top:0;font-size:11.5px;letter-spacing:.02em}
+thead th:first-child,thead th.izq{text-align:left}
+thead th.sortable{cursor:pointer;user-select:none}
+thead th.sortable:hover{background:var(--naranja-osc)}
+thead th .arrow{opacity:.45;font-size:10px}
+thead th[data-active=true] .arrow{opacity:1}
+tbody td{padding:8px 11px;text-align:right;border-top:1px solid var(--borde);font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody td:first-child,tbody td.izq{text-align:left;white-space:normal}
+tbody tr:nth-child(even){background:var(--gris-fila)}
+tbody tr:hover{background:var(--tinte)}
+tfoot td{padding:9px 11px;text-align:right;border-top:2px solid var(--borde);font-weight:700;font-variant-numeric:tabular-nums;background:#fff}
+tfoot td:first-child{text-align:left}
+.pill{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--tinte);color:var(--naranja-osc);border:1px solid var(--borde)}
+.pill.auto{background:#EDF6F0;color:#1F7A45;border-color:#CFE6D9}
+.vacio{padding:26px;text-align:center;color:var(--nota);font-style:italic;font-size:13px}
+
+.barra-lista{display:flex;flex-direction:column;gap:11px}
+.barra-fila{display:grid;grid-template-columns:230px 1fr 118px;gap:12px;align-items:center}
+.barra-fila .nom{font-size:12.5px;font-weight:600;line-height:1.25}
+.barra-track{background:var(--gris-fila);border-radius:5px;height:22px;overflow:hidden}
+.barra-fill{height:100%;background:var(--naranja);border-radius:5px;transition:width .4s cubic-bezier(.2,.7,.3,1)}
+.barra-val{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;font-weight:600}
+.barra-val small{display:block;font-weight:400;color:var(--nota);font-size:11px}
+
+.stack{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--borde)}
+.stack div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;min-width:0}
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;font-size:12px;color:var(--texto-2)}
+.leyenda span{display:flex;align-items:center;gap:6px}
+.leyenda i{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+.insight{background:var(--tinte);border:1px solid var(--borde);border-radius:10px;padding:13px 15px;margin-top:16px;display:flex;gap:11px;align-items:flex-start}
+.insight .ico{font-size:15px;line-height:1.3}
+.insight .txt{font-size:13px}
+.insight .txt b{display:block;margin-bottom:2px}
+.bloqueado{border:1px dashed var(--borde);border-radius:11px;padding:22px;background:var(--crema)}
+.bloqueado h4{margin:0 0 6px;font-size:14px;color:var(--naranja-osc)}
+.bloqueado p{margin:0 0 8px;font-size:13px;color:var(--texto)}
+.bloqueado p:last-child{margin-bottom:0}
+.bloqueado code{background:#fff;border:1px solid var(--borde);border-radius:4px;padding:1px 5px;font-size:11.5px}
+
+footer{margin-top:48px;border-top:1px solid var(--borde);padding-top:18px;font-size:11.5px;color:var(--nota);font-style:italic}
+details.setup{margin-top:20px;border:1px solid var(--borde);border-radius:11px;background:var(--crema)}
+details.setup summary{cursor:pointer;padding:13px 16px;font-weight:700;font-size:13px;color:var(--naranja);list-style:none;font-style:normal}
+details.setup summary::-webkit-details-marker{display:none}
+details.setup summary::before{content:'▸ ';display:inline-block;transition:.15s}
+details.setup[open] summary::before{transform:rotate(90deg)}
+details.setup .cuerpo{padding:0 16px 18px;font-size:12.5px;color:var(--texto);font-style:normal;line-height:1.65}
+details.setup code{background:#fff;border:1px solid var(--borde);border-radius:4px;padding:1px 5px;font-size:11.5px}
+details.setup pre{background:#fff;border:1px solid var(--borde);border-radius:8px;padding:11px 13px;overflow:auto;font-size:11.5px;line-height:1.5}
+details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
+
+@media (max-width:900px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .barra-fila{grid-template-columns:150px 1fr 100px}
 }
-
-/* ── APP BAR ── */
-.app-bar{
-  height:50px; background:#111; border-bottom:1px solid #1E1E1E;
-  display:flex; align-items:center; flex-shrink:0; padding:0 0 0 20px;
+@media (max-width:560px){
+  .wrap,.topbar-in{padding-left:16px;padding-right:16px}
+  .kpis{grid-template-columns:1fr 1fr;gap:9px}
+  .kpi .val{font-size:22px}
+  h2{font-size:19px}
+  .barra-fila{grid-template-columns:1fr;gap:4px}
+  .barra-val{text-align:left}
 }
-.app-brand{
-  display:flex; align-items:center; gap:8px;
-  padding-right:18px; border-right:1px solid #1E1E1E; flex-shrink:0;
-}
-.ab-ico{width:26px;height:26px;background:var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center}
-.ab-ico span{font-size:13px;font-weight:900;color:#fff}
-.ab-name{font-size:12px;font-weight:600;color:#fff;white-space:nowrap}
-.ab-name em{color:var(--blue);font-style:normal}
-.tab-row{display:flex;flex:1;height:100%;overflow-x:auto}
-.tab-row::-webkit-scrollbar{display:none}
-.cat-tab{
-  display:flex;align-items:center;gap:7px;padding:0 18px;
-  cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.3px;
-  color:#333;border:none;background:none;border-bottom:2px solid transparent;
-  border-right:1px solid #1A1A1A;height:100%;transition:color .12s;
-  font-family:inherit;white-space:nowrap;
-}
-.cat-tab:hover{color:#888;background:#0E0E0E}
-.cat-tab.on{color:#fff}
-.cat-tab .pip{width:6px;height:6px;border-radius:50%}
-.cat-tab .tnum{font-size:9px;color:#333;font-weight:500}
-.cat-tab.on .tnum{color:#666}
-.app-r{
-  display:flex;align-items:center;gap:7px;
-  padding:0 16px;border-left:1px solid #1E1E1E;flex-shrink:0;height:100%;
-}
-.cbtn{
-  background:#1A1A1A;border:1px solid #2A2A2A;color:#555;
-  font-size:10px;font-weight:600;padding:5px 10px;border-radius:4px;
-  cursor:pointer;font-family:inherit;transition:all .12s;white-space:nowrap;
-}
-.cbtn:hover{color:#aaa;border-color:#444}
-.cbtn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-.cbtn.lbl-on{background:#1E1E1E;color:#fff;border-color:#555}
-.ebtn{
-  background:var(--black);color:#fff;font-size:10px;font-weight:700;
-  padding:6px 14px;border-radius:4px;border:none;cursor:pointer;
-  font-family:inherit;white-space:nowrap;
-}
-
-/* ── LEGEND BAR ── */
-.legend-bar{
-  display:none; background:#090909; border-bottom:1px solid #1A1A1A;
-  padding:0 20px; height:36px; align-items:center; gap:0; flex-shrink:0;
-}
-body.show-labels .legend-bar{display:flex}
-.lg-item{display:flex;align-items:center;gap:6px;padding:0 16px;border-right:1px solid #1A1A1A}
-.lg-item:first-child{padding-left:0}
-.lg-item:last-child{border-right:none}
-.lg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-.lg-txt{font-size:10px;font-weight:500;color:#555}
-
-/* ── PREVIEW ── */
-.preview-area{
-  flex:1;overflow-y:auto;background:#181818;
-  display:flex;justify-content:center;padding:28px 16px;
-}
-.email-frame{
-  background:#fff;
-  font-family:'Geist','Helvetica Neue',Helvetica,Arial,sans-serif;
-  transition:width .22s; box-shadow:0 8px 40px rgba(0,0,0,.5);
-}
-.email-frame.desk{width:620px;max-width:100%}
-.email-frame.mob{width:390px;max-width:100%}
-
-/* ══════════════════════════════════════
-   BLOCK ANNOTATION SYSTEM
-══════════════════════════════════════ */
-.blk{position:relative}
-.blk-lbl{
-  display:none;
-  position:absolute;top:0;left:0;z-index:30;
-  font-family:'Courier New',monospace;
-  font-size:8.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  padding:3px 9px 3px 7px;border-bottom-right-radius:5px;
-  line-height:1;pointer-events:none;
-  box-shadow:1px 1px 6px rgba(0,0,0,.25);
-  display:none;
-}
-.blk-lbl .lt{display:block;font-size:7px;font-weight:500;opacity:.72;margin-top:2px;letter-spacing:.3px}
-.blk-lbl .lt-size{display:block;font-size:7px;font-weight:600;opacity:.55;margin-top:1px;letter-spacing:.4px;font-family:"Courier New",monospace}
-body.show-labels .blk-lbl{display:block}
-body.show-labels .blk{outline:1px dashed rgba(0,0,0,.1);outline-offset:-1px}
-.lbl-d{background:var(--c-design);color:#fff}  /* 🎨 Diseño gráfico */
-.lbl-c{background:var(--c-copy);color:#fff}    /* ✏️ Texto editable */
-.lbl-a{background:var(--c-auto);color:#fff}    /* ⚡ Automático */
-
-/* ══════════════════════════════════════
-   EMAIL STYLES — FarmaFull
-══════════════════════════════════════ */
-
-/* Header */
-.em-hdr{
-  background:#fff;padding:15px 22px 12px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
-.em-logo{display:flex;align-items:center;gap:8px}
-.em-logo .lic{width:28px;height:28px;background:var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center}
-.em-logo .lic span{font-size:14px;font-weight:900;color:#fff}
-.em-logo .lw .l1{font-size:20px;font-weight:700;color:var(--black);letter-spacing:-.4px}
-.em-logo .lw .l2{font-size:20px;font-weight:700;color:var(--blue);letter-spacing:-.4px}
-.em-nav a{font-size:10px;font-weight:600;color:var(--black);letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;padding:0 9px;border-right:1px solid var(--border)}
-.em-nav a:last-child{border-right:none;padding-right:0}
-
-/* Top strips */
-.em-strip-envio{background:var(--black);padding:7px 20px;text-align:center;font-size:10px;color:#777;letter-spacing:.3px}
-.em-strip-envio strong{color:#ddd}
-
-/* Beauty Club */
-.em-bc{
-  background:#fff;padding:11px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1.5px solid var(--border);flex-wrap:wrap;gap:8px;
-}
-.bc-l{display:flex;align-items:center;gap:10px}
-.bc-heart{font-size:22px;color:#E91E8C}
-.bc-title{font-size:13px;font-weight:700;color:var(--black)}
-.bc-sub{font-size:10px;color:var(--muted);margin-top:1px}
-.bc-pts{font-size:11px;font-weight:600;color:var(--blue)}
-.bc-btn{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:5px 14px;border-radius:20px}
-
-/* Cuotas */
-.em-cuotas{background:#fff;padding:12px 20px;border-bottom:1.5px solid var(--border)}
-.cq-inner{background:#EFF8FF;border-radius:8px;padding:11px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.cq-num{background:var(--black);color:#fff;font-size:30px;font-weight:900;padding:4px 12px;border-radius:5px;line-height:1;flex-shrink:0}
-.cq-txt .ct1{font-size:12px;font-weight:700;color:var(--black)}
-.cq-txt .ct2{font-size:10px;color:var(--muted);margin-top:1px}
-.cq-cards{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
-.cc{font-size:8px;font-weight:700;color:#fff;padding:3px 7px;border-radius:3px;letter-spacing:.4px}
-.cc-v{background:#1A1A6E}.cc-m{background:#8B0000}.cc-n{background:var(--orange)}.cc-c{background:#006400}
-
-/* Section label */
-.em-sec{padding:17px 20px 9px;background:#fff}
-.em-sec h2{font-size:10px;font-weight:700;color:#BBB;letter-spacing:2.5px;text-transform:uppercase}
-
-/* ── HERO TYPES ── */
-/* A — izquierda (dermo) */
-.hero-a{min-height:240px;position:relative;overflow:hidden;display:flex;align-items:flex-end}
-.ha-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end}
-.ha-shape{width:55%;height:100%;display:flex;align-items:center;justify-content:center;font-size:96px;opacity:.16}
-.ha-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.42) 52%,rgba(0,0,0,.06) 100%)}
-.ha-cnt{position:relative;z-index:2;padding:24px}
-
-/* B — centrado oscuro (supl) */
-.hero-b{min-height:260px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center}
-.hb-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:160px;opacity:.07}
-.hb-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.65) 100%)}
-.hb-cnt{position:relative;z-index:2;padding:28px 24px}
-.hb-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
-.hb-title{font-size:clamp(24px,5vw,36px);font-weight:900;color:#fff;line-height:1.0;letter-spacing:-.5px;margin-bottom:8px;text-transform:uppercase}
-.hb-sub{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:18px;line-height:1.5}
-
-/* C — split (cuidado) */
-.hero-c{min-height:220px;display:flex}
-.hc-l{flex:1;padding:24px;display:flex;flex-direction:column;justify-content:center}
-.hc-r{flex:0 0 150px;display:flex;align-items:center;justify-content:center;font-size:80px}
-
-/* D — editorial (frag) */
-.hero-d{min-height:260px;position:relative;overflow:hidden;display:flex;align-items:center}
-.hd-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end}
-.hd-stripe{width:42%;height:100%;display:flex;align-items:center;justify-content:center;font-size:96px}
-.hd-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,6,10,.96) 0%,rgba(8,6,10,.72) 56%,rgba(8,6,10,.1) 100%)}
-.hd-cnt{position:relative;z-index:2;padding:28px 24px}
-.hd-tag{font-size:9px;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
-.hd-title{font-size:clamp(18px,3.8vw,26px);font-weight:300;color:#fff;line-height:1.25;letter-spacing:.3px;margin-bottom:8px;font-style:italic;max-width:280px}
-.hd-rule{width:28px;height:1px;background:rgba(255,255,255,.2);margin:10px 0 12px}
-.hd-sub{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
-
-/* Shared hero elements */
-.hs-pill{display:inline-flex;align-items:center;gap:5px;background:var(--orange);border-radius:3px;padding:3px 10px;margin-bottom:10px}
-.hs-pill .hp1{font-size:9px;font-weight:900;color:#fff}
-.hs-pill .hpsep{width:1px;height:10px;background:rgba(255,255,255,.3)}
-.hs-pill .hp2{font-size:8px;color:rgba(255,255,255,.72);letter-spacing:.5px}
-.h-title{font-size:clamp(18px,4vw,24px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:6px}
-.h-body{font-size:11px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:14px;max-width:300px}
-.h-cta{display:inline-block;color:#fff;font-size:12px;font-weight:700;padding:10px 22px;border-radius:20px;min-height:40px;line-height:1.4}
-.h-off{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:5px 12px;border-radius:3px;margin-left:8px;letter-spacing:.4px}
-
-/* Stats (supl) */
-.em-stats{display:flex;background:var(--black);border-top:1px solid #222}
-.stat{flex:1;text-align:center;padding:13px 8px;border-right:1px solid #222}
-.stat:last-child{border-right:none}
-.stat-n{font-size:22px;font-weight:900;color:var(--orange);line-height:1}
-.stat-l{font-size:8px;font-weight:700;color:#444;letter-spacing:.8px;text-transform:uppercase;margin-top:3px;line-height:1.3}
-
-/* Skin guide (dermo) */
-.skin-guide{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
-.sg{background:#fff;padding:14px 16px;display:flex;gap:11px;align-items:flex-start}
-.sg-ico{font-size:20px;flex-shrink:0;margin-top:1px}
-.sg h4{font-size:12px;font-weight:700;color:var(--black);margin-bottom:2px}
-.sg p{font-size:10px;color:var(--muted);line-height:1.5}
-.sg-lnk{font-size:10px;font-weight:700;color:var(--blue);margin-top:3px}
-
-/* Featured horizontal */
-.em-feat{display:flex;gap:1px;background:var(--border)}
-.feat-img{flex:0 0 148px;min-height:168px;display:flex;align-items:center;justify-content:center;font-size:54px}
-.feat-body{flex:1;background:#fff;padding:16px}
-.feat-badge{display:inline-block;background:var(--orange);color:#fff;font-size:8px;font-weight:700;padding:2px 8px;border-radius:2px;letter-spacing:.5px;margin-bottom:7px;text-transform:uppercase}
-.feat-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.feat-name{font-size:15px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:8px}
-.feat-notes{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:9px}
-.feat-note{font-size:9px;color:#888;background:#F5F5F5;padding:2px 7px;border-radius:2px}
-.feat-prices{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
-.feat-old{font-size:11px;color:#CCC;text-decoration:line-through}
-.feat-new{font-size:24px;font-weight:900;color:var(--black)}
-.feat-cuota{font-size:10px;font-weight:700;color:var(--blue);margin-bottom:12px}
-.feat-btn{display:inline-block;background:var(--blue);color:#fff;font-size:12px;font-weight:700;padding:9px 20px;border-radius:20px}
-
-/* Product grid 2×2 */
-.prods-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);align-items:start}
-.pc{background:#fff;padding:14px}
-.pc-img{width:100%;aspect-ratio:1;border-radius:6px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:44px}
-.pc-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.pc-name{font-size:12px;font-weight:600;color:var(--black);line-height:1.35;margin-bottom:6px;min-height:32px}
-.pc-old{font-size:10px;color:#CCC;text-decoration:line-through;margin-bottom:1px}
-.pc-new{font-size:18px;font-weight:900;color:var(--black);margin-bottom:2px}
-.pc-cuota{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:10px}
-.pc-btn{display:block;background:var(--blue);color:#fff;font-size:11px;font-weight:700;text-align:center;padding:9px;border-radius:20px;min-height:36px;line-height:1.4}
-
-/* Product list horizontal (supl) */
-.prods-list{background:#fff}
-.pli{display:flex;border-bottom:1px solid #F2F2F2}
-.pli:last-child{border-bottom:none}
-.pli-img{flex:0 0 88px;display:flex;align-items:center;justify-content:center;font-size:36px;min-height:100px}
-.pli-body{flex:1;padding:12px 12px 12px 0}
-.pli-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.pli-name{font-size:13px;font-weight:700;color:var(--black);line-height:1.3;margin-bottom:4px}
-.pli-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
-.pli-tag{font-size:8px;font-weight:700;color:#888;background:#F0F0F0;padding:2px 6px;border-radius:2px}
-.pli-r{flex-shrink:0;padding:12px 14px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:96px}
-.pli-old{font-size:10px;color:#CCC;text-decoration:line-through}
-.pli-new{font-size:17px;font-weight:900;color:var(--black);line-height:1}
-.pli-cuota{font-size:9px;font-weight:700;color:var(--blue);margin:2px 0 8px}
-.pli-btn{display:inline-block;background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:7px 14px;border-radius:20px;white-space:nowrap}
-
-/* Cat 2×2 (cuidado) */
-.cat-2x2{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border)}
-.ct{min-height:88px;padding:16px 14px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
-.ct-ico{font-size:30px;margin-bottom:8px;line-height:1}
-.ct-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:.2px}
-.ct-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
-
-/* Needs list (cuidado) */
-.needs-list{background:#fff}
-.need{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #F5F5F5}
-.need:last-child{border-bottom:none}
-.need-ico{font-size:22px;flex-shrink:0;width:32px;text-align:center}
-.need-body{flex:1}
-.need-body h4{font-size:12px;font-weight:700;color:var(--black);margin-bottom:1px}
-.need-body p{font-size:10px;color:var(--muted)}
-.need-lnk{font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0}
-
-/* Notas strip (frag) */
-.notas-strip{background:var(--black);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid #1A1A1A}
-.notas-lbl{font-size:8px;font-weight:700;color:#333;letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
-.nota-tag{font-size:9px;color:#666;background:#1E1E1E;padding:3px 9px;border-radius:2px}
-
-/* Asymmetric grid (frag) */
-.asym{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
-.asym-big{background:#fff;padding:16px;display:flex;gap:12px;align-items:center}
-.ab-img{flex:0 0 100px;height:118px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:44px}
-.ab-brand{font-size:9px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.ab-name{font-size:14px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:6px}
-.ab-prices{display:flex;align-items:baseline;gap:7px;margin-bottom:2px}
-.ab-old{font-size:10px;color:#CCC;text-decoration:line-through}
-.ab-new{font-size:19px;font-weight:900;color:var(--black)}
-.ab-cuota{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:10px}
-.ab-btn{display:inline-block;background:var(--black);color:#fff;font-size:10px;font-weight:700;padding:7px 14px;border-radius:20px}
-.asym-smalls{display:flex;flex-direction:column;gap:1px;background:var(--border);flex:1}
-.as{background:#fff;padding:12px;flex:1;display:flex;flex-direction:column}
-.as-img{width:100%;aspect-ratio:1;border-radius:4px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:34px}
-.as-brand{font-size:8px;font-weight:700;color:#CCC;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.as-name{font-size:11px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:5px}
-.as-price{font-size:15px;font-weight:900;color:var(--black);margin-bottom:2px}
-.as-cuota{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:8px}
-.as-btn{display:block;background:var(--blue);color:#fff;font-size:10px;font-weight:700;text-align:center;padding:7px;border-radius:20px;margin-top:auto}
-
-/* Stack CTA (supl) */
-.em-stack{background:var(--black);padding:16px 20px;text-align:center}
-.em-stack h3{font-size:12px;font-weight:900;color:#fff;letter-spacing:.5px;margin-bottom:4px}
-.em-stack p{font-size:10px;color:#444;margin-bottom:12px}
-.em-stack a{display:inline-block;background:var(--orange);color:#fff;font-size:12px;font-weight:700;padding:10px 24px;border-radius:20px;letter-spacing:.3px}
-
-/* CTA block */
-.em-cta{padding:20px;text-align:center;background:#fff;border-top:1px solid var(--border)}
-.em-cta a{display:inline-block;color:#fff;font-size:12px;font-weight:700;padding:12px 32px;border-radius:20px;min-height:42px;line-height:1.5;letter-spacing:.3px}
-
-/* Benefits */
-.em-bene{display:flex;background:var(--light);flex-wrap:wrap}
-.be{flex:1;min-width:80px;text-align:center;padding:13px 8px;border-right:1px solid var(--border)}
-.be:last-child{border-right:none}
-.be-ico{font-size:15px;display:block;margin-bottom:4px}
-.be-txt{font-size:9px;font-weight:700;color:#BBB;letter-spacing:.3px;text-transform:uppercase;line-height:1.4}
-
-/* Footer */
-.em-foot{background:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:2px solid var(--border)}
-.ef-l{display:flex;align-items:center;gap:8px}
-.ef-hrt{font-size:18px;color:#E91E8C}
-.ef-t{font-size:11px;font-weight:700;color:var(--black)}
-.ef-s{font-size:9px;color:var(--muted)}
-.ef-pts{font-size:10px;font-weight:700;color:var(--blue)}
-.ef-tags{display:flex;gap:5px}
-.ef-tag{background:var(--light);color:#888;font-size:9px;font-weight:600;padding:2px 9px;border-radius:10px}
-.em-foot-soc{background:#fff;padding:8px 20px 10px;text-align:center;border-top:1px solid #F5F5F5}
-.em-foot-soc span{font-size:10px;color:#CCC;margin:0 6px}
-.em-foot-legal{background:var(--light);padding:12px 20px;text-align:center;border-top:1px solid var(--border)}
-.em-foot-legal p{font-size:8px;color:#CCC;line-height:1.7;margin:0 0 3px}
-.em-foot-legal a{color:#AAA}
-
-@media(max-width:480px){
-  .asym{grid-template-columns:1fr}
-  .hero-c{flex-direction:column}
-  .hc-r{flex:0 0 100px;width:100%}
-}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
-<div class="app-bar">
-  <div class="app-brand">
-    <div class="ab-ico"><span>F</span></div>
-    <div class="ab-name">FARMA<em>full</em> · Templates Email</div>
-  </div>
-  <div class="tab-row" id="tab-row"></div>
-  <div class="app-r">
-    <button class="cbtn on"  id="vd" onclick="sv('desk')">🖥 Desktop</button>
-    <button class="cbtn"     id="vm" onclick="sv('mob')">📱 Mobile</button>
-    <button class="cbtn" id="lbl-btn" onclick="toggleLabels()">🏷 Etiquetas</button>
-    <button class="ebtn" onclick="dl()">⬇ Exportar</button>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="marca"><img src="data:image/png;base64,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" alt="Segmentya" class="logo"><span class="sub" id="nomCliente">Lácteos El Puente</span></div>
+    <div class="spacer"></div>
+    <div class="estado" id="estadoDatos">Cargando…</div>
   </div>
 </div>
 
-<div class="legend-bar">
-  <div class="lg-item">
-    <div class="lg-dot" style="background:var(--c-design)"></div>
-    <div class="lg-txt">🎨 Diseño gráfico — requiere producción de imagen</div>
-  </div>
-  <div class="lg-item">
-    <div class="lg-dot" style="background:var(--c-copy)"></div>
-    <div class="lg-txt">✏️ Texto editable — se carga desde la plantilla</div>
-  </div>
-  <div class="lg-item">
-    <div class="lg-dot" style="background:var(--c-auto)"></div>
-    <div class="lg-txt">⚡ Automático — imagen · precio · botón vienen del ESP</div>
-  </div>
-</div>
+<div class="wrap">
 
-<div class="preview-area">
-  <div class="email-frame desk" id="out"></div>
+  <div class="controles">
+    <div class="campo">
+      <label for="preset">Período</label>
+      <select id="preset">
+        <option value="7">Últimos 7 días</option>
+        <option value="14">Últimos 14 días</option>
+        <option value="30" selected>Últimos 30 días</option>
+        <option value="mes">Este mes</option>
+        <option value="mesant">Mes anterior</option>
+        <option value="todo">Todo el histórico</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
+    <div class="campo"><label for="desde">Desde</label><input type="date" id="desde"></div>
+    <div class="campo"><label for="hasta">Hasta</label><input type="date" id="hasta"></div>
+    <label class="chk"><input type="checkbox" id="comparar" checked> Comparar con período anterior</label>
+  </div>
+  <div class="rango-info" id="rangoInfo"></div>
+
+  <section id="secKpis" style="margin-top:6px">
+    <p class="kicker">Resultados del período</p>
+    <h2>Lo que el CRM le aportó al negocio</h2>
+    <p class="bajada">Campañas y automatizaciones gestionadas por Segmentya en WooWup. Ingresos atribuidos por WooWup.</p>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section>
+    <p class="kicker">Evolución</p>
+    <h2>Cómo se movió el período</h2>
+    <p class="bajada">Elegí la métrica y la agrupación. Pasá el mouse por el gráfico para ver el detalle.</p>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="tabs" id="tabsMetrica" role="tablist"></div>
+        <div class="tabs" id="tabsGranu" role="tablist"></div>
+      </div>
+      <div class="chart-box" id="chartBox">
+        <svg class="chart" id="chartLinea" viewBox="0 0 900 300" preserveAspectRatio="none" aria-label="Evolución temporal"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Automatizaciones vs. envíos puntuales</p>
+    <h2>Dónde está el rendimiento por envío</h2>
+    <p class="bajada">Las automatizaciones mandan poco volumen pero convierten mucho más. Esta comparación lo hace visible.</p>
+    <div class="panel" style="margin-bottom:14px">
+      <div class="stack" id="stackTipo"></div>
+      <div class="leyenda" id="leyendaTipo"></div>
+    </div>
+    <div class="tabla-wrap"><table id="tablaTipo"></table></div>
+    <div class="insight" id="insightTipo"></div>
+  </section>
+
+  <section>
+    <p class="kicker">Atribución por sucursal</p>
+    <h2>En qué sucursal terminó la compra</h2>
+    <p class="bajada">Dónde compró la gente impactada por cada campaña, según la sucursal que registró el ticket en WooWup. El Puente opera 28 locales propios entre Córdoba y CABA.</p>
+    <div class="kpis" id="kpisSuc" style="grid-template-columns:repeat(4,1fr)"></div>
+    <div class="panel" style="margin:14px 0">
+      <div class="stack" id="stackSuc"></div>
+      <div class="leyenda" id="leyendaSuc"></div>
+    </div>
+    <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSuc"></table></div>
+    <div class="insight" id="insightSuc"></div>
+    <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.06em">Concentración por sucursal, campaña por campaña</h4>
+    <div class="tabla-wrap"><table id="tablaSucCamp"></table></div>
+    <div class="bloqueado" style="margin-top:16px">
+      <h4>Alcance de este bloque</h4>
+      <p id="coberturaSuc"></p>
+      <p><b>Las automatizaciones quedan afuera.</b> El desglose por sucursal existe para todas las campañas, pero en los flujos automatizados WooWup devuelve el <b>acumulado histórico</b>, no el período: un flujo que viene corriendo desde hace meses reporta todo su historial como si fuera del período que estás mirando. Mezclarlo rompería el número, así que este bloque cubre sólo envíos puntuales, donde el reporte sí coincide con el período.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Mix de canales</p>
+    <h2>De dónde viene el ingreso</h2>
+    <p class="bajada">Participación de cada canal en el ingreso atribuido y su rendimiento relativo.</p>
+    <div class="panel" style="margin-bottom:14px">
+      <div class="stack" id="stackCanales"></div>
+      <div class="leyenda" id="leyendaCanales"></div>
+    </div>
+    <div class="tabla-wrap"><table id="tablaCanales"></table></div>
+  </section>
+
+  <section>
+    <p class="kicker">Segmentos</p>
+    <h2>Qué segmentos están rindiendo</h2>
+    <p class="bajada">Segmentos tal como están definidos en WooWup, ordenados por ingreso atribuido.</p>
+    <div class="panel" style="margin-bottom:14px"><div class="barra-lista" id="barrasSegmentos"></div></div>
+    <div class="tabla-wrap"><table id="tablaSegmentos"></table></div>
+  </section>
+
+  <section>
+    <p class="kicker">Genoma</p>
+    <h2>Las cuatro identidades</h2>
+    <p class="bajada">El Puente no tiene un cliente: tiene cuatro identidades de compra más una base sin clasificar. Arriba, el tamaño de cada una; abajo, qué rindió lo que les mandamos.</p>
+
+    <div class="kpis" id="kpisGenoma" style="grid-template-columns:repeat(5,1fr)"></div>
+
+    <div class="panel" style="margin:14px 0">
+      <div class="panel-head">
+        <div class="tabs" id="tabsGenoma" role="tablist">
+          <button class="tab" data-v="ingresos" aria-selected="true">Ingreso atribuido</button>
+          <button class="tab" data-v="clientes" aria-selected="false">Tamaño de la base</button>
+        </div>
+      </div>
+      <div class="barra-lista" id="barrasGenoma"></div>
+    </div>
+
+    <div class="tabla-wrap"><table id="tablaGenoma"></table></div>
+    <div class="insight" id="insightGenoma"></div>
+
+    <div class="bloqueado" style="margin-top:16px">
+      <h4>Cómo se arma este bloque</h4>
+      <p><b>El tamaño de cada identidad</b> sale de la pestaña <code>identidades</code> del Sheet, que se carga a mano cada 15 días leyendo el atributo extendido <i>Identidad</i> del grupo <b>Genoma IA</b> en WooWup. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
+      <p><b>El rendimiento</b> se arma cruzando las campañas contra el nombre del segmento: toda campaña cuyo segmento nombre una identidad se le imputa a esa identidad. Por eso los segmentos de envío tienen que llevar el nombre de la identidad adentro — es lo que hace que esta tabla se arme sola.</p>
+      <p><b>Reposición de lácteos tiene un KPI que se autodestruye:</b> si el cliente compra queso, sale del segmento, y el denominador se achica justo cuando la campaña funciona. Para medirla hay que usar la copia congelada <code>KPI · Reposición base 06-10</code>, tomada en el momento cero.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Valor del cliente</p>
+    <h2>Escalamiento entre grupos RFM</h2>
+    <p class="bajada">Composición de la base por Grupo de Valor, quincena a quincena. El momento cero del plan es octubre 2026: de ahí en adelante se mide el escalamiento.</p>
+    <div class="kpis" id="kpisRfm" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px"></div>
+    <div class="panel" style="margin-bottom:14px">
+      <div class="panel-head">
+        <div class="tabs" id="tabsRfm" role="tablist">
+          <button class="tab" data-v="share" aria-selected="true">Composición %</button>
+          <button class="tab" data-v="abs" aria-selected="false">Clientes</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--nota);font-style:italic" id="rangoRfm">—</div>
+      </div>
+      <div class="chart-box">
+        <svg class="chart" id="chartRfm" viewBox="0 0 900 340" aria-label="Evolución de grupos RFM"></svg>
+      </div>
+      <div class="leyenda" id="leyendaRfm" style="padding-bottom:8px"></div>
+    </div>
+    <div class="insight" id="insightRfm"></div>
+    <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.06em">Grupo por grupo</h4>
+    <div class="tabla-wrap"><table id="tablaRfm"></table></div>
+    <div class="bloqueado" style="margin-top:16px">
+      <h4>Qué mide y qué no mide este bloque</h4>
+      <p>Son <b>fotos mensuales del tamaño de cada grupo</b>, no el recorrido de cada cliente. Muestra el movimiento neto — si un grupo creció o se achicó — pero no permite decir cuántos clientes puntuales subieron de Prometedores a Potenciales Fieles, porque haría falta el histórico de pertenencia individual.</p>
+      <p>Fuente: Dashboard RFM de WoowUp (<code>segments.woowup.com/lacteos-el-puente/dashboard</code>). No está expuesto en el conector MCP, así que esta pestaña se carga a mano cada 15 días, los días 1 y 16.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Detalle</p>
+    <h2>Campañas del período</h2>
+    <p class="bajada">Una fila por campaña y día de actividad. Ordená por cualquier columna haciendo clic en el encabezado.</p>
+    <div class="controles" style="padding-top:0">
+      <div class="campo"><label for="buscar">Buscar</label><input type="search" id="buscar" placeholder="Nombre o segmento…" style="min-width:220px"></div>
+      <div class="campo"><label for="filtroCanal">Canal</label><select id="filtroCanal"></select></div>
+      <div class="campo"><label for="filtroTipo">Tipo</label><select id="filtroTipo">
+        <option value="todos">Todos</option><option value="auto">Automatizaciones</option><option value="oneshot">Envíos puntuales</option>
+      </select></div>
+      <div class="campo"><label for="agrup">Ver</label><select id="agrup">
+        <option value="campania">Por campaña</option><option value="dia">Por campaña y día</option>
+      </select></div>
+    </div>
+    <div class="tabla-wrap"><table id="tablaCampanias"></table></div>
+  </section>
+
+  <details class="setup">
+    <summary>Fuente de los datos y cómo actualizarlos</summary>
+    <div class="cuerpo">
+      <p>Este archivo no trae datos propios: lee un Google Sheet cada vez que alguien lo abre. El Sheet lo alimenta una <b>tarea programada diaria</b> que consulta el conector de WooWup (cuenta <code>lacteos-el-puente</code>, id 1562) y deja dos CSVs en una carpeta de Drive, que un activador dentro del propio Sheet importa.</p>
+
+      <h4>La cadena completa</h4>
+      <pre>Tarea diaria 8:47 (Cowork)
+   │  conector de WooWup → dos CSVs
+   ▼
+Carpeta de Drive
+   ▼
+Activador diario 9:10 (dentro del Sheet)
+   │  importa, idempotente
+   ▼
+Google Sheet · 4 pestañas
+   │  publicado en la web como CSV
+   ▼
+Este dashboard</pre>
+      <p>Sin aplicación web, sin URL pública y sin token: así no depende de las políticas de Workspace que bloquean el acceso anónimo a Apps Script. Es el mismo patrón que el pipeline de Stanley.</p>
+
+      <h4>Cómo se arma cada fila de campañas</h4>
+      <p>Hacen falta dos llamadas y un join, porque ninguna sola trae todo:</p>
+      <pre>get_campaigns_timeline(from_date, to_date, filter_by="activity")
+   → una fila por campaña y día: sent, open, click, tickets, revenue
+   → NO trae canal ni segmento
+
+list_campaigns(from_date, to_date, with_stats=true, limit=100)
+   → metadata por campaña: channel, segment_title, type
+   → NO trae desglose diario
+
+join por campaign id</pre>
+
+      <h4>Puntos que importan</h4>
+      <ul>
+        <li><code>filter_by</code> debe ser <b>"activity"</b>. Con "sent" las automatizaciones sólo reportan su última corrida y se pierde todo el historial diario.</li>
+        <li><b>La ventana de atribución es de 5 días</b> y sigue sumando después del envío: aparecen filas con <code>sent = 0</code> y <code>revenue &gt; 0</code>. Por eso la tarea diaria <b>reescribe 30 días hacia atrás</b>, no sólo el día anterior: corrige los números que todavía estaban abiertos y, de paso, rellena sola cualquier día que se haya salteado. El desglose por sucursal, que es el acumulado de cada campaña y ya no se mueve pasados los 5 días, se reescribe con 7 días.</li>
+        <li><b>Antes de consultar hay que confirmar la cuenta activa.</b> El conector es multi-cuenta: llamar <code>switch_account("lacteos-el-puente")</code> y verificar que la respuesta traiga <code>active_account: "lacteos-el-puente"</code>. Si viene otro slug, los números son de otro cliente.</li>
+        <li>La cuenta declara <code>currency: USD</code> pero los importes son pesos argentinos. El dashboard fuerza ARS.</li>
+        <li>No hay endpoint de contactos, segmentos, grupos RFM ni atributos extendidos. Los grupos de valor y el tamaño de cada identidad del Genoma <b>se cargan a mano cada 15 días</b>, los días 1 y 16. La tarea diaria lo recuerda sola esos dos días.</li>
+        <li><b>Ingreso atribuido no es ingreso incremental.</b> Para saber cuánto de esto no hubiera pasado igual hace falta un hold-out del 15–20% en las campañas grandes.</li>
+      </ul>
+
+      <h4>Las cuatro pestañas del Sheet</h4>
+      <p>El dashboard lee las cuatro cada vez que alguien lo abre, por separado: si una falla o está vacía, las otras siguen funcionando y aparece un aviso arriba — nunca muestra ceros ni se rompe. Las dos primeras las escribe la tarea diaria; las dos últimas se cargan a mano los días 1 y 16.</p>
+      <pre>campanias     fecha | campania | canal | segmento | tipo | enviados | aperturas | clicks | conversiones | ingresos
+sucursales    fecha | campania | sucursal | digital | tickets | ingresos
+rfm           fecha | grupo | contactos | ingresos
+identidades   fecha | identidad | clientes | con_kpi</pre>
+      <ul>
+        <li>Números: acepta formato argentino con moneda (<code>$650.300,00</code>, <code>-$76.000,00</code>) o números planos. No hace falta desformatear las celdas.</li>
+        <li><code>fecha</code> en formato <code>AAAA-MM-DD</code>. En <code>rfm</code> y en <code>identidades</code>, el día del corte: 1 o 16.</li>
+        <li>En <code>rfm</code>, la columna <code>ingresos</code> sólo hace falta en el último mes: alimenta el share de revenue por grupo.</li>
+        <li>En <code>identidades</code>, <code>identidad</code> tiene que escribirse <b>igual</b> que en <code>CONFIG.identidades</code> y que en el atributo <i>Identidad</i> de WooWup. Si no coincide, la fila no se muestra.</li>
+        <li><code>tipo</code> en <code>campanias</code>: <code>custom</code> es envío puntual, cualquier otro valor cuenta como automatización.</li>
+        <li>Las pestañas deben cubrir el <b>mismo rango de fechas</b>. Si sucursales llega más lejos que campañas, el dashboard avisa.</li>
+      </ul>
+
+      <h4>Cómo está conectado</h4>
+      <p>El Sheet está publicado en la web (<i>Archivo → Compartir → Publicar en la web</i>, como <b>Documento completo</b>) y el dashboard usa la clave de publicación cargada en <code>CONFIG.publicacionBase</code>. A partir de esa única URL descubre solo el identificador de cada pestaña. Si el descubrimiento falla, se pueden fijar a mano en <code>CONFIG.gids</code>: abrí el Sheet, hacé clic en cada pestaña y copiá el número al final de la URL (<code>…#gid=123456789</code>).</p>
+      <p><b>Importante:</b> el archivo tiene que abrirse en un navegador real (descargado o en un hosting). Dentro de un visor de vista previa, el entorno aislado bloquea las peticiones a Google y los bloques quedan vacíos.</p>
+    </div>
+  </details>
+
+  <footer id="pie"></footer>
 </div>
 
 <script>
-const URL = 'https://www.farmafullweb.com.ar';
+/* ====================================================================
+   CONFIGURACIÓN
+   ==================================================================== */
+const CONFIG = {
+  cliente:      'Lácteos El Puente',
+  cuenta:       'lacteos-el-puente (id 1562)',
+  moneda:       'ARS',
 
-/* ── BLOCK LABEL HELPER ── */
-function blk(html, name, type, note, size) {
-  const cfg = {
-    d: { cls:'lbl-d', ico:'🎨', label:'Diseño gráfico' },
-    c: { cls:'lbl-c', ico:'✏️',  label:'Texto editable' },
-    a: { cls:'lbl-a', ico:'⚡', label:'Automático · ESP' },
-  }[type];
-  const noteHtml = note ? `<span style="font-weight:400;opacity:.7"> · ${note}</span>` : '';
-  const sizeHtml = size ? `<span class="lt-size">${size}</span>` : '';
-  return `<div class="blk">`
-    + `<div class="blk-lbl ${cfg.cls}">${cfg.ico} ${name}${noteHtml}<span class="lt">${cfg.label}</span>${sizeHtml}</div>`
-    + html
-    + `</div>`;
+  // ── Sheet publicado en la web ────────────────────────────────────────
+  // Clave que aparece en la URL de "Publicar en la web", entre /d/e/ y /pubhtml
+  // ⚠ PASO 3 DEL INSTRUCTIVO: pegar acá la clave del Sheet de El Puente.
+  publicacionBase: '2PACX-1vQnmgzdDyQYdZ2PzD3D9wkk4PB5kUutTJnlxvYmb-BzXLZp9DuFRyKtTs7S5Jf3omBBTP4inVO-VqPX',
+
+  // Identificador de cada pestaña (el número al final de la URL del Sheet).
+  // Estando cargados, el dashboard va derecho al CSV y saltea el paso de
+  // descubrimiento automático, que es el más frágil de la cadena.
+  // ⚠ PASO 3: pegar los cuatro gids. Si quedan vacíos, los descubre solo.
+  gids: {campanias:'', sucursales:'', rfm:'', identidades:''},
+
+  // Alternativa: URLs completas de cada pestaña publicada como CSV.
+  // Si están cargadas, tienen prioridad sobre todo lo anterior.
+  urlsPublicadas: {campanias:'', sucursales:'', rfm:'', identidades:''},
+
+  // Último recurso: ID del Sheet privado + nombres de pestaña (suele fallar
+  // por restricciones del navegador; queda como fallback).
+  // ⚠ PASO 1: pegar acá el id del Sheet (lo que va entre /d/ y /edit).
+  sheetId:      '1nxcjcucnBYXwnIs2_tLIyLDmHvXpuLkmOOehPevwyCY',
+  pestanias:    {campanias:'campanias', sucursales:'sucursales', rfm:'rfm', identidades:'identidades'},
+
+  // Las cuatro identidades del Genoma, en el orden en que se muestran.
+  // Tienen que escribirse igual que en el atributo Identidad de WooWup.
+  identidades: ['Picada del finde','Quesero','Reposición de lácteos','D70','Sin clasificar'],
+
+  // true = ignora el Sheet y usa los datos embebidos
+  modoEmbebido: false
+};;
+
+const DATOS_EMBEBIDOS = [];
+let SUCURSALES = [];
+let RFM = null;
+let IDENTIDADES = [];
+const EXTRAIDO_EL = null;   // El Puente no lleva foto embebida: todo sale del Sheet
+
+/* ---------------- Utilidades ---------------- */
+const nfMoney = new Intl.NumberFormat('es-AR',{style:'currency',currency:CONFIG.moneda,maximumFractionDigits:0});
+const nfNum   = new Intl.NumberFormat('es-AR',{maximumFractionDigits:0});
+const nfDec   = new Intl.NumberFormat('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const nfDec2  = new Intl.NumberFormat('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money = v => nfMoney.format(Math.round(v||0));
+const num   = v => nfNum.format(Math.round(v||0));
+const pct   = v => nfDec.format((v||0)*100)+'%';
+const pct2  = v => nfDec2.format((v||0)*100)+'%';
+const pp    = v => (v>=0?'+':'')+nfDec.format(v*100)+' p.p.';
+
+const dObj = s => new Date(s+'T12:00:00');
+const iso  = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+const mesDe = s => s.slice(0,7)+'-01';
+const nomMes = s => dObj(s).toLocaleDateString('es-AR',{month:'short',year:'2-digit'}).replace('.','');
+const nomDia = s => dObj(s).toLocaleDateString('es-AR',{day:'2-digit',month:'short'}).replace('.','');
+const fechaLarga = s => dObj(s).toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+
+const NOM_CANAL = {email:'Email', whatsapp:'WhatsApp', sms:'SMS', push:'Push'};
+const COLOR_CANAL = {email:'#E8551F', whatsapp:'#2E9E5B', sms:'#B23F12', push:'#F0916A'};
+// Todo lo que no es "custom" es un flujo automatizado disparado por comportamiento
+const esAuto = t => t !== 'custom';
+
+/* Convierte a número los valores que Google Sheets exporta con formato de moneda
+   argentino: "$650.300,00", "-$76.000,00", "1.058.900,00", "$0,00", "73".
+   Sin esto todo el revenue se lee como 0. */
+function numAR(v){
+  if(typeof v==='number') return v;
+  if(v===null||v===undefined) return 0;
+  let s=String(v).trim();
+  if(!s) return 0;
+  const neg = /^-/.test(s) || /^\(.*\)$/.test(s) || /^-?\s*\$/.test(s) && /^-/.test(s);
+  s=s.replace(/[()]/g,'').replace(/[^0-9.,-]/g,'');   // saca $, espacios, NBSP
+  s=s.replace(/(?!^)-/g,'');                           // guiones internos
+  if(s.includes(',')){
+    // coma = decimal, punto = miles
+    s=s.replace(/\./g,'').replace(',','.');
+  } else if(/\.\d{3}(\.|$)/.test(s)){
+    // sólo puntos y grupos de 3 dígitos: son separadores de miles
+    s=s.replace(/\./g,'');
+  }
+  const n=parseFloat(s);
+  if(!isFinite(n)) return 0;
+  return neg && n>0 ? -n : n;
 }
 
-/* ── DATA ── */
-const PRODS = {
-  dermo:[
-    {brand:'La Roche-Posay',name:'Anthelios UV Mineral SPF50+ 50ml',old:'$ 59.842',price:'$ 41.890',cuota:'12 cuotas de $ 3.490',bg:'#D8EEF8',ico:'☀️'},
-    {brand:'Bioderma',name:'Sensibio H2O Micellar 250ml',old:'$ 28.500',price:'$ 19.950',cuota:'12 cuotas de $ 1.662',bg:'#D8F0E8',ico:'💧'},
-    {brand:'Isdin',name:'Eryfotona Ageless SPF100+ 50ml',old:'$ 72.000',price:'$ 36.000',cuota:'12 cuotas de $ 3.000',bg:'#FFF3D8',ico:'🧴'},
-    {brand:'Vichy',name:'Minéral 89 Booster Sérum 50ml',old:'$ 38.000',price:'$ 19.000',cuota:'12 cuotas de $ 1.583',bg:'#F0D8F0',ico:'✨'},
-    {brand:'Neutrogena',name:'Sérum Retinol 0.3% 30ml',old:'$ 42.000',price:'$ 29.400',cuota:'12 cuotas de $ 2.450',bg:'#E8F4D8',ico:'🌿'},
-  ],
-  supl:[
-    {brand:'ENA Sport',name:'Creatina Micronizada x300gr',old:'$ 32.000',price:'$ 19.200',cuota:'12 cuotas de $ 1.600',tags:['300g','micronizada'],bg:'#D8E4F8',ico:'💊'},
-    {brand:'ENA',name:'Carnitina 1500mg 60 cápsulas',old:'$ 18.500',price:'$ 11.100',cuota:'12 cuotas de $ 925',tags:['60 caps','fat burner'],bg:'#F8DDD8',ico:'🏋️'},
-    {brand:'By Derm',name:'Kollagen Full Life Colágeno 250gr',old:'$ 26.000',price:'$ 15.600',cuota:'12 cuotas de $ 1.300',tags:['colágeno','vit C'],bg:'#D8F8E4',ico:'🌿'},
-    {brand:'GOOM Nutrition',name:'Gomitas Vinagre de Sidra x30',old:'$ 14.000',price:'$ 8.400',cuota:'12 cuotas de $ 700',tags:['gomitas','digestión'],bg:'#F8F4D8',ico:'🍏'},
-  ],
-  cuidado:[
-    {brand:'Dove',name:'Mascara Bond Intense Repair 250gr',old:'$ 18.500',price:'$ 9.250',cuota:'12 cuotas de $ 770',bg:'#D8EEF8',ico:'🫧'},
-    {brand:'Dove',name:'Acondicionador Bond Intense 250ml',old:'$ 14.200',price:'$ 7.100',cuota:'12 cuotas de $ 591',bg:'#D8F0E8',ico:'💆'},
-    {brand:'TRESemmé',name:'Shampoo Hidratación Profunda 750ml',old:'$ 9.800',price:'$ 4.900',cuota:'12 cuotas de $ 408',bg:'#F8EAD8',ico:'🧴'},
-    {brand:'Elvive',name:'Kit Sérum Dream Liso x2',old:'$ 28.000',price:'$ 14.000',cuota:'12 cuotas de $ 1.166',bg:'#EEF8D8',ico:'✨'},
-  ],
-  frag:[
-    {brand:'Chloé',name:'EDP Rocket 100ml',old:'$ 48.990',price:'$ 34.290',cuota:'12 cuotas de $ 2.857',notes:['floral','fresco','almizcle'],bg:'#F5E8F5',ico:'🌸'},
-    {brand:'YSL',name:'Libre EDP 50ml',old:'$ 55.000',price:'$ 38.500',cuota:'12 cuotas de $ 3.208',bg:'#E8EEF8',ico:'🌿'},
-    {brand:'Armani',name:'Acqua di Gioia EDP 100ml',old:'$ 68.000',price:'$ 47.600',cuota:'12 cuotas de $ 3.966',bg:'#D8F0F4',ico:'🌊'},
-    {brand:'Narciso R.',name:'For Her EDP 100ml',old:'$ 72.000',price:'$ 50.400',cuota:'12 cuotas de $ 4.200',bg:'#F8E8EE',ico:'🌺'},
-  ],
-};
-
-/* ── SHARED BLOCKS ── */
-function hsBadge(){
-  return `<div class="hs-pill"><span class="hp1">hot sale</span><span class="hpsep"></span><span class="hp2">11 AL 13 DE MAYO</span></div>`;
+/* ---------------- Parser CSV (modo Sheet) ---------------- */
+function parseCSV(txt){
+  const filas=[]; let campo='',fila=[],enCom=false;
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(enCom){ if(c==='"'){ if(txt[i+1]==='"'){campo+='"';i++;} else enCom=false; } else campo+=c; }
+    else if(c==='"') enCom=true;
+    else if(c===','){ fila.push(campo); campo=''; }
+    else if(c==='\n'){ fila.push(campo); filas.push(fila); fila=[]; campo=''; }
+    else if(c!=='\r') campo+=c;
+  }
+  if(campo!==''||fila.length){ fila.push(campo); filas.push(fila); }
+  if(!filas.length) return [];
+  const cab=filas[0].map(h=>h.trim().toLowerCase());
+  return filas.slice(1).filter(f=>f.some(v=>v.trim()!=='')).map(f=>{
+    const o={}; cab.forEach((h,i)=>{ const v=(f[i]??'').trim();
+      o[h]=(v!==''&&!isNaN(v)&&h!=='fecha')?Number(v):v; }); return o;
+  });
 }
 
-function emHeader(){
-  return blk(`<div class="em-hdr">
-    <div class="em-logo">
-      <div class="lic"><span>F</span></div>
-      <div class="lw"><span class="l1">FARMA</span><span class="l2">full</span></div>
-    </div>
-    <div class="em-nav">
-      <a href="${URL}">DERMO</a><a href="${URL}">PERFUMERÍA</a><a href="${URL}">MAKEUP</a>
-    </div>
-  </div>`,'Header · Logo + Nav','c','Fijo de marca','620 × 60 px')
-  + blk(`<div class="em-strip-envio">📦 <strong>Envío gratis</strong> dentro de Entre Ríos · Hasta $170.000</div>`,'Strip de envío','c','Texto editable por campaña','620 × 28 px');
+/* ---------------- Estado ---------------- */
+let DATOS=null;
+const ST={desde:null,hasta:null,comparar:true,metrica:'ingresos',granu:'dia',
+          orden:{col:'ingresos',dir:-1},buscar:'',canal:'todos',tipo:'todos',agrup:'campania'};
+
+const enRango=(f,a,b)=>f>=a&&f<=b;
+const filtrar=(arr,a,b)=>arr.filter(x=>enRango(x.fecha,a,b));
+
+function agregar(rows){
+  const t={enviados:0,aperturas:0,clicks:0,conversiones:0,ingresos:0};
+  rows.forEach(c=>{for(const k in t) t[k]+=(c[k]||0);});
+  return {...t,
+    apertura: t.enviados? t.aperturas/t.enviados : 0,
+    ctr:      t.aperturas? t.clicks/t.aperturas : 0,
+    convRate: t.enviados? t.conversiones/t.enviados : 0,
+    ticket:   t.conversiones? t.ingresos/t.conversiones : 0,
+    rpe:      t.enviados? t.ingresos/t.enviados : 0
+  };
+}
+function periodoAnterior(a,b){
+  const dias=Math.round((dObj(b)-dObj(a))/86400000)+1;
+  return [iso(addDays(dObj(a),-dias)), iso(addDays(dObj(a),-1))];
 }
 
-function bcBar(){
-  return blk(`<div class="em-bc">
-    <div class="bc-l">
-      <span class="bc-heart">♥</span>
-      <div><div class="bc-title">BEAUTY CLUB</div><div class="bc-sub">Sumá puntos con cada compra</div></div>
-    </div>
-    <div>
-      <div class="bc-pts">✦ Doble puntos en Hot Sale</div>
-      <span class="bc-btn">Ver mis puntos</span>
-    </div>
-  </div>`,'Beauty Club','c','Puntos se calculan automáticamente','620 × 52 px');
-}
-
-function cuotasBar(){
-  return blk(`<div class="em-cuotas">
-    <div class="cq-inner">
-      <div class="cq-num">12</div>
-      <div class="cq-txt"><div class="ct1">CUOTAS SIN INTERÉS</div><div class="ct2">Todos los días · Con tarjetas participantes</div></div>
-      <div class="cq-cards">
-        <span class="cc cc-v">VISA</span><span class="cc cc-m">MC</span>
-        <span class="cc cc-n">NARANJA</span><span class="cc cc-c">CABAL</span>
-      </div>
-    </div>
-  </div>`,'12 Cuotas sin interés','c','Número de cuotas y tarjetas editables','620 × 68 px');
-}
-
-function secLabel(txt){
-  return blk(`<div class="em-sec"><h2>${txt}</h2></div>`,`Título de sección`,'c','Texto editable','620 × 44 px');
-}
-
-function prodGrid(prods){
-  return blk(`<div class="prods-grid">${prods.map(p=>`
-    <div class="pc">
-      <div class="pc-img" style="background:${p.bg}">${p.ico}</div>
-      <div class="pc-brand">${p.brand}</div>
-      <div class="pc-name">${p.name}</div>
-      <div class="pc-old">${p.old}</div>
-      <div class="pc-new">${p.price}</div>
-      <div class="pc-cuota">${p.cuota}</div>
-      <a class="pc-btn" href="${URL}">Comprar</a>
-    </div>`).join('')}</div>`,'Grilla de productos (2 col)','a','Imagen · nombre · precio · cuota · botón desde ESP','Card: 310 × auto · img: 310 × 310 px');
-}
-
-function ctaBlock(txt, color){
-  return blk(`<div class="em-cta"><a href="${URL}" style="background:${color||'#1A1A1A'}">${txt}</a></div>`,`CTA: ${txt}`,'c','Texto y color editables','620 × 64 px');
-}
-
-function beneRow(){
-  return blk(`<div class="em-bene">
-    <div class="be"><span class="be-ico">🚚</span><div class="be-txt">Envío gratis<br>Entre Ríos</div></div>
-    <div class="be"><span class="be-ico">📦</span><div class="be-txt">Gratis al país<br>+$70.000</div></div>
-    <div class="be"><span class="be-ico">🏪</span><div class="be-txt">Retiro<br>3 horas</div></div>
-    <div class="be"><span class="be-ico">🔒</span><div class="be-txt">Pago<br>seguro</div></div>
-  </div>`,'Beneficios logísticos','c','Íconos y textos editables','620 × 64 px');
-}
-
-function footerFull(){
-  return blk(`<div class="em-foot">
-    <div class="ef-l"><span class="ef-hrt">♥</span><div><div class="ef-t">BEAUTY CLUB</div><div class="ef-s">Cada compra suma puntos</div></div></div>
-    <div class="ef-pts">⭐ Doble puntos en Hot Sale</div>
-    <div class="ef-tags"><span class="ef-tag">{{mensaje}}</span><span class="ef-tag">Suma puntos</span></div>
-  </div>
-  <div class="em-foot-soc"><span>📘 Facebook</span><span>📷 Instagram</span></div>
-  <div class="em-foot-legal">
-    <p>Precios válidos del 11 al 13 de mayo de 2026. Sujetos a disponibilidad de stock.<br>Cuotas sin interés con tarjetas participantes. Consultar condiciones.</p>
-    <p><a href="#">Cancelar suscripción</a> · <a href="#">Privacidad</a> · © 2026 FarmaFull</p>
-  </div>`,'Footer · Beauty Club + Legales','c','Texto legal y redes editables','620 × 110 px');
-}
-
-/* ════════════════
-   TEMPLATE 01 — DERMOCOSMÉICA
-   Bloques: header · bc · cuotas · hero-A ·
-   guía tipo piel · featured · grilla 2×2 · cta · bene · footer
-════════════════ */
-function tDermo(){
-  const p = PRODS.dermo;
-  return emHeader() + bcBar() + cuotasBar()
-    + blk(`<div class="hero-a" style="background:#1A3D52">
-        <div class="ha-bg" style="background:linear-gradient(135deg,#1A3D52 60%,#2A6080 100%)">
-          <div class="ha-shape" style="color:var(--blue)">🧴</div>
-        </div>
-        <div class="ha-overlay"></div>
-        <div class="ha-cnt">
-          ${hsBadge()}
-          <div class="h-title" style="margin-top:9px">Aprendé a cuidar<br>tu piel</div>
-          <div class="h-body">Con nuestras soluciones dermatológicas seleccionadas por especialistas.</div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <a class="h-cta" href="${URL}" style="background:var(--blue)">Ver skincare →</a>
-            <span class="h-off">HASTA 50% OFF</span>
-          </div>
-        </div>
-      </div>`,'Banner principal','d','Imagen de fondo a reemplazar · texto superpuesto','620 × 280 px')
-    + secLabel('GUÍA RÁPIDA POR TIPO DE PIEL')
-    + blk(`<div class="skin-guide">
-        <div class="sg"><span class="sg-ico">💊</span><div><h4>Piel con Arrugas</h4><p>Retinol + Ácido Hialurónico</p><div class="sg-lnk">→ Ver productos</div></div></div>
-        <div class="sg"><span class="sg-ico">🔬</span><div><h4>Piel con Poros</h4><p>Ácido Salicílico + Niacinamida</p><div class="sg-lnk">→ Ver productos</div></div></div>
-        <div class="sg"><span class="sg-ico">✨</span><div><h4>Piel Apagada</h4><p>Vitamina C + SPF diario</p><div class="sg-lnk">→ Ver productos</div></div></div>
-        <div class="sg"><span class="sg-ico">💧</span><div><h4>Flacidez</h4><p>Péptidos + Ácido Hialurónico</p><div class="sg-lnk">→ Ver productos</div></div></div>
-      </div>`,'Guía tipo de piel (2×2)','c','Título + ingrediente activo + link editables','Celda: 310 × 90 px')
-    + secLabel('PRODUCTO DESTACADO')
-    + blk(`<div class="em-feat">
-        <div class="feat-img" style="background:#D8EEF8">☀️</div>
-        <div class="feat-body">
-          <div class="feat-badge">MÁS VENDIDO</div>
-          <div class="feat-brand">La Roche-Posay</div>
-          <div class="feat-name">Anthelios UV Mineral SPF50+ 50ml</div>
-          <div class="feat-prices"><span class="feat-old">$ 59.842</span><span class="feat-new">$ 41.890</span></div>
-          <div class="feat-cuota">12 cuotas de $ 3.490</div>
-          <a class="feat-btn" href="${URL}">Comprar →</a>
-        </div>
-      </div>`,'Producto featured (horizontal)','a','Imagen · nombre · precio · cuota · botón desde ESP','img: 148 × 170 px')
-    + secLabel('MÁS PRODUCTOS SELECCIONADOS')
-    + prodGrid(p.slice(1,5))
-    + ctaBlock('VER TODO EL SKINCARE →','#4DC8E8')
-    + beneRow() + footerFull();
-}
-
-/* ════════════════
-   TEMPLATE 02 — SUPLEMENTOS DEPORTIVOS
-   Bloques: header · bc · cuotas · hero-B ·
-   stats · lista horizontal · stack CTA · bene · footer
-════════════════ */
-function tSupl(){
-  const p = PRODS.supl;
-  return emHeader() + bcBar() + cuotasBar()
-    + blk(`<div class="hero-b" style="background:#0E1A2E">
-        <div class="hb-bg">💪</div>
-        <div class="hb-overlay"></div>
-        <div class="hb-cnt">
-          ${hsBadge()}
-          <div class="hb-eyebrow" style="color:var(--orange);margin-top:10px">SUPLEMENTOS DEPORTIVOS</div>
-          <div class="hb-title">POTENCIÁ<br>TU RUTINA</div>
-          <div class="hb-sub">Creatina, proteínas y colágeno al mejor precio del año.</div>
-          <div style="display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap">
-            <a class="h-cta" href="${URL}" style="background:var(--orange)">Ver suplementos →</a>
-            <span class="h-off">HASTA 40% OFF</span>
-          </div>
-        </div>
-      </div>`,'Banner principal','d','Imagen de fondo a reemplazar · texto superpuesto','620 × 280 px')
-    + blk(`<div class="em-stats">
-        <div class="stat"><div class="stat-n">40%</div><div class="stat-l">OFF creatina</div></div>
-        <div class="stat"><div class="stat-n">30%</div><div class="stat-l">OFF proteínas</div></div>
-        <div class="stat"><div class="stat-n">12</div><div class="stat-l">cuotas s/int.</div></div>
-        <div class="stat"><div class="stat-n">24hs</div><div class="stat-l">despacho</div></div>
-      </div>`,'Fila de estadísticas','c','Números y etiquetas editables','620 × 62 px')
-    + secLabel('SUPLEMENTOS EN OFERTA')
-    + blk(`<div class="prods-list">${p.map(pr=>`
-        <div class="pli">
-          <div class="pli-img" style="background:${pr.bg}">${pr.ico}</div>
-          <div class="pli-body">
-            <div class="pli-brand">${pr.brand}</div>
-            <div class="pli-name">${pr.name}</div>
-            <div class="pli-tags">${pr.tags.map(t=>`<span class="pli-tag">${t}</span>`).join('')}</div>
-          </div>
-          <div class="pli-r">
-            <div class="pli-old">${pr.old}</div>
-            <div class="pli-new">${pr.price}</div>
-            <div class="pli-cuota">${pr.cuota}</div>
-            <a class="pli-btn" href="${URL}">Comprar →</a>
-          </div>
-        </div>`).join('')}</div>`,'Lista de productos (horizontal)','a','Imagen · nombre · tags · precio · cuota · botón desde ESP','img: 88 × 100 px por fila')
-    + blk(`<div class="em-stack">
-        <h3>ARMÁ TU STACK COMPLETO</h3>
-        <p>Creatina + Proteína + Colágeno + Carnitina. Resultados reales.</p>
-        <a href="${URL}">Ver todos los suplementos →</a>
-      </div>`,'Stack CTA agrupador','c','Título · descripción · texto botón editables','620 × 80 px')
-    + beneRow() + footerFull();
-}
-
-/* ════════════════
-   TEMPLATE 03 — CUIDADO PERSONAL
-   Bloques: header · bc · cuotas · hero-C (split) ·
-   cat 2×2 · lista necesidades · grilla 2×2 · cta · bene · footer
-════════════════ */
-function tCuidado(){
-  const p = PRODS.cuidado;
-  return emHeader() + bcBar() + cuotasBar()
-    + blk(`<div class="hero-c" style="background:#1E3A2A">
-        <div class="hc-l">
-          ${hsBadge()}
-          <div class="h-title" style="margin-top:9px;color:#fff">Todo lo que tu<br>rutina necesita</div>
-          <div class="h-body" style="color:rgba(255,255,255,.62)">Capilar, higiene personal y más hasta 50% OFF.</div>
-          <a class="h-cta" href="${URL}" style="background:#7DBA7B">Ver cuidado personal →</a>
-        </div>
-        <div class="hc-r" style="background:#2A4E38">💆</div>
-      </div>`,'Banner principal (split)','d','Imagen lado derecho · copy lado izquierdo','620 × 220 px')
-    + secLabel('EXPLORÁ POR CATEGORÍA')
-    + blk(`<div class="cat-2x2">
-        <div class="ct" style="background:#2A5C8A"><div class="ct-ico">🧴</div><div class="ct-name">Dermo-cosmética</div><div class="ct-sub">Hasta 50% OFF</div></div>
-        <div class="ct" style="background:#2A7A4A"><div class="ct-ico">💆</div><div class="ct-name">Capilar</div><div class="ct-sub">Hasta 50% OFF</div></div>
-        <div class="ct" style="background:#7A4A2A"><div class="ct-ico">🌸</div><div class="ct-name">Higiene personal</div><div class="ct-sub">Productos seleccionados</div></div>
-        <div class="ct" style="background:#1A4A6A"><div class="ct-ico">👶</div><div class="ct-name">Bebé</div><div class="ct-sub">Pampers · Nutrilon</div></div>
-      </div>`,'Grilla de categorías (2×2)','d','Imagen de fondo por tile · nombre · descuento','Tile: 309 × 88 px')
-    + secLabel('ENCONTRÁ LO QUE NECESITÁS')
-    + blk(`<div class="needs-list">
-        <div class="need"><span class="need-ico">💆</span><div class="need-body"><h4>Pelo dañado o seco</h4><p>Dove Bond Intense, Elvive Dream Liso</p></div><span class="need-lnk">Ver →</span></div>
-        <div class="need"><span class="need-ico">🧼</span><div class="need-body"><h4>Piel sensible</h4><p>Jabones dermatológicos, gel neutro</p></div><span class="need-lnk">Ver →</span></div>
-        <div class="need"><span class="need-ico">🌸</span><div class="need-body"><h4>Higiene femenina</h4><p>Líneas especializadas seleccionadas</p></div><span class="need-lnk">Ver →</span></div>
-        <div class="need"><span class="need-ico">👶</span><div class="need-body"><h4>Bebé</h4><p>Pampers, ACF Baby Care, Nutrilon</p></div><span class="need-lnk">Ver →</span></div>
-      </div>`,'Lista de necesidades / problemas','c','Ícono · título · descripción · link editables','Fila: 620 × 52 px')
-    + secLabel('PRODUCTOS EN OFERTA')
-    + prodGrid(p)
-    + ctaBlock('VER CUIDADO PERSONAL →','#7DBA7B')
-    + beneRow() + footerFull();
-}
-
-/* ════════════════
-   TEMPLATE 04 — FRAGANCIAS
-   Bloques: header · bc · cuotas · hero-D (editorial) ·
-   familias olfativas · featured · asimétrico · cta · bene · footer
-════════════════ */
-function tFrag(){
-  const p = PRODS.frag;
-  const fp = p[0];
-  return emHeader() + bcBar() + cuotasBar()
-    + blk(`<div class="hero-d" style="background:#0A080C">
-        <div class="hd-bg">
-          <div class="hd-stripe" style="background:linear-gradient(135deg,#2A1A3A,#1A0E22)">🌸</div>
-        </div>
-        <div class="hd-overlay"></div>
-        <div class="hd-cnt">
-          ${hsBadge()}
-          <div class="hd-tag" style="margin-top:12px">FRAGANCIAS · HOT SALE 2026</div>
-          <div class="hd-title">"Tu perfume de<br>este otoño<br>está acá"</div>
-          <div class="hd-rule"></div>
-          <div class="hd-sub">Fragancias selectivas · hasta 25% OFF</div>
-          <a class="h-cta" href="${URL}" style="border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;padding:9px 20px">Descubrí la colección</a>
-        </div>
-      </div>`,'Banner principal (editorial)','d','Imagen de fondo · quote en itálica · tono oscuro','620 × 280 px')
-    + blk(`<div class="notas-strip">
-        <span class="notas-lbl">Familias</span>
-        ${['Floral','Oriental','Amaderado','Fresco','Cítrico','Aromático'].map(n=>`<span class="nota-tag">${n}</span>`).join('')}
-      </div>`,'Strip de familias olfativas','c','Tags editables','620 × 38 px')
-    + secLabel('SELECCIÓN DE LA SEMANA')
-    + blk(`<div class="em-feat">
-        <div class="feat-img" style="background:${fp.bg}">${fp.ico}</div>
-        <div class="feat-body">
-          <div class="feat-badge">SELECCIÓN</div>
-          <div class="feat-brand">${fp.brand}</div>
-          <div class="feat-name">${fp.name}</div>
-          <div class="feat-notes">${fp.notes.map(n=>`<span class="feat-note">${n}</span>`).join('')}</div>
-          <div class="feat-prices"><span class="feat-old">${fp.old}</span><span class="feat-new">${fp.price}</span></div>
-          <div class="feat-cuota">${fp.cuota}</div>
-          <a class="feat-btn" href="${URL}">Comprar →</a>
-        </div>
-      </div>`,'Producto featured (horizontal)','a','Imagen · nombre · notas · precio · cuota · botón desde ESP','img: 148 × 170 px')
-    + secLabel('MÁS FRAGANCIAS EN OFERTA')
-    + blk(`<div class="asym">
-        <div class="asym-big">
-          <div class="ab-img" style="background:${p[1].bg}">${p[1].ico}</div>
-          <div>
-            <div class="ab-brand">${p[1].brand}</div>
-            <div class="ab-name">${p[1].name}</div>
-            <div class="ab-prices"><span class="ab-old">${p[1].old}</span><span class="ab-new">${p[1].price}</span></div>
-            <div class="ab-cuota">${p[1].cuota}</div>
-            <a class="ab-btn" href="${URL}">Comprar</a>
-          </div>
-        </div>
-        <div class="asym-smalls">
-          ${p.slice(2).map(pr=>`
-          <div class="as">
-            <div class="as-img" style="background:${pr.bg}">${pr.ico}</div>
-            <div class="as-brand">${pr.brand}</div>
-            <div class="as-name">${pr.name}</div>
-            <div class="as-price">${pr.price}</div>
-            <div class="as-cuota">${pr.cuota}</div>
-            <a class="as-btn" href="${URL}">Comprar</a>
-          </div>`).join('')}
-        </div>
-      </div>`,'Grilla asimétrica (1 grande + 2 chicos)','a','Imagen · nombre · precio · cuota · botón desde ESP','Grande img: 100 × 118 px · Chicos img: 310 × 310 px')
-    + ctaBlock('VER TODA LA COLECCIÓN →','#0A080C')
-    + beneRow() + footerFull();
-}
-
-/* ════════════════
-   UI
-════════════════ */
-const TABS = [
-  {id:'dermo',   label:'Dermocosméica',   color:'#4DC8E8', num:'01', fn:tDermo},
-  {id:'supl',    label:'Suplementos',      color:'#FC5B31', num:'02', fn:tSupl},
-  {id:'cuidado', label:'Cuidado personal', color:'#7DBA7B', num:'03', fn:tCuidado},
-  {id:'frag',    label:'Fragancias',       color:'#C8A97A', num:'04', fn:tFrag},
+/* ---------------- KPIs ---------------- */
+const KPI_DEFS=[
+  {k:'ingresos',    rot:'Ingreso CRM',        f:money, tipo:'rel'},
+  {k:'conversiones',rot:'Conversiones',       f:num,   tipo:'rel'},
+  {k:'ticket',      rot:'Ticket promedio',    f:money, tipo:'rel'},
+  {k:'rpe',         rot:'Ingreso por envío',  f:money, tipo:'rel'},
+  {k:'enviados',    rot:'Envíos',             f:num,   tipo:'rel'},
+  {k:'apertura',    rot:'Tasa de apertura',   f:pct,   tipo:'pp'},
+  {k:'ctr',         rot:'CTR sobre aperturas',f:pct,   tipo:'pp'},
+  {k:'convRate',    rot:'Conversión s/ envíos',f:pct2, tipo:'pp'}
 ];
-let cur='dermo', view='desk';
 
-function buildTabs(){
-  const row=document.getElementById('tab-row');
-  TABS.forEach(t=>{
-    const b=document.createElement('button');
-    b.className='cat-tab'+(t.id===cur?' on':'');
-    b.id='tab-'+t.id;
-    b.style.borderBottomColor=t.id===cur?t.color:'transparent';
-    b.innerHTML=`<span class="pip" style="background:${t.color}"></span>${t.label}<span class="tnum">${t.num}</span>`;
-    b.onclick=()=>selTab(t.id);
-    row.appendChild(b);
+function renderKpis(act,prev){
+  document.getElementById('kpis').innerHTML=KPI_DEFS.map(d=>{
+    const v=act[d.k]; let dh='<div class="delta flat">—</div>';
+    if(prev){
+      const p=prev[d.k];
+      if(d.tipo==='pp'){
+        const dd=v-p, cl=Math.abs(dd)<0.0002?'flat':dd>0?'up':'down';
+        dh=`<div class="delta ${cl}">${cl==='flat'?'=':cl==='up'?'▲':'▼'} ${pp(dd)} <small>vs anterior</small></div>`;
+      } else {
+        const dd=p?(v-p)/p:0, cl=Math.abs(dd)<0.005?'flat':dd>0?'up':'down';
+        dh=`<div class="delta ${cl}">${cl==='flat'?'=':cl==='up'?'▲':'▼'} ${(dd>=0?'+':'')+nfDec.format(dd*100)}% <small>vs anterior</small></div>`;
+      }
+    }
+    return `<div class="kpi"><div class="rot">${d.rot}</div><div class="val">${d.f(v)}</div>${dh}</div>`;
+  }).join('');
+}
+
+/* ---------------- Serie temporal ---------------- */
+const METRICAS=[
+  {k:'ingresos',rot:'Ingreso CRM',f:money},
+  {k:'conversiones',rot:'Conversiones',f:num},
+  {k:'enviados',rot:'Envíos',f:num},
+  {k:'apertura',rot:'Apertura',f:pct}
+];
+
+function serie(rows){
+  const mapa=new Map();
+  rows.forEach(c=>{
+    let clave;
+    if(ST.granu==='dia') clave=c.fecha;
+    else if(ST.granu==='mes') clave=mesDe(c.fecha);
+    else { const d=dObj(c.fecha); clave=iso(addDays(d,-((d.getDay()+6)%7))); }
+    if(!mapa.has(clave)) mapa.set(clave,{clave,ingresos:0,conversiones:0,enviados:0,aperturas:0});
+    const o=mapa.get(clave);
+    o.ingresos+=c.ingresos; o.conversiones+=c.conversiones; o.enviados+=c.enviados; o.aperturas+=c.aperturas;
+  });
+  return [...mapa.values()].sort((a,b)=>a.clave<b.clave?-1:1)
+    .map(o=>({...o,apertura:o.enviados?o.aperturas/o.enviados:0}));
+}
+
+function renderLinea(rows){
+  const s=serie(rows);
+  const svg=document.getElementById('chartLinea');
+  const W=900,H=300,ml=80,mr=14,mt=16,mb=34, iw=W-ml-mr, ih=H-mt-mb;
+  const met=METRICAS.find(m=>m.k===ST.metrica);
+  if(!s.length){ svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#8A8A8A" font-size="14" font-style="italic">Sin datos en el período</text>`; return; }
+  const vals=s.map(o=>o[ST.metrica]);
+  const max=Math.max(...vals)*1.12||1, min=0;
+  const x=i=>ml+(s.length===1?iw/2:i*iw/(s.length-1));
+  const y=v=>mt+ih-((v-min)/(max-min))*ih;
+
+  let g='';
+  for(let i=0;i<=4;i++){
+    const v=min+(max-min)*i/4, yy=y(v);
+    g+=`<line x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}" stroke="#ECDFD3" stroke-width="1"/>`;
+    const et = ST.metrica==='apertura' ? nfDec.format(v*100)+'%'
+      : v>=1e6 ? nfDec.format(v/1e6)+'M' : v>=1000 ? Math.round(v/1000)+'k' : Math.round(v);
+    g+=`<text x="${ml-9}" y="${yy+4}" text-anchor="end" fill="#8A8A8A" font-size="11" font-family="Inter">${et}</text>`;
+  }
+  const pts=s.map((o,i)=>`${x(i)},${y(o[ST.metrica])}`).join(' ');
+  g+=`<polygon points="${ml},${mt+ih} ${pts} ${x(s.length-1)},${mt+ih}" fill="#E8551F" opacity=".09"/>`;
+  g+=`<polyline points="${pts}" fill="none" stroke="#E8551F" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s.forEach((o,i)=>{ g+=`<circle cx="${x(i)}" cy="${y(o[ST.metrica])}" r="3.2" fill="#fff" stroke="#E8551F" stroke-width="2"/>`; });
+  const paso=Math.max(1,Math.ceil(s.length/9));
+  s.forEach((o,i)=>{
+    if(i%paso&&i!==s.length-1) return;
+    g+=`<text x="${x(i)}" y="${H-11}" text-anchor="middle" fill="#8A8A8A" font-size="11" font-family="Inter">${ST.granu==='mes'?nomMes(o.clave):nomDia(o.clave)}</text>`;
+  });
+  g+=`<line class="cursor" x1="0" y1="${mt}" x2="0" y2="${mt+ih}" stroke="#B23F12" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
+  svg.innerHTML=g;
+
+  const box=document.getElementById('chartBox'), tip=document.getElementById('tip');
+  const cursor=svg.querySelector('.cursor');
+  box.onmousemove=e=>{
+    const rc=svg.getBoundingClientRect();
+    const px=(e.clientX-rc.left)/rc.width*W;
+    let idx=0,best=1e9;
+    s.forEach((o,i)=>{const d=Math.abs(x(i)-px); if(d<best){best=d;idx=i;}});
+    const o=s[idx];
+    const et = ST.granu==='mes'?nomMes(o.clave):ST.granu==='semana'?'Semana del '+nomDia(o.clave):fechaLarga(o.clave);
+    tip.innerHTML=`<span class="t-fecha">${et}</span><b>${met.f(o[ST.metrica])}</b> · ${met.rot.toLowerCase()}`;
+    tip.style.opacity=1;
+    tip.style.left=Math.min(Math.max(x(idx)/W*rc.width-tip.offsetWidth/2,0),rc.width-tip.offsetWidth)+'px';
+    tip.style.top=Math.max(0,y(o[ST.metrica])/H*rc.height-46)+'px';
+    cursor.setAttribute('x1',x(idx)); cursor.setAttribute('x2',x(idx)); cursor.setAttribute('opacity','.6');
+  };
+  box.onmouseleave=()=>{tip.style.opacity=0;cursor.setAttribute('opacity','0');};
+}
+
+/* ---------------- Automatizaciones vs puntuales ---------------- */
+function renderTipo(rows){
+  const grupos={auto:[],oneshot:[]};
+  rows.forEach(r=>grupos[esAuto(r.tipo)?'auto':'oneshot'].push(r));
+  const A=agregar(grupos.auto), O=agregar(grupos.oneshot);
+  const total=A.ingresos+O.ingresos||1;
+  const COL={auto:'#2E9E5B',oneshot:'#E8551F'};
+
+  document.getElementById('stackTipo').innerHTML=
+    [['auto','Automatizaciones',A],['oneshot','Envíos puntuales',O]].map(([k,rot,d])=>{
+      const w=d.ingresos/total*100;
+      return `<div style="width:${w}%;background:${COL[k]}" title="${rot}">${w>10?nfDec.format(w)+'%':''}</div>`;
+    }).join('');
+  document.getElementById('leyendaTipo').innerHTML=
+    `<span><i style="background:${COL.auto}"></i>Automatizaciones · ${money(A.ingresos)}</span>
+     <span><i style="background:${COL.oneshot}"></i>Envíos puntuales · ${money(O.ingresos)}</span>`;
+
+  document.getElementById('tablaTipo').innerHTML=`
+    <thead><tr><th class="izq">Tipo</th><th>Envíos</th><th>% de envíos</th><th>Conversiones</th>
+      <th>Conversión s/ envíos</th><th>Ingreso</th><th>% del ingreso</th><th>Ingreso por envío</th></tr></thead>
+    <tbody>${[['Automatizaciones',A,'auto'],['Envíos puntuales',O,'oneshot']].map(([rot,d,k])=>{
+      const te=A.enviados+O.enviados||1;
+      return `<tr><td class="izq"><span class="pill ${k==='auto'?'auto':''}">${rot}</span></td>
+        <td>${num(d.enviados)}</td><td>${pct(d.enviados/te)}</td><td>${num(d.conversiones)}</td>
+        <td>${pct2(d.convRate)}</td><td>${money(d.ingresos)}</td><td>${pct(d.ingresos/total)}</td>
+        <td><b>${money(d.rpe)}</b></td></tr>`;
+    }).join('')}</tbody>`;
+
+  const ins=document.getElementById('insightTipo');
+  if(!A.enviados||!O.enviados){ ins.innerHTML=''; return; }
+  const ratio=O.rpe? A.rpe/O.rpe : 0;
+  ins.innerHTML=`<div class="ico">💡</div><div class="txt">
+    <b style="color:var(--naranja-osc)">Cada envío automatizado rinde ${nfDec.format(ratio)}× más que uno puntual</b>
+    Las automatizaciones son el ${pct(A.enviados/(A.enviados+O.enviados))} de los envíos y generan el ${pct(A.ingresos/total)} del ingreso.
+    Producen ${money(A.rpe)} por envío contra ${money(O.rpe)} de los envíos puntuales.</div>`;
+}
+
+/* ---------------- RFM ---------------- */
+const COLOR_RFM={
+ 'Campeones':'#1F7A45','Clientes Fieles':'#2E9E5B','No puedes perderlos':'#7BC49A',
+ 'Potenciales Fieles':'#E8551F','Clientes Prometedores':'#F0916A','Nuevos Clientes':'#F5B99E',
+ 'Requieren Atención':'#C9A227','En Riesgo de Perderse':'#C0392B','A punto de Inactivarse':'#8A7A6E',
+ 'Hibernando':'#D8CCC2'};
+const BLOQUE_ROT={activo:'Activos',riesgo:'En riesgo',dormido:'Hibernando'};
+let vistaRfm='share';
+
+function rfmSerie(){
+  return RFM.meses.map(m=>{
+    const f=RFM.evolucion.filter(r=>r.fecha===m);
+    const tot=f.reduce((s,r)=>s+r.contactos,0);
+    const o={mes:m,total:tot};
+    f.forEach(r=>o[r.grupo]=r.contactos);
+    return o;
   });
 }
 
-function selTab(id){
-  cur=id;
-  TABS.forEach(t=>{
-    const b=document.getElementById('tab-'+t.id);
-    b.classList.toggle('on',t.id===id);
-    b.style.borderBottomColor=t.id===id?t.color:'transparent';
+function renderRfm(){
+  const rr=document.getElementById('rangoRfm');
+  if(rr) rr.textContent = (RFM&&RFM.meses&&RFM.meses.length)
+    ? nomMes(RFM.meses[0]+'-01')+' → '+nomMes(RFM.meses[RFM.meses.length-1]+'-01')
+    : 'esperando la carga del primer corte';
+
+  // Sin la pestaña rfm cargada el bloque no tiene nada que dibujar: lo
+  // dejamos explícito en vez de romper el resto del dashboard.
+  if(!RFM || !RFM.meses || !RFM.meses.length){
+    document.getElementById('kpisRfm').innerHTML='';
+    document.getElementById('chartRfm').innerHTML='';
+    document.getElementById('leyendaRfm').innerHTML='';
+    document.getElementById('tablaRfm').innerHTML=
+      '<tbody><tr><td class="vacio">La pestaña <b>rfm</b> del Sheet todavía no tiene datos. Se carga a mano en cada corte, desde el dashboard RFM de WoowUp.</td></tr></tbody>';
+    document.getElementById('insightRfm').innerHTML=
+      '<div class="ico">◷</div><div class="txt"><b>Esperando el primer corte</b>Con dos cortes cargados ya se puede leer el movimiento entre grupos de valor.</div>';
+    return;
+  }
+
+  const S=rfmSerie(), ini=S[0], fin=S[S.length-1];
+  const ord=[...RFM.actual].sort((a,b)=>b.rango-a.rango).map(x=>x.grupo);
+
+  // KPIs por bloque
+  const porBloque=(fila,bl)=>RFM.evolucion.filter(r=>r.bloque===bl&&r.fecha===fila.mes)
+    .reduce((s,r)=>s+r.contactos,0);
+  const cards=[
+    ['Base total', num(fin.total), `${(fin.total/ini.total-1>=0?'+':'')+nfDec.format((fin.total/ini.total-1)*100)}% desde ${nomMes(RFM.meses[0]+'-01')}`, null],
+    ...['activo','riesgo','dormido'].map(bl=>{
+      const a=porBloque(ini,bl)/ini.total, b=porBloque(fin,bl)/fin.total;
+      const dd=b-a, cl=Math.abs(dd)<0.001?'flat':dd>0?(bl==='activo'?'up':'down'):(bl==='activo'?'down':'up');
+      return [BLOQUE_ROT[bl], pct(b), `${pp(dd)} de la base`, cl];
+    })
+  ];
+  document.getElementById('kpisRfm').innerHTML=cards.map(([rot,val,sub,cl])=>
+    `<div class="kpi"><div class="rot">${rot}</div><div class="val">${val}</div>
+     <div class="delta ${cl||'flat'}">${sub}</div></div>`).join('');
+
+  // Gráfico apilado
+  const svg=document.getElementById('chartRfm');
+  const W=900,H=340,ml=52,mr=10,mt=12,mb=30, iw=W-ml-mr, ih=H-mt-mb;
+  const bw=iw/S.length*0.66, gap=iw/S.length;
+  const maxAbs=Math.max(...S.map(s=>s.total));
+  let g='';
+  for(let i=0;i<=4;i++){
+    const yy=mt+ih-ih*i/4;
+    g+=`<line x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}" stroke="#ECDFD3" stroke-width="1"/>`;
+    const et = vistaRfm==='share' ? (i*25)+'%'
+      : (maxAbs*i/4>=1000? Math.round(maxAbs*i/4/1000)+'k' : Math.round(maxAbs*i/4));
+    g+=`<text x="${ml-8}" y="${yy+4}" text-anchor="end" fill="#8A8A8A" font-size="11" font-family="Inter">${et}</text>`;
+  }
+  S.forEach((s,i)=>{
+    const x=ml+gap*i+(gap-bw)/2;
+    let acc=0;
+    ord.forEach(gr=>{
+      const v=s[gr]||0;
+      const frac = vistaRfm==='share' ? v/s.total : v/maxAbs;
+      const h=frac*ih;
+      const y=mt+ih-acc-h;
+      g+=`<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(0,h)}" fill="${COLOR_RFM[gr]}">
+          <title>${gr} · ${nomMes(s.mes)} · ${num(v)} clientes (${pct(v/s.total)})</title></rect>`;
+      acc+=h;
+    });
+    g+=`<text x="${x+bw/2}" y="${H-10}" text-anchor="middle" fill="#8A8A8A" font-size="11" font-family="Inter">${nomMes(s.mes).split(' ')[0]}</text>`;
   });
+  svg.innerHTML=g;
+
+  document.getElementById('leyendaRfm').innerHTML=ord.map(gr=>
+    `<span><i style="background:${COLOR_RFM[gr]}"></i>${gr}</span>`).join('');
+
+  // Tabla
+  const tot0=ini.total, tot1=fin.total;
+  const rev={}; RFM.actual.forEach(a=>rev[a.grupo]=a);
+  document.getElementById('tablaRfm').innerHTML=`
+    <thead><tr><th class="izq">Grupo de valor</th><th class="izq">Bloque</th>
+      <th>Sep 2025</th><th>Ago 2026</th><th>Var.</th>
+      <th>% base sep</th><th>% base ago</th><th>Δ p.p.</th>
+      <th>Revenue</th><th>% revenue</th></tr></thead>
+    <tbody>${ord.map(gr=>{
+      const a=ini[gr],b=fin[gr], sa=a/tot0, sb=b/tot1, dd=sb-sa;
+      const cl=Math.abs(dd)<0.0005?'flat':dd>0?'up':'down';
+      const r=rev[gr]||{};
+      return `<tr><td class="izq"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${COLOR_RFM[gr]};margin-right:7px"></span>${gr}</td>
+        <td class="izq"><span class="pill ${r.bloque==='activo'?'auto':''}">${BLOQUE_ROT[r.bloque]||''}</span></td>
+        <td>${num(a)}</td><td>${num(b)}</td>
+        <td class="${b>a?'up':'down'}">${(b/a-1>=0?'+':'')+nfDec.format((b/a-1)*100)}%</td>
+        <td>${pct2(sa)}</td><td>${pct2(sb)}</td>
+        <td class="${cl}"><b>${pp(dd)}</b></td>
+        <td>${r.ingresos?money(r.ingresos):'—'}</td>
+        <td>${r.shareRevenue?pct(r.shareRevenue):'—'}</td></tr>`;
+    }).join('')}</tbody>
+    <tfoot><tr><td colspan="2">Base total</td><td>${num(tot0)}</td><td>${num(tot1)}</td>
+      <td class="up">${'+'+nfDec.format((tot1/tot0-1)*100)}%</td>
+      <td>100,00%</td><td>100,00%</td><td>—</td>
+      <td>${money(RFM.revenueTotal)}</td><td>100,0%</td></tr></tfoot>`;
+
+  // Insight
+  const hibA=ini['Hibernando']/tot0, hibB=fin['Hibernando']/tot1;
+  const act0=['activo'].flatMap(bl=>RFM.evolucion.filter(r=>r.bloque===bl&&r.fecha===ini.mes)).reduce((s,r)=>s+r.contactos,0)/tot0;
+  const act1=RFM.evolucion.filter(r=>r.bloque==='activo'&&r.fecha===fin.mes).reduce((s,r)=>s+r.contactos,0)/tot1;
+  const camp=rev['Campeones'];
+  document.getElementById('insightRfm').innerHTML=`<div class="ico">📊</div><div class="txt">
+    <b style="color:var(--naranja-osc)">La base creció ${nfDec.format((tot1/tot0-1)*100)}% en doce meses, pero la composición casi no se movió</b>
+    Hibernando pasó de ${pct(hibA)} a ${pct(hibB)} de la base: absorbió el crecimiento en lugar de reducirse. Los activos ganaron apenas ${pp(act1-act0)}.
+    Campeones creció ${nfDec.format((fin['Campeones']/ini['Campeones']-1)*100)}% en cantidad pero <b style="display:inline">perdió participación</b> (${pp(fin['Campeones']/tot1-ini['Campeones']/tot0)}), y sigue concentrando el ${pct(camp.shareRevenue)} del revenue con sólo el ${pct(camp.shareClientes)} de los clientes.</div>`;
+
+  document.querySelectorAll('#tabsRfm .tab').forEach(t=>t.onclick=()=>{
+    vistaRfm=t.dataset.v;
+    document.querySelectorAll('#tabsRfm .tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+    renderRfm();
+  });
+}
+
+/* ---------------- Física vs digital ---------------- */
+function renderSucursales(a,b){
+  const rows=SUCURSALES.filter(r=>enRango(r.fecha,a,b));
+  const cont=document.getElementById('kpisSuc');
+  const cob=document.getElementById('coberturaSuc');
+  if(!rows.length){
+    cont.innerHTML='<div class="vacio" style="grid-column:1/-1">Ninguna campaña con desglose por sucursal cayó en este período</div>';
+    ['stackSuc','leyendaSuc','tablaSuc','tablaSucCamp'].forEach(id=>document.getElementById(id).innerHTML='');
+    document.getElementById('insightSuc').innerHTML='';
+    cob.textContent='Ampliá el rango de fechas para ver el desglose.';
+    return;
+  }
+  const sum=(f)=>rows.filter(f).reduce((o,r)=>({t:o.t+r.tickets,r:o.r+r.ingresos}),{t:0,r:0});
+  const D=sum(r=>r.digital), F=sum(r=>!r.digital);
+  const tot=D.r+F.r||1;
+
+  cont.innerHTML=[
+    ['E-commerce', D.r, D.r/tot, D.t],
+    ['Tiendas físicas', F.r, F.r/tot, F.t],
+    ['Ticket prom. online', D.t?D.r/D.t:0, null, null],
+    ['Ticket prom. en local', F.t?F.r/F.t:0, null, null]
+  ].map(([rot,val,share,tk])=>`<div class="kpi"><div class="rot">${rot}</div>
+      <div class="val">${money(val)}</div>
+      <div class="delta flat">${share!==null?`${pct(share)} del ingreso · ${num(tk)} tickets`:'&nbsp;'}</div></div>`).join('');
+
+  document.getElementById('stackSuc').innerHTML=
+    `<div style="width:${D.r/tot*100}%;background:#E8551F">${D.r/tot>.1?pct(D.r/tot):''}</div>
+     <div style="width:${F.r/tot*100}%;background:#2E9E5B">${F.r/tot>.1?pct(F.r/tot):''}</div>`;
+  document.getElementById('leyendaSuc').innerHTML=
+    `<span><i style="background:#E8551F"></i>E-commerce · ${money(D.r)}</span>
+     <span><i style="background:#2E9E5B"></i>Tiendas físicas · ${money(F.r)}</span>`;
+
+  // Tabla por sucursal
+  const porSuc={};
+  rows.forEach(r=>{const o=porSuc[r.sucursal]=porSuc[r.sucursal]||{t:0,r:0,dig:r.digital,camps:new Set()};
+    o.t+=r.tickets; o.r+=r.ingresos; o.camps.add(r.campania);});
+  const lista=Object.entries(porSuc).sort((x,y)=>y[1].r-x[1].r);
+  document.getElementById('tablaSuc').innerHTML=`
+    <thead><tr><th class="izq">Sucursal</th><th class="izq">Tipo</th><th>Campañas con venta</th>
+      <th>Tickets</th><th>Ingreso</th><th>% del total</th><th>Ticket promedio</th></tr></thead>
+    <tbody>${lista.map(([n,o])=>`<tr>
+      <td class="izq">${n}</td>
+      <td class="izq"><span class="pill ${o.dig?'':'auto'}">${o.dig?'Digital':'Física'}</span></td>
+      <td>${o.camps.size}</td><td>${num(o.t)}</td>
+      <td class="${o.r<0?'down':''}">${money(o.r)}</td><td>${pct(o.r/tot)}</td>
+      <td>${o.t?money(o.r/o.t):'—'}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td colspan="3">Total</td><td>${num(D.t+F.t)}</td><td>${money(tot)}</td><td>100,0%</td>
+      <td>${money(tot/(D.t+F.t))}</td></tr></tfoot>`;
+
+  // Tabla por campaña
+  const porCamp={};
+  rows.forEach(r=>{const o=porCamp[r.campania]=porCamp[r.campania]||{fecha:r.fecha,canal:r.canal,dig:0,fis:0};
+    if(r.digital) o.dig+=r.ingresos; else o.fis+=r.ingresos;});
+  const camps=Object.entries(porCamp).map(([n,o])=>({n,...o,tot:o.dig+o.fis}))
+    .sort((x,y)=>(y.tot?y.fis/y.tot:0)-(x.tot?x.fis/x.tot:0));
+  document.getElementById('tablaSucCamp').innerHTML=`
+    <thead><tr><th class="izq">Campaña</th><th class="izq">Fecha</th><th>E-commerce</th><th>Físico</th>
+      <th>Total</th><th>% físico</th></tr></thead>
+    <tbody>${camps.map(c=>{
+      const p=c.tot?c.fis/c.tot:0;
+      const cl=p>=0.5?'up':p>=0.25?'':'flat';
+      return `<tr><td class="izq">${c.n}</td><td class="izq">${nomDia(c.fecha)}</td>
+        <td>${money(c.dig)}</td><td>${money(c.fis)}</td><td>${money(c.tot)}</td>
+        <td class="${cl}"><b>${pct(p)}</b></td></tr>`;}).join('')}</tbody>`;
+
+  // Insight
+  const soloFis=camps.filter(c=>c.dig===0&&c.fis>0);
+  let extra='';
+  if(soloFis.length) extra=` ${soloFis.length===1?'Una campaña vendió':'Hay '+soloFis.length+' campañas que vendieron'} exclusivamente en local (${soloFis.map(c=>c.n.split('_')[0]).join(', ')}): son piezas de afinidad de producto que el e-commerce no capturó.`;
+  const neg=lista.filter(([,o])=>o.r<0);
+  if(neg.length) extra+=` ${neg.map(([n])=>n).join(', ')} figura con ingreso negativo, lo que indica devoluciones netas en el período.`;
+  document.getElementById('insightSuc').innerHTML=`<div class="ico">🏬</div><div class="txt">
+    <b style="color:var(--naranja-osc)">${pct(F.r/tot)} del ingreso atribuido se cobró en tienda física</b>
+    ${num(F.t)} de los ${num(D.t+F.t)} tickets se cerraron en local, con un ticket promedio de ${money(F.t?F.r/F.t:0)} contra ${money(D.t?D.r/D.t:0)} online.${extra}</div>`;
+
+  const nCamps=camps.length;
+  cob.innerHTML=`El desglose cubre <b>${nCamps} campañas puntuales</b> del período, que suman ${money(tot)} de ingreso atribuido. Se trae con <code>get_campaign_report(campaign_id, sections=["branches"])</code>, una llamada por campaña.`;
+}
+
+/* ---------------- Canales ---------------- */
+function renderCanales(rows,prevRows){
+  const por={}, prev={};
+  rows.forEach(c=>{ (por[c.canal]=por[c.canal]||[]).push(c); });
+  (prevRows||[]).forEach(c=>{ prev[c.canal]=(prev[c.canal]||0)+c.ingresos; });
+  const orden=Object.keys(por).sort((a,b)=>agregar(por[b]).ingresos-agregar(por[a]).ingresos);
+  const total=orden.reduce((s,c)=>s+agregar(por[c]).ingresos,0)||1;
+
+  document.getElementById('stackCanales').innerHTML=orden.map(c=>{
+    const w=agregar(por[c]).ingresos/total*100;
+    return `<div style="width:${w}%;background:${COLOR_CANAL[c]||'#8A7A6E'}" title="${NOM_CANAL[c]||c}">${w>9?nfDec.format(w)+'%':''}</div>`;
+  }).join('');
+  document.getElementById('leyendaCanales').innerHTML=orden.map(c=>
+    `<span><i style="background:${COLOR_CANAL[c]||'#8A7A6E'}"></i>${NOM_CANAL[c]||c} · ${money(agregar(por[c]).ingresos)}</span>`).join('');
+
+  document.getElementById('tablaCanales').innerHTML=`
+    <thead><tr><th class="izq">Canal</th><th>Envíos</th><th>Apertura</th><th>CTR</th><th>Conversiones</th>
+      <th>Ingreso</th><th>Ingreso por envío</th><th>Var. ingreso</th></tr></thead>
+    <tbody>${orden.map(c=>{
+      const d=agregar(por[c]), p=prev[c];
+      let dh='<span class="flat">—</span>';
+      if(p!==undefined&&p>0){const dd=(d.ingresos-p)/p, cl=Math.abs(dd)<0.005?'flat':dd>0?'up':'down';
+        dh=`<span class="${cl}">${cl==='flat'?'=':cl==='up'?'▲':'▼'} ${(dd>=0?'+':'')+nfDec.format(dd*100)}%</span>`;}
+      return `<tr><td class="izq"><span class="pill">${NOM_CANAL[c]||c}</span></td><td>${num(d.enviados)}</td>
+        <td>${pct(d.apertura)}</td><td>${pct(d.ctr)}</td><td>${num(d.conversiones)}</td>
+        <td>${money(d.ingresos)}</td><td><b>${money(d.rpe)}</b></td><td>${dh}</td></tr>`;
+    }).join('')}</tbody>`;
+}
+
+/* ---------------- Segmentos ---------------- */
+function renderSegmentos(rows){
+  const por={};
+  rows.forEach(c=>{ (por[c.segmento]=por[c.segmento]||[]).push(c); });
+  const lista=Object.entries(por).map(([n,rs])=>[n,agregar(rs)]).sort((a,b)=>b[1].ingresos-a[1].ingresos);
+  const max=lista.length?lista[0][1].ingresos:1;
+  const total=lista.reduce((s,[,d])=>s+d.ingresos,0)||1;
+
+  document.getElementById('barrasSegmentos').innerHTML=lista.slice(0,12).map(([n,d])=>`
+    <div class="barra-fila">
+      <div class="nom">${n}</div>
+      <div class="barra-track"><div class="barra-fill" style="width:${Math.max(1.5,d.ingresos/max*100)}%"></div></div>
+      <div class="barra-val">${money(d.ingresos)}<small>${nfDec.format(d.ingresos/total*100)}% del total</small></div>
+    </div>`).join('')||'<div class="vacio">Sin datos en el período</div>';
+
+  document.getElementById('tablaSegmentos').innerHTML=`
+    <thead><tr><th class="izq">Segmento en WooWup</th><th>Envíos</th><th>Apertura</th><th>Conversiones</th>
+      <th>Conversión s/ envíos</th><th>Ingreso</th><th>Ticket promedio</th><th>Ingreso por envío</th></tr></thead>
+    <tbody>${lista.map(([n,d])=>`<tr><td class="izq">${n}</td><td>${num(d.enviados)}</td>
+      <td>${pct(d.apertura)}</td><td>${num(d.conversiones)}</td><td>${pct2(d.convRate)}</td>
+      <td>${money(d.ingresos)}</td><td>${d.conversiones?money(d.ticket):'—'}</td>
+      <td><b>${money(d.rpe)}</b></td></tr>`).join('')}</tbody>`;
+}
+
+/* ---------------- Genoma: identidades ---------------- */
+let vistaGenoma='ingresos';
+
+/* Imputa una campaña a una identidad mirando el nombre del segmento.
+   Si el segmento no nombra ninguna, la campaña queda fuera del bloque:
+   preferimos no imputar antes que imputar mal. */
+function identidadDe(seg){
+  const s=String(seg||'').toLowerCase();
+  for(const id of CONFIG.identidades){
+    const clave=id.toLowerCase();
+    if(s.includes(clave)) return id;
+    // "Reposición de lácteos" también matchea un segmento que diga sólo "Reposición"
+    const primera=clave.split(' ')[0];
+    if(primera.length>4 && s.includes(primera)) return id;
+  }
+  return null;
+}
+
+/* Última foto del tamaño de cada identidad, desde la pestaña identidades. */
+function baseGenoma(){
+  if(!IDENTIDADES.length) return {};
+  const ult=IDENTIDADES.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
+  const o={};
+  IDENTIDADES.filter(r=>r.fecha===ult).forEach(r=>{
+    o[r.identidad]={clientes:r.clientes, conKpi:r.conKpi, fecha:r.fecha};
+  });
+  return o;
+}
+
+function renderGenoma(rows){
+  const base=baseGenoma();
+  const por={};
+  CONFIG.identidades.forEach(id=>{ por[id]=[]; });
+  rows.forEach(c=>{ const id=identidadDe(c.segmento); if(id) por[id].push(c); });
+
+  const lista=CONFIG.identidades.map(id=>{
+    const d=agregar(por[id]);
+    const b=base[id]||{};
+    return {id, d, clientes:b.clientes||0, conKpi:b.conKpi||0, campanias:por[id].length};
+  });
+
+  // KPIs: una tarjeta por identidad con su tamaño de base
+  const totalBase=lista.reduce((s,x)=>s+x.clientes,0);
+  document.getElementById('kpisGenoma').innerHTML=lista.map(x=>`
+    <div class="kpi">
+      <div class="rot">${x.id}</div>
+      <div class="val">${x.clientes?num(x.clientes):'—'}</div>
+      <div class="delta flat"><small>${x.clientes&&totalBase?nfDec.format(x.clientes/totalBase*100)+'% de la base':'esperando el primer corte'}</small></div>
+    </div>`).join('');
+
+  // Barras: ingreso atribuido o tamaño de base, según la pestaña elegida
+  const campo = vistaGenoma==='ingresos' ? (x=>x.d.ingresos) : (x=>x.clientes);
+  const orden=[...lista].sort((a,b)=>campo(b)-campo(a));
+  const max=campo(orden[0])||1;
+  const tot=orden.reduce((s,x)=>s+campo(x),0)||1;
+  const fmt = vistaGenoma==='ingresos' ? money : num;
+
+  document.getElementById('barrasGenoma').innerHTML = tot>1 ? orden.map(x=>`
+    <div class="barra-fila">
+      <div class="nom">${x.id}</div>
+      <div class="barra-track"><div class="barra-fill" style="width:${Math.max(1.5,campo(x)/max*100)}%"></div></div>
+      <div class="barra-val">${fmt(campo(x))}<small>${nfDec.format(campo(x)/tot*100)}% del total</small></div>
+    </div>`).join('')
+    : '<div class="vacio">Todavía no hay datos cargados para este bloque</div>';
+
+  // Tabla
+  document.getElementById('tablaGenoma').innerHTML=`
+    <thead><tr><th class="izq">Identidad</th><th>Clientes</th><th>Campañas</th><th>Envíos</th>
+      <th>Apertura</th><th>Conversiones</th><th>Ingreso atribuido</th>
+      <th>Ingreso por envío</th><th>Ingreso por cliente</th></tr></thead>
+    <tbody>${lista.map(x=>`<tr>
+      <td class="izq">${x.id}</td>
+      <td>${x.clientes?num(x.clientes):'—'}</td>
+      <td>${x.campanias||'—'}</td>
+      <td>${x.d.enviados?num(x.d.enviados):'—'}</td>
+      <td>${x.d.enviados?pct(x.d.apertura):'—'}</td>
+      <td>${x.d.conversiones?num(x.d.conversiones):'—'}</td>
+      <td>${x.d.ingresos?money(x.d.ingresos):'—'}</td>
+      <td>${x.d.enviados?'<b>'+money(x.d.rpe)+'</b>':'—'}</td>
+      <td>${x.clientes&&x.d.ingresos?money(x.d.ingresos/x.clientes):'—'}</td>
+    </tr>`).join('')}</tbody>`;
+
+  // Insight: la identidad con mejor ingreso por envío, y las que no recibieron nada
+  const act=lista.filter(x=>x.d.enviados>0);
+  const sin=lista.filter(x=>!x.d.enviados).map(x=>x.id);
+  const ico=document.getElementById('insightGenoma');
+  if(!act.length){
+    ico.innerHTML=`<div class="ico">◷</div><div class="txt"><b>Todavía no hay envíos imputados a ninguna identidad</b>
+      Cuando los segmentos de envío lleven el nombre de la identidad en el título, esta tabla se arma sola.</div>`;
+  } else {
+    const mejor=act.reduce((a,b)=>b.d.rpe>a.d.rpe?b:a);
+    const peor=act.length>1?act.reduce((a,b)=>b.d.rpe<a.d.rpe?b:a):null;
+    let t=`<b>${mejor.id} es la identidad que mejor rinde por envío: ${money(mejor.d.rpe)}</b>`;
+    if(peor && peor.id!==mejor.id && peor.d.rpe>0){
+      t+=` Contra ${money(peor.d.rpe)} de ${peor.id}, la diferencia es de ${nfDec.format(mejor.d.rpe/peor.d.rpe)}×: el mismo esfuerzo de envío vale muy distinto según a quién le hablamos.`;
+    }
+    if(sin.length) t+=` ${sin.length===1?'Queda sin recibir nada':'Quedan sin recibir nada'}: ${sin.join(', ')}.`;
+    ico.innerHTML=`<div class="ico">▲</div><div class="txt">${t}</div>`;
+  }
+}
+
+/* ---------------- Tabla de campañas ---------------- */
+const COLS=[
+  {k:'fecha',rot:'Fecha',izq:true,f:v=>v?nomDia(v):'—'},
+  {k:'campania',rot:'Campaña',izq:true,f:v=>v},
+  {k:'canal',rot:'Canal',izq:true,f:v=>`<span class="pill">${NOM_CANAL[v]||v}</span>`},
+  {k:'auto',rot:'Tipo',izq:true,f:v=>v?'<span class="pill auto">Automatización</span>':'<span class="pill">Puntual</span>'},
+  {k:'segmento',rot:'Segmento',izq:true,f:v=>v},
+  {k:'enviados',rot:'Envíos',f:num},
+  {k:'apertura',rot:'Apertura',f:pct},
+  {k:'ctr',rot:'CTR',f:pct},
+  {k:'conversiones',rot:'Conv.',f:num},
+  {k:'ingresos',rot:'Ingreso',f:money},
+  {k:'rpe',rot:'Ing./envío',f:money}
+];
+
+function renderCampanias(rows){
+  let base;
+  if(ST.agrup==='campania'){
+    const m=new Map();
+    rows.forEach(r=>{
+      if(!m.has(r.campania)) m.set(r.campania,{campania:r.campania,canal:r.canal,segmento:r.segmento,
+        tipo:r.tipo,fecha:'',enviados:0,aperturas:0,clicks:0,conversiones:0,ingresos:0});
+      const o=m.get(r.campania);
+      ['enviados','aperturas','clicks','conversiones','ingresos'].forEach(k=>o[k]+=r[k]||0);
+      if(!o.fecha||r.fecha<o.fecha) o.fecha=r.fecha;
+    });
+    base=[...m.values()];
+  } else base=rows.map(r=>({...r}));
+
+  let filas=base.map(r=>({...r, auto:esAuto(r.tipo),
+    apertura:r.enviados?r.aperturas/r.enviados:0,
+    ctr:r.aperturas?r.clicks/r.aperturas:0,
+    rpe:r.enviados?r.ingresos/r.enviados:0}));
+
+  if(ST.canal!=='todos') filas=filas.filter(f=>f.canal===ST.canal);
+  if(ST.tipo!=='todos') filas=filas.filter(f=>ST.tipo==='auto'?f.auto:!f.auto);
+  if(ST.buscar){ const q=ST.buscar.toLowerCase();
+    filas=filas.filter(f=>(f.campania+' '+f.segmento).toLowerCase().includes(q)); }
+
+  const {col,dir}=ST.orden;
+  filas.sort((x,y)=>{const a=x[col],b=y[col];
+    return (typeof a==='string'? a.localeCompare(b) : (a===b?0:a-b))*dir;});
+
+  const tot=filas.reduce((t,f)=>{['enviados','aperturas','clicks','conversiones','ingresos'].forEach(k=>t[k]+=f[k]||0);return t;},
+    {enviados:0,aperturas:0,clicks:0,conversiones:0,ingresos:0});
+
+  document.getElementById('tablaCampanias').innerHTML=`
+    <thead><tr>${COLS.map(c=>
+      `<th class="sortable ${c.izq?'izq':''}" data-col="${c.k}" data-active="${col===c.k}">${c.rot} <span class="arrow">${col===c.k?(dir===1?'▲':'▼'):'⇅'}</span></th>`).join('')}</tr></thead>
+    <tbody>${filas.length?filas.map(f=>
+      `<tr>${COLS.map(c=>`<td class="${c.izq?'izq':''}">${c.f(f[c.k])}</td>`).join('')}</tr>`).join('')
+      :`<tr><td colspan="${COLS.length}" class="vacio">No hay campañas que coincidan con el filtro</td></tr>`}</tbody>
+    ${filas.length?`<tfoot><tr><td colspan="5">Total · ${num(filas.length)} ${ST.agrup==='campania'?'campañas':'filas'}</td>
+      <td>${num(tot.enviados)}</td><td>${pct(tot.enviados?tot.aperturas/tot.enviados:0)}</td>
+      <td>${pct(tot.aperturas?tot.clicks/tot.aperturas:0)}</td><td>${num(tot.conversiones)}</td>
+      <td>${money(tot.ingresos)}</td><td>${money(tot.enviados?tot.ingresos/tot.enviados:0)}</td></tr></tfoot>`:''}`;
+
+  document.querySelectorAll('#tablaCampanias th.sortable').forEach(th=>{
+    th.onclick=()=>{const c=th.dataset.col;
+      ST.orden = ST.orden.col===c ? {col:c,dir:-ST.orden.dir} : {col:c,dir:typeof filas[0]?.[c]==='string'?1:-1};
+      renderCampanias(rows);};
+  });
+}
+
+/* ---------------- Orquestación ---------------- */
+function render(){
+  const a=ST.desde,b=ST.hasta;
+  document.getElementById('rangoInfo').textContent=
+    `Del ${fechaLarga(a)} al ${fechaLarga(b)} · ${Math.round((dObj(b)-dObj(a))/86400000)+1} días`;
+
+  const rows=filtrar(DATOS,a,b);
+  const act=agregar(rows);
+  let prev=null,prevRows=null;
+  if(ST.comparar){
+    const [pa,pb]=periodoAnterior(a,b);
+    prevRows=filtrar(DATOS,pa,pb);
+    if(prevRows.length) prev=agregar(prevRows); else prevRows=null;
+  }
+  renderKpis(act,prev);
+  renderLinea(rows);
+  renderTipo(rows);
+  renderSucursales(a,b);
+  renderCanales(rows,prevRows);
+  renderSegmentos(rows);
+  renderGenoma(rows);
+  renderRfm();
+  renderCampanias(rows);
+}
+
+function aplicarPreset(v){
+  // Sin filas cargadas no hay "último día con datos": anclamos en hoy para que
+  // los controles y el resto del dashboard funcionen igual.
+  const anclaHoy=iso(new Date());
+  const maxF=DATOS.length?DATOS.reduce((m,c)=>c.fecha>m?c.fecha:m,'0000-00-00'):anclaHoy;
+  const minF=DATOS.length?DATOS.reduce((m,c)=>c.fecha<m?c.fecha:m,'9999-99-99'):anclaHoy;
+  const hoy=dObj(maxF);
+  let a,b=maxF;
+  if(v==='mes') a=iso(new Date(hoy.getFullYear(),hoy.getMonth(),1));
+  else if(v==='mesant'){ a=iso(new Date(hoy.getFullYear(),hoy.getMonth()-1,1));
+    b=iso(new Date(hoy.getFullYear(),hoy.getMonth(),0)); }
+  else if(v==='todo') a=minF;
+  else a=iso(addDays(hoy,-(Number(v)-1)));
+  // Sólo recortamos al primer día con datos si hay datos: sin filas, minF es
+  // hoy y el recorte dejaba cualquier período en 1 día.
+  if(DATOS.length && a<minF) a=minF; if(b<a) b=maxF;
+  ST.desde=a; ST.hasta=b;
+  document.getElementById('desde').value=a;
+  document.getElementById('hasta').value=b;
+}
+
+function montarControles(){
+  if(DATOS.length){
+    const min=DATOS.reduce((m,c)=>c.fecha<m?c.fecha:m,'9999-99-99');
+    const max=DATOS.reduce((m,c)=>c.fecha>m?c.fecha:m,'0000-00-00');
+    ['desde','hasta'].forEach(id=>{const el=document.getElementById(id);el.min=min;el.max=max;});
+  }
+
+  document.getElementById('preset').onchange=e=>{ if(e.target.value==='custom') return; aplicarPreset(e.target.value); render(); };
+  ['desde','hasta'].forEach(id=>{
+    document.getElementById(id).onchange=()=>{
+      const a=document.getElementById('desde').value, b=document.getElementById('hasta').value;
+      if(!a||!b) return;
+      if(a>b){ document.getElementById('rangoInfo').textContent='La fecha inicial no puede ser posterior a la final.'; return; }
+      ST.desde=a; ST.hasta=b; document.getElementById('preset').value='custom'; render();
+    };
+  });
+  document.getElementById('comparar').onchange=e=>{ST.comparar=e.target.checked;render();};
+
+  document.getElementById('tabsMetrica').innerHTML=METRICAS.map(m=>
+    `<button class="tab" role="tab" data-m="${m.k}" aria-selected="${m.k===ST.metrica}">${m.rot}</button>`).join('');
+  document.querySelectorAll('#tabsMetrica .tab').forEach(t=>t.onclick=()=>{
+    ST.metrica=t.dataset.m;
+    document.querySelectorAll('#tabsMetrica .tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+    renderLinea(filtrar(DATOS,ST.desde,ST.hasta));
+  });
+
+  const gr=[{k:'dia',rot:'Día'},{k:'semana',rot:'Semana'},{k:'mes',rot:'Mes'}];
+  document.getElementById('tabsGranu').innerHTML=gr.map(g=>
+    `<button class="tab" role="tab" data-g="${g.k}" aria-selected="${g.k===ST.granu}">${g.rot}</button>`).join('');
+  document.querySelectorAll('#tabsGranu .tab').forEach(t=>t.onclick=()=>{
+    ST.granu=t.dataset.g;
+    document.querySelectorAll('#tabsGranu .tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+    renderLinea(filtrar(DATOS,ST.desde,ST.hasta));
+  });
+
+  const canales=[...new Set(DATOS.map(c=>c.canal))];
+  document.getElementById('filtroCanal').innerHTML='<option value="todos">Todos</option>'+
+    canales.map(c=>`<option value="${c}">${NOM_CANAL[c]||c}</option>`).join('');
+  const re=()=>renderCampanias(filtrar(DATOS,ST.desde,ST.hasta));
+  document.getElementById('filtroCanal').onchange=e=>{ST.canal=e.target.value;re();};
+  document.getElementById('filtroTipo').onchange=e=>{ST.tipo=e.target.value;re();};
+  document.getElementById('agrup').onchange=e=>{ST.agrup=e.target.value;re();};
+  let deb; document.getElementById('buscar').oninput=e=>{
+    clearTimeout(deb); deb=setTimeout(()=>{ST.buscar=e.target.value;re();},180); };
+}
+
+/* Lee el documento publicado y saca el gid de cada pestaña por su nombre.
+   Así alcanza con pegar una sola URL en CONFIG.publicacionBase. */
+let GIDS_DESCUBIERTOS=null;
+async function descubrirGids(){
+  if(GIDS_DESCUBIERTOS) return GIDS_DESCUBIERTOS;
+  const url=`https://docs.google.com/spreadsheets/d/e/${CONFIG.publicacionBase}/pubhtml`;
+  const r=await fetch(url);
+  if(!r.ok) throw Object.assign(new Error('no se pudo leer el documento publicado'),{tipo:'http'});
+  const doc=new DOMParser().parseFromString(await r.text(),'text/html');
+  const mapa={};
+  doc.querySelectorAll('#sheet-menu li a').forEach(a=>{
+    const m=(a.getAttribute('href')||'').match(/gid=(\d+)/);
+    if(m) mapa[a.textContent.trim().toLowerCase()]=m[1];
+  });
+  if(!Object.keys(mapa).length) throw Object.assign(new Error('el documento publicado no expone las pestañas'),{tipo:'http'});
+  GIDS_DESCUBIERTOS=mapa;
+  return mapa;
+}
+
+async function urlDePestania(clave){
+  const directa=(CONFIG.urlsPublicadas||{})[clave];
+  if(directa && directa.trim()) return directa.trim();
+
+  if(CONFIG.publicacionBase){
+    let gid=(CONFIG.gids||{})[clave];
+    if(!gid){
+      const mapa=await descubrirGids();
+      const nombre=(CONFIG.pestanias[clave]||clave).toLowerCase();
+      gid = mapa[nombre] ?? Object.entries(mapa)
+        .find(([n])=>n.includes(nombre)||nombre.includes(n))?.[1];
+      if(!gid) throw Object.assign(
+        new Error(`"${clave}": no encontré una pestaña con ese nombre en el Sheet publicado`),{tipo:'permiso'});
+    }
+    return `https://docs.google.com/spreadsheets/d/e/${CONFIG.publicacionBase}/pub?gid=${gid}&single=true&output=csv`;
+  }
+  return `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CONFIG.pestanias[clave])}`;
+}
+
+/* Plan B: leer vía etiqueta <script>.
+   Cuando el archivo se abre desde el disco (file://) el navegador suele
+   bloquear las peticiones normales a otros dominios. Las etiquetas <script>
+   no tienen esa restricción, así que este camino funciona igual.
+   Además Google devuelve los números sin formato, sin símbolo de moneda. */
+function valorGviz(c){
+  if(!c) return '';
+  const v=c.v;
+  if(v===null||v===undefined) return c.f ?? '';
+  if(typeof v==='string'){
+    const m=v.match(/^Date\((\d+),(\d+),(\d+)/);
+    if(m) return `${m[1]}-${String(+m[2]+1).padStart(2,'0')}-${String(+m[3]).padStart(2,'0')}`;
+  }
+  if(v instanceof Date){
+    return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
+  }
+  return v;
+}
+
+function tablaGviz(resp){
+  const t=resp&&resp.table;
+  if(!t||!t.cols) throw new Error('respuesta inesperada de Google');
+  let cab=t.cols.map(c=>String(c.label||'').trim().toLowerCase());
+  let filas=t.rows||[];
+  if(cab.every(h=>!h) && filas.length){          // sin encabezados detectados
+    cab=(filas[0].c||[]).map(c=>String(valorGviz(c)||'').trim().toLowerCase());
+    filas=filas.slice(1);
+  }
+  return filas.map(r=>{
+    const o={};
+    cab.forEach((h,i)=>{ if(h) o[h]=valorGviz((r.c||[])[i]); });
+    return o;
+  }).filter(o=>Object.values(o).some(v=>v!==''&&v!==null&&v!==undefined));
+}
+
+function leerPorScript(clave, ms=15000){
+  // Por gid si lo tenemos; si no, por nombre de pestaña (gviz acepta los dos).
+  const gid=(CONFIG.gids||{})[clave];
+  const sel=gid ? `gid=${encodeURIComponent(gid)}`
+                : `sheet=${encodeURIComponent(CONFIG.pestanias[clave]||clave)}`;
+  return new Promise((res,rej)=>{
+    const cb='__gviz'+Math.random().toString(36).slice(2,9);
+    const s=document.createElement('script');
+    let listo=false;
+    const limpiar=()=>{ try{delete window[cb];}catch(e){window[cb]=undefined;} s.remove(); };
+    const reloj=setTimeout(()=>{ if(!listo){listo=true;limpiar();rej(new Error('tiempo agotado'));} },ms);
+    window[cb]=(resp)=>{
+      if(listo) return;
+      listo=true; clearTimeout(reloj); limpiar();
+      try{ res(tablaGviz(resp)); }catch(e){ rej(e); }
+    };
+    s.onerror=()=>{ if(!listo){listo=true;clearTimeout(reloj);limpiar();rej(new Error('no respondió'));} };
+    s.src=`https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq`+
+          `?${sel}&headers=1&tqx=responseHandler:${cb}`;
+    document.head.appendChild(s);
+  });
+}
+
+const BITACORA=[];
+async function leerPestania(clave){
+  // Plan B: etiqueta <script> contra gviz. No depende de CORS, así que anda
+  // aunque el archivo se abra desde el disco o desde otro dominio.
+  const planB=async(motivo,url)=>{
+    try{
+      const filas=await leerPorScript(clave);
+      BITACORA.push({clave,url:'vía <script> (gviz)',res:`OK · ${filas.length} filas`});
+      return filas;
+    }catch(e2){
+      BITACORA.push({clave,url:url||'(no se pudo armar)',res:motivo+' · plan B también falló ('+e2.message+')'});
+      throw Object.assign(new Error('no se pudo conectar con Google Sheets'),{tipo:'red'});
+    }
+  };
+  let url;
+  try{ url=await urlDePestania(clave); }
+  catch(e){
+    // Si el descubrimiento de gids falló por red (pubhtml no manda CORS),
+    // no nos rendimos: vamos directo al plan B por nombre de pestaña.
+    if(e.tipo==='permiso'){ BITACORA.push({clave,url:'(no se pudo armar)',res:e.message}); throw e; }
+    return planB(e.message);
+  }
+  let r;
+  try{
+    r=await fetch(url);
+  }catch(e){
+    return planB('bloqueada por el navegador · '+e.message, url);
+  }
+  if(!r.ok){
+    BITACORA.push({clave,url,res:'HTTP '+r.status});
+    throw Object.assign(new Error(`"${clave}": el servidor respondió ${r.status}`),
+      {tipo: r.status===401||r.status===403 ? 'permiso' : 'http'});
+  }
+  const txt=await r.text();
+  if(txt.trim().startsWith('<')){
+    BITACORA.push({clave,url,res:'devolvió HTML en vez de CSV (no publicado)'});
+    throw Object.assign(new Error(`"${clave}": el Sheet no está publicado o el gid no coincide`),{tipo:'permiso'});
+  }
+  const filas=parseCSV(txt);
+  BITACORA.push({clave,url,res:`OK · ${filas.length} filas`});
+  return filas;
+}
+
+const BLOQUE_MAP={
+ 'Campeones':'activo','Clientes Fieles':'activo','Potenciales Fieles':'activo',
+ 'Nuevos Clientes':'activo','Clientes Prometedores':'activo',
+ 'No puedes perderlos':'riesgo','Requieren Atención':'riesgo',
+ 'En Riesgo de Perderse':'riesgo','A punto de Inactivarse':'riesgo',
+ 'Hibernando':'dormido'};
+const RANGO_MAP={'Hibernando':0,'A punto de Inactivarse':1,'En Riesgo de Perderse':2,
+ 'Requieren Atención':3,'Nuevos Clientes':4,'Clientes Prometedores':5,
+ 'Potenciales Fieles':6,'No puedes perderlos':7,'Clientes Fieles':8,'Campeones':9};
+
+function normalizarCampanias(filas){
+  return filas.filter(r=>r.fecha).map(r=>({
+    fecha:String(r.fecha).slice(0,10), campania:r.campania, canal:String(r.canal||'').toLowerCase(),
+    segmento:r.segmento, tipo:r.tipo,
+    enviados:numAR(r.enviados), aperturas:numAR(r.aperturas), clicks:numAR(r.clicks),
+    conversiones:numAR(r.conversiones), ingresos:numAR(r.ingresos)}));
+}
+function normalizarSucursales(filas){
+  return filas.filter(r=>r.fecha).map(r=>({
+    fecha:String(r.fecha).slice(0,10), campania:r.campania, sucursal:r.sucursal,
+    digital:String(r.digital).toUpperCase()==='TRUE'||r.sucursal==='E-commerce',
+    tickets:numAR(r.tickets), ingresos:numAR(r.ingresos)}));
+}
+function normalizarIdentidades(filas){
+  return filas.filter(r=>r.fecha&&r.identidad).map(r=>({
+    fecha:String(r.fecha).slice(0,10), identidad:String(r.identidad).trim(),
+    clientes:numAR(r.clientes), conKpi:numAR(r.con_kpi)}));
+}
+function normalizarRfm(filas){
+  const ev=filas.filter(r=>r.fecha&&r.grupo).map(r=>({
+    fecha:String(r.fecha).slice(0,7), grupo:r.grupo, contactos:numAR(r.contactos),
+    bloque:BLOQUE_MAP[r.grupo]||'activo'}));
+  if(!ev.length) return null;
+  const meses=[...new Set(ev.map(r=>r.fecha))].sort();
+  const ult=meses[meses.length-1];
+  const totUlt=ev.filter(r=>r.fecha===ult).reduce((s,r)=>s+r.contactos,0)||1;
+  const revUlt={};
+  filas.forEach(r=>{ const i=numAR(r.ingresos);
+    if(String(r.fecha).slice(0,7)===ult && i) revUlt[r.grupo]=i; });
+  const totRev=Object.values(revUlt).reduce((s,v)=>s+v,0)||1;
+  const actual=ev.filter(r=>r.fecha===ult).map(r=>({
+    grupo:r.grupo, contactos:r.contactos, ingresos:revUlt[r.grupo]||0,
+    shareClientes:r.contactos/totUlt, shareRevenue:(revUlt[r.grupo]||0)/totRev,
+    bloque:r.bloque, rango:RANGO_MAP[r.grupo] ?? 0}));
+  return {meses,evolucion:ev,actual,revenueTotal:totRev};
+}
+
+async function iniciar(){
+  document.getElementById('nomCliente').textContent=CONFIG.cliente;
+  const est=document.getElementById('estadoDatos');
+  const avisos=[];
+  let diagnostico=null;
+
+  if(CONFIG.modoEmbebido){
+    DATOS=DATOS_EMBEBIDOS;
+    est.innerHTML='Modo embebido · sin datos cargados';
+  } else {
+    est.textContent='Leyendo Google Sheet…';
+    const tipos=[];
+    // Cada pestaña se lee por separado: si una falla, las otras siguen funcionando
+    try{
+      const f=normalizarCampanias(await leerPestania('campanias'));
+      if(f.length) DATOS=f;
+      else { DATOS=[]; avisos.push('la pestaña de campañas está vacía'); }
+    }catch(e){ DATOS=[]; avisos.push(e.message); tipos.push(e.tipo); }
+
+    try{
+      const f=normalizarSucursales(await leerPestania('sucursales'));
+      if(f.length) SUCURSALES=f; else avisos.push('la pestaña de sucursales está vacía');
+    }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
+
+    try{
+      const f=normalizarRfm(await leerPestania('rfm'));
+      if(f) RFM=f; else avisos.push('la pestaña de RFM está vacía');
+    }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
+
+    try{
+      const f=normalizarIdentidades(await leerPestania('identidades'));
+      if(f.length) IDENTIDADES=f; else avisos.push('la pestaña de identidades está vacía');
+    }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
+
+    // Si todas fallaron por red, es un solo problema, no cuatro
+    if(tipos.length===4 && tipos.every(t=>t==='red')){
+      avisos.length=0; diagnostico='red';
+    } else if(tipos.includes('permiso')){
+      diagnostico='permiso';
+    }
+
+    if(!avisos.length && !diagnostico){
+      // Mostramos hasta qué día llegan los datos, no la hora en que se abrió
+      // la página: si la tarea deja de correr, el cliente tiene que notarlo.
+      const maxF=DATOS.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
+      const dias=maxF?Math.floor((new Date()-dObj(maxF))/86400000):999;
+      const rot=`Datos hasta el ${maxF?fechaLarga(maxF):'—'}`;
+      est.innerHTML = dias>2
+        ? `<span style="color:var(--naranja);font-style:normal;font-weight:600">${rot}</span> · hace ${dias} días`
+        : rot;
+    } else if(diagnostico==='red'){
+      est.innerHTML='<span style="color:var(--neg);font-style:normal;font-weight:600">Sin conexión al Sheet</span> · no hay datos para mostrar';
+    } else {
+      est.innerHTML='<span style="color:var(--naranja);font-style:normal;font-weight:600">Actualizado parcialmente</span> · faltan pestañas por leer';
+    }
+
+    // Chequeo de frescura: si la tarea dejó de correr, el cliente vería
+    // números viejos como si fueran de hoy.
+    if(DATOS.length){
+      const maxF=DATOS.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
+      const dias=Math.floor((new Date()-dObj(maxF))/86400000);
+      if(dias>2) avisos.push(`el último dato es del ${fechaLarga(maxF)}, hace ${dias} días: la tarea diaria puede haberse cortado`);
+    }
+
+    // Chequeo de coherencia: si sucursales llega más lejos que campañas,
+    // los bloques estarían midiendo períodos distintos.
+    if(DATOS.length && SUCURSALES.length){
+      const maxC=DATOS.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
+      const maxS=SUCURSALES.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
+      if(maxS>maxC) avisos.push(`la pestaña de sucursales llega hasta el ${maxS} pero la de campañas termina el ${maxC}: las dos corridas cubrieron períodos distintos`);
+    }
+  }
+
+  document.getElementById('pie').innerHTML=
+    `Dashboard preparado por Segmentya · Fuente: WooWup, cuenta ${CONFIG.cuenta}. Los ingresos son atribuidos por WooWup y siguen acumulándose días después del envío, por lo que las campañas más recientes están subrepresentadas. Importes en pesos argentinos. Las variaciones comparan contra el período inmediatamente anterior de igual duración.`;
+
+  const bitacoraHtml = () => BITACORA.length
+    ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600;font-size:12px;color:var(--naranja)">Ver detalle técnico de las peticiones</summary>
+       <div style="margin-top:8px;font-size:11px;line-height:1.6">${BITACORA.map(b=>
+         `<div style="margin-bottom:7px"><b>${b.clave}</b> → ${b.res}<br>
+          <code style="font-size:10px;word-break:break-all;display:inline-block;margin-top:2px">${b.url}</code></div>`).join('')}</div></details>`
+    : '';
+
+  if(diagnostico==='red'){
+    const d=document.createElement('div');
+    d.className='bloqueado';
+    d.style.cssText='margin:16px 0;border-color:var(--neg)';
+    d.innerHTML=`<h4>El navegador bloqueó la conexión con Google Sheets</h4>
+      <p>No es un problema del Sheet ni de los datos: la petición nunca salió. Hasta que se resuelva, el dashboard no tiene de dónde leer y los bloques quedan vacíos.</p>
+      <p><b>1 · Abrilo fuera del visor.</b> Dentro de una vista previa el archivo corre en un entorno aislado que no permite pedirle datos a otros sitios. Descargá el HTML y abrilo directo en Chrome, o subilo a un hosting.</p>
+      <p><b>2 · Revisá los dos accesos.</b> El dashboard intenta primero con el Sheet publicado (<i>Archivo → Compartir → Publicar en la web</i>, como <b>Documento completo</b>) y, si eso falla, por una vía alternativa que necesita que el Sheet esté compartido con <b>cualquier persona con el enlace</b>. Si fallaron los dos, revisá que ninguna de las dos cosas se haya desactivado.</p>
+      <p><b>3 · Verificá la consola.</b> En Chrome, tecla F12 → pestaña Console. El mensaje que aparezca ahí dice exactamente qué bloqueó la petición.</p>`+bitacoraHtml();
+    document.getElementById('secKpis').before(d);
+  } else if(avisos.length){
+    const d=document.createElement('div');
+    d.className='bloqueado';
+    d.style.cssText='margin:16px 0;border-color:var(--naranja)';
+    d.innerHTML=`<h4>⚠ Algunas pestañas del Sheet no se pudieron leer</h4>
+      <p>${avisos.map(a=>'· '+a).join('<br>')}</p>
+      <p>Esos bloques quedan vacíos hasta que la pestaña se pueda leer.${diagnostico==='permiso'?' Revisá que el Sheet esté publicado como <b>Documento completo</b> y que los gids de <code>CONFIG.gids</code> coincidan con los del Sheet.':''}</p>`+bitacoraHtml();
+    document.getElementById('secKpis').before(d);
+  }
+
+  document.querySelectorAll('#tabsGenoma .tab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      vistaGenoma=b.dataset.v;
+      document.querySelectorAll('#tabsGenoma .tab').forEach(o=>o.setAttribute('aria-selected',String(o===b)));
+      render();
+    });
+  });
+
+  montarControles();
+  aplicarPreset('30');
   render();
 }
-
-function render(){
-  const t=TABS.find(x=>x.id===cur);
-  document.getElementById('out').innerHTML=t.fn();
-}
-
-function sv(v){
-  view=v;
-  document.getElementById('out').className='email-frame '+v;
-  document.getElementById('vd').classList.toggle('on',v==='desk');
-  document.getElementById('vm').classList.toggle('on',v==='mob');
-}
-
-function toggleLabels(){
-  const on=document.body.classList.toggle('show-labels');
-  document.getElementById('lbl-btn').classList.toggle('lbl-on',on);
-  document.getElementById('lbl-btn').textContent=on?'🏷 Ocultar etiquetas':'🏷 Etiquetas';
-}
-
-function dl(){
-  const t=TABS.find(x=>x.id===cur);
-  const css=document.querySelector('style').textContent;
-  const html=`<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FarmaFull — ${t.label} · Hot Sale 2026</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{margin:0;padding:24px;background:#E8E8E8;font-family:'Geist','Helvetica Neue',Helvetica,Arial,sans-serif}
-.wrap{max-width:620px;margin:0 auto;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.1)}
-.blk-lbl{display:none}
-${css}</style></head>
-<body><div class="wrap">${document.getElementById('out').innerHTML}</div></body></html>`;
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`farmafull_template_${t.id}.html`;
-  a.click();
-}
-
-buildTabs();
-render();
+iniciar();
 </script>
 </body>
 </html>
