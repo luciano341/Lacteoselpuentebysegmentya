@@ -108,6 +108,54 @@ tfoot td:first-child{text-align:left}
 .bloqueado p:last-child{margin-bottom:0}
 .bloqueado code{background:#fff;border:1px solid var(--borde);border-radius:4px;padding:1px 5px;font-size:11.5px}
 
+/* ── Portada ─────────────────────────────────────────────────────────
+   El recurso central es la marca de tiempo sobre la barra: sin ella un
+   "72% de la meta" no se puede juzgar. Con ella se ve de un vistazo si va
+   adelantado o atrasado respecto del calendario. */
+.portada{border:1px solid var(--borde);border-radius:14px;background:var(--crema);
+  padding:22px 24px 24px;margin-top:22px}
+.portada-head{display:flex;justify-content:space-between;align-items:baseline;
+  gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.portada h2{font-size:25px;margin:0}
+.portada .vent{font-size:12.5px;color:var(--texto-2);font-style:italic}
+.tiempo{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.tiempo .track{flex:1;height:6px;background:#fff;border:1px solid var(--borde);
+  border-radius:99px;overflow:hidden}
+.tiempo .fill{height:100%;background:var(--texto-2);border-radius:99px}
+.tiempo .rot{font-size:12px;color:var(--texto-2);white-space:nowrap}
+
+.ids{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.id-card{background:#fff;border:1px solid var(--borde);border-radius:11px;padding:14px 15px 16px}
+.id-card .nom{font-size:13px;font-weight:600;line-height:1.3;min-height:2.6em}
+.id-card .plata{font-size:24px;font-weight:700;color:var(--naranja);
+  letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:6px 0 2px}
+.id-card .de{font-size:11.5px;color:var(--nota);font-variant-numeric:tabular-nums}
+.pace{position:relative;height:20px;background:var(--gris-fila);border-radius:5px;
+  overflow:hidden;margin:11px 0 7px}
+.pace .barra{height:100%;border-radius:5px;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.pace .hoy{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--texto);
+  border-radius:1px}
+.id-card .veredicto{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.id-card .veredicto small{display:block;font-weight:400;color:var(--nota);font-size:11px}
+
+.portada .pie{margin-top:18px;padding-top:14px;border-top:1px solid var(--borde);
+  font-size:13px;color:var(--texto)}
+.portada .pie b{color:var(--naranja-osc)}
+
+/* Las tablas largas se pliegan: el bloque abre con el gráfico y la
+   conclusión, y el detalle queda a un clic. */
+details.tabla{margin-top:12px}
+details.tabla>summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--naranja);
+  list-style:none;padding:7px 0;display:inline-flex;align-items:center;gap:6px}
+details.tabla>summary::-webkit-details-marker{display:none}
+details.tabla>summary::before{content:'▸';display:inline-block;transition:transform .15s}
+details.tabla[open]>summary::before{transform:rotate(90deg)}
+details.tabla>summary:hover{color:var(--naranja-osc)}
+details.tabla>summary:focus-visible{outline:2px solid var(--naranja);outline-offset:2px}
+
+@media (max-width:900px){ .ids{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){ .ids{grid-template-columns:1fr} .portada h2{font-size:21px} }
+
 footer{margin-top:48px;border-top:1px solid var(--borde);padding-top:18px;font-size:11.5px;color:var(--nota);font-style:italic}
 details.setup{margin-top:20px;border:1px solid var(--borde);border-radius:11px;background:var(--crema)}
 details.setup summary{cursor:pointer;padding:13px 16px;font-weight:700;font-size:13px;color:var(--naranja);list-style:none;font-style:normal}
@@ -165,6 +213,73 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
   </div>
   <div class="rango-info" id="rangoInfo"></div>
 
+  <section class="portada" id="portada" style="display:none">
+    <div class="portada-head">
+      <h2 id="portadaTitulo">Cómo viene el trimestre</h2>
+      <div class="vent" id="portadaVentana"></div>
+    </div>
+    <div class="tiempo">
+      <div class="track"><div class="fill" id="tiempoFill"></div></div>
+      <div class="rot" id="tiempoRot"></div>
+    </div>
+    <div class="ids" id="portadaIds"></div>
+    <div class="pie" id="portadaPie"></div>
+  </section>
+
+  <section>
+    <p class="kicker">Genoma</p>
+    <h2>Las cuatro identidades</h2>
+    <p class="bajada">El Puente no tiene un cliente: tiene cuatro identidades de compra más una base sin clasificar. Arriba, el tamaño de cada una; abajo, qué rindió lo que les mandamos.</p>
+
+    <div class="kpis" id="kpisGenoma" style="grid-template-columns:repeat(5,1fr)"></div>
+
+    <div class="panel" style="margin:14px 0">
+      <div class="panel-head">
+        <div class="tabs" id="tabsGenoma" role="tablist">
+          <button class="tab" data-v="ingresos" aria-selected="true">Ingreso atribuido</button>
+          <button class="tab" data-v="clientes" aria-selected="false">Tamaño de la base</button>
+        </div>
+      </div>
+      <div class="barra-lista" id="barrasGenoma"></div>
+    </div>
+
+    <details class="tabla"><summary>Ver el detalle por identidad</summary>
+      <div class="tabla-wrap"><table id="tablaGenoma"></table></div></details>
+    <div class="insight" id="insightGenoma"></div>
+    <div class="bloqueado" id="sinImputar" style="margin-top:16px;display:none"></div>
+
+    <div id="bloqueSalud" style="display:none">
+      <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:28px 0 4px;text-transform:uppercase;letter-spacing:.06em">Composición RFM dentro de cada identidad</h4>
+      <p class="bajada" id="ventanaSalud" style="margin-bottom:12px"></p>
+      <div class="panel" style="margin-bottom:14px"><div class="barra-lista" id="barrasSalud"></div>
+        <div class="leyenda" id="leyendaSalud" style="padding-bottom:6px"></div></div>
+      <div class="panel-head">
+        <div class="tabs" id="tabsSalud" role="tablist">
+          <button class="tab" data-v="clientes" aria-selected="true">Clientes</button>
+          <button class="tab" data-v="ingresos" aria-selected="false">Venta del segmento</button>
+        </div>
+      </div>
+      <details class="tabla"><summary>Ver los 10 grupos de valor, identidad por identidad</summary>
+      <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSalud" style="min-width:1050px"></table></div></details>
+      <div class="insight" id="insightSalud"></div>
+    </div>
+
+    <div id="bloqueObjetivos" style="display:none">
+      <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:28px 0 4px;text-transform:uppercase;letter-spacing:.06em">Objetivos · momento cero → meta → real</h4>
+      <p class="bajada" id="ventanaObjetivos" style="margin-bottom:12px"></p>
+      <div class="tabla-wrap"><table id="tablaObjetivos"></table></div>
+      <div class="insight" id="insightObjetivos"></div>
+    </div>
+
+    <div class="bloqueado" style="margin-top:16px">
+      <h4>Cómo se arma este bloque</h4>
+      <p><b>El tamaño de cada identidad</b> sale de <code>rfm_identidad</code>, sumando sus 10 grupos de valor. La pestaña <code>identidades</code> quedó como alternativa para quien no cargue el detalle RFM: si existe, tiene prioridad. Conviene usar una sola de las dos — con las dos cargadas es fácil que digan números distintos y no haya forma de saber cuál vale. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
+      <p><b>El rendimiento</b> se arma cruzando las campañas contra <code>CONFIG.mapaSegmentos</code>: se buscan las palabras de cada identidad primero en el nombre del segmento y, si ahí no hay ninguna, en el de la campaña. Ignora mayúsculas y tildes. Lo que no matchea con nada queda listado en el panel <b>Sin imputar</b>, con su ingreso: esa lista es exactamente la guía de qué agregar al mapa. No hace falta renombrar segmentos en WooWup.</p>
+      <p><b>La variación</b> compara contra el período inmediatamente anterior de igual duración, imputado con el mismo criterio. Si una identidad no tiene ingreso en el período anterior, la variación queda en <code>—</code> en vez de mostrar un porcentaje sin sentido.</p>
+      <p><b>Reposición de lácteos tiene un KPI que se autodestruye:</b> si el cliente compra queso, sale del segmento, y el denominador se achica justo cuando la campaña funciona. Para medirla hay que usar la copia congelada <code>KPI · Reposición base 06-10</code>, tomada en el momento cero.</p>
+    </div>
+  </section>
+
   <section id="secKpis" style="margin-top:6px">
     <p class="kicker">Resultados del período</p>
     <h2>Lo que el CRM le aportó al negocio</h2>
@@ -196,7 +311,8 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
       <div class="stack" id="stackTipo"></div>
       <div class="leyenda" id="leyendaTipo"></div>
     </div>
-    <div class="tabla-wrap"><table id="tablaTipo"></table></div>
+    <details class="tabla"><summary>Ver el detalle por tipo de envío</summary>
+      <div class="tabla-wrap"><table id="tablaTipo"></table></div></details>
     <div class="insight" id="insightTipo"></div>
   </section>
 
@@ -209,10 +325,12 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
       <div class="stack" id="stackSuc"></div>
       <div class="leyenda" id="leyendaSuc"></div>
     </div>
-    <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSuc"></table></div>
+    <details class="tabla"><summary>Ver el detalle por sucursal</summary>
+      <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSuc"></table></div></details>
     <div class="insight" id="insightSuc"></div>
     <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.06em">Campaña por campaña</h4>
-    <div class="tabla-wrap"><table id="tablaSucCamp"></table></div>
+    <details class="tabla"><summary>Ver campaña por campaña</summary>
+      <div class="tabla-wrap"><table id="tablaSucCamp"></table></div></details>
     <div class="bloqueado" style="margin-top:16px">
       <h4>Alcance de este bloque</h4>
       <p id="coberturaSuc"></p>
@@ -229,7 +347,8 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
       <div class="stack" id="stackCanales"></div>
       <div class="leyenda" id="leyendaCanales"></div>
     </div>
-    <div class="tabla-wrap"><table id="tablaCanales"></table></div>
+    <details class="tabla"><summary>Ver el detalle por canal</summary>
+      <div class="tabla-wrap"><table id="tablaCanales"></table></div></details>
   </section>
 
   <section>
@@ -237,59 +356,8 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
     <h2>Qué segmentos están rindiendo</h2>
     <p class="bajada">Segmentos tal como están definidos en WooWup, ordenados por ingreso atribuido.</p>
     <div class="panel" style="margin-bottom:14px"><div class="barra-lista" id="barrasSegmentos"></div></div>
-    <div class="tabla-wrap"><table id="tablaSegmentos"></table></div>
-  </section>
-
-  <section>
-    <p class="kicker">Genoma</p>
-    <h2>Las cuatro identidades</h2>
-    <p class="bajada">El Puente no tiene un cliente: tiene cuatro identidades de compra más una base sin clasificar. Arriba, el tamaño de cada una; abajo, qué rindió lo que les mandamos.</p>
-
-    <div class="kpis" id="kpisGenoma" style="grid-template-columns:repeat(5,1fr)"></div>
-
-    <div class="panel" style="margin:14px 0">
-      <div class="panel-head">
-        <div class="tabs" id="tabsGenoma" role="tablist">
-          <button class="tab" data-v="ingresos" aria-selected="true">Ingreso atribuido</button>
-          <button class="tab" data-v="clientes" aria-selected="false">Tamaño de la base</button>
-        </div>
-      </div>
-      <div class="barra-lista" id="barrasGenoma"></div>
-    </div>
-
-    <div class="tabla-wrap"><table id="tablaGenoma"></table></div>
-    <div class="insight" id="insightGenoma"></div>
-    <div class="bloqueado" id="sinImputar" style="margin-top:16px;display:none"></div>
-
-    <div id="bloqueSalud" style="display:none">
-      <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:28px 0 4px;text-transform:uppercase;letter-spacing:.06em">Composición RFM dentro de cada identidad</h4>
-      <p class="bajada" id="ventanaSalud" style="margin-bottom:12px"></p>
-      <div class="panel" style="margin-bottom:14px"><div class="barra-lista" id="barrasSalud"></div>
-        <div class="leyenda" id="leyendaSalud" style="padding-bottom:6px"></div></div>
-      <div class="panel-head">
-        <div class="tabs" id="tabsSalud" role="tablist">
-          <button class="tab" data-v="clientes" aria-selected="true">Clientes</button>
-          <button class="tab" data-v="ingresos" aria-selected="false">Venta del segmento</button>
-        </div>
-      </div>
-      <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSalud" style="min-width:1050px"></table></div>
-      <div class="insight" id="insightSalud"></div>
-    </div>
-
-    <div id="bloqueObjetivos" style="display:none">
-      <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:28px 0 4px;text-transform:uppercase;letter-spacing:.06em">Objetivos · momento cero → meta → real</h4>
-      <p class="bajada" id="ventanaObjetivos" style="margin-bottom:12px"></p>
-      <div class="tabla-wrap"><table id="tablaObjetivos"></table></div>
-      <div class="insight" id="insightObjetivos"></div>
-    </div>
-
-    <div class="bloqueado" style="margin-top:16px">
-      <h4>Cómo se arma este bloque</h4>
-      <p><b>El tamaño de cada identidad</b> sale de <code>rfm_identidad</code>, sumando sus 10 grupos de valor. La pestaña <code>identidades</code> quedó como alternativa para quien no cargue el detalle RFM: si existe, tiene prioridad. Conviene usar una sola de las dos — con las dos cargadas es fácil que digan números distintos y no haya forma de saber cuál vale. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
-      <p><b>El rendimiento</b> se arma cruzando las campañas contra <code>CONFIG.mapaSegmentos</code>: se buscan las palabras de cada identidad primero en el nombre del segmento y, si ahí no hay ninguna, en el de la campaña. Ignora mayúsculas y tildes. Lo que no matchea con nada queda listado en el panel <b>Sin imputar</b>, con su ingreso: esa lista es exactamente la guía de qué agregar al mapa. No hace falta renombrar segmentos en WooWup.</p>
-      <p><b>La variación</b> compara contra el período inmediatamente anterior de igual duración, imputado con el mismo criterio. Si una identidad no tiene ingreso en el período anterior, la variación queda en <code>—</code> en vez de mostrar un porcentaje sin sentido.</p>
-      <p><b>Reposición de lácteos tiene un KPI que se autodestruye:</b> si el cliente compra queso, sale del segmento, y el denominador se achica justo cuando la campaña funciona. Para medirla hay que usar la copia congelada <code>KPI · Reposición base 06-10</code>, tomada en el momento cero.</p>
-    </div>
+    <details class="tabla"><summary>Ver el detalle por segmento</summary>
+      <div class="tabla-wrap"><table id="tablaSegmentos"></table></div></details>
   </section>
 
   <section id="secRfm">
@@ -1293,6 +1361,82 @@ function renderSalud(){
   }
 }
 
+/* ---------------- Portada ---------------- */
+
+/* Cuánto del período transcurrió. Es el dato que vuelve legible a una meta:
+   sin él, "72% de la meta" no se puede juzgar como bueno ni malo. */
+function transcurrido(desde, hasta){
+  if(!desde || !hasta) return null;
+  const a=dObj(desde), b=dObj(hasta), hoy=new Date();
+  const total=b-a; if(total<=0) return null;
+  return Math.max(0, Math.min(1, (hoy-a)/total));
+}
+
+function renderPortada(){
+  const cont=document.getElementById('portada');
+  const conMeta=OBJETIVOS.filter(o=>o.atribMeta>0 && o.desde && o.hasta);
+  if(!conMeta.length){ cont.style.display='none'; return; }
+  cont.style.display='';
+
+  const desde=conMeta[0].desde, hasta=conMeta[0].hasta;
+  const t=transcurrido(desde, hasta);
+  const dias=Math.max(0, Math.round((dObj(hasta)-new Date())/86400000));
+
+  document.getElementById('portadaVentana').textContent =
+    `${fechaLarga(desde)} → ${fechaLarga(hasta)}`;
+  document.getElementById('tiempoFill').style.width = (t===null?0:t*100)+'%';
+  document.getElementById('tiempoRot').innerHTML = t===null ? ''
+    : `<b>${nfDec.format(t*100)}%</b> del trimestre · quedan ${dias} días`;
+
+  /* Sólo el ingreso atribuido se compara contra el calendario: es un flujo
+     que se acumula. La venta del segmento y el % de activos son fotos de un
+     momento, y medirles "ritmo" no significa nada. */
+  const filas=conMeta.map(o=>{
+    const rows=DATOS.filter(r=>enRango(r.fecha,o.desde,o.hasta)
+      && identidadDe(r.segmento,r.campania)===o.identidad);
+    const real=agregar(rows).ingresos;
+    const av=o.atribMeta ? (real-o.atribCero)/(o.atribMeta-o.atribCero) : null;
+    return {id:o.identidad, real, meta:o.atribMeta, av, envios:rows.length};
+  });
+
+  const VERDE='#2E9E5B', NARANJA='#E8551F', GRIS='#B9ADA3';
+  document.getElementById('portadaIds').innerHTML=filas.map(f=>{
+    let col=GRIS, estado='sin envíos todavía', cls='flat';
+    if(f.envios){
+      const d = (t===null) ? 0 : f.av - t;
+      if(d > 0.05){ col=VERDE; estado='adelantada'; cls='up'; }
+      else if(d < -0.05){ col=NARANJA; estado='atrasada'; cls='down'; }
+      else { col=NARANJA; estado='en ritmo'; cls='flat'; }
+    }
+    const w=Math.max(0, Math.min(100, (f.av||0)*100));
+    return `<div class="id-card">
+      <div class="nom">${f.id}</div>
+      <div class="plata">${money(f.real)}</div>
+      <div class="de">de ${money(f.meta)}</div>
+      <div class="pace">
+        <div class="barra" style="width:${w}%;background:${col}"></div>
+        ${t===null?'':`<div class="hoy" style="left:${t*100}%" title="hoy"></div>`}
+      </div>
+      <div class="veredicto ${cls}">${f.av===null?'—':nfDec.format(f.av*100)+'% de la meta'}
+        <small>${estado}</small></div>
+    </div>`;}).join('');
+
+  // Una sola conclusión, la que cambia qué hacer el lunes
+  const sinEnvios=filas.filter(f=>!f.envios);
+  const atrasadas=filas.filter(f=>f.envios && t!==null && f.av-t < -0.05);
+  const total=filas.reduce((s,f)=>s+f.real,0);
+  const metaTot=filas.reduce((s,f)=>s+f.meta,0);
+  let pie=`El CRM lleva <b>${money(total)}</b> atribuidos a las identidades, sobre ${money(metaTot)} comprometidos para el trimestre.`;
+  if(sinEnvios.length){
+    pie+=` ${sinEnvios.length===1?'Una identidad no recibió ninguna campaña':sinEnvios.length+' identidades no recibieron ninguna campaña'}: <b>${sinEnvios.map(f=>f.id).join(', ')}</b>.`;
+  }
+  if(atrasadas.length){
+    pie+=` ${atrasadas.length===1?'Va atrasada':'Van atrasadas'} respecto del calendario: <b>${atrasadas.map(f=>f.id).join(', ')}</b>.`;
+  }
+  if(!sinEnvios.length && !atrasadas.length) pie+=` Las cuatro van al día o adelantadas.`;
+  document.getElementById('portadaPie').innerHTML=pie;
+}
+
 /* ---------------- Objetivos del trimestre ---------------- */
 
 /* El "real" de clientes es la última foto de la pestaña identidades.
@@ -1512,6 +1656,7 @@ function render(){
   renderCanales(rows,prevRows);
   renderSegmentos(rows);
   renderGenoma(rows, prevRows);
+  renderPortada();
   renderSalud();
   renderObjetivos();
   renderRfm();
