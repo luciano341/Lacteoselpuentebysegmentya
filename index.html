@@ -211,16 +211,17 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
     </div>
     <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSuc"></table></div>
     <div class="insight" id="insightSuc"></div>
-    <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.06em">Concentración por sucursal, campaña por campaña</h4>
+    <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.06em">Campaña por campaña</h4>
     <div class="tabla-wrap"><table id="tablaSucCamp"></table></div>
     <div class="bloqueado" style="margin-top:16px">
       <h4>Alcance de este bloque</h4>
       <p id="coberturaSuc"></p>
       <p><b>Las automatizaciones quedan afuera.</b> El desglose por sucursal existe para todas las campañas, pero en los flujos automatizados WooWup devuelve el <b>acumulado histórico</b>, no el período: un flujo que viene corriendo desde hace meses reporta todo su historial como si fuera del período que estás mirando. Mezclarlo rompería el número, así que este bloque cubre sólo envíos puntuales, donde el reporte sí coincide con el período.</p>
+      <p><b>No se separa e-commerce de local.</b> El Puente vende hoy sólo en sus locales, así que dividir por canal daba 100% físico en todas las filas y no aportaba nada. La columna <code>digital</code> del Sheet se sigue cargando por si algún día hay tienda online, pero el dashboard no la usa.</p>
     </div>
   </section>
 
-  <section>
+  <section id="secCanales">
     <p class="kicker">Mix de canales</p>
     <h2>De dónde viene el ingreso</h2>
     <p class="bajada">Participación de cada canal en el ingreso atribuido y su rendimiento relativo.</p>
@@ -258,16 +259,18 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
 
     <div class="tabla-wrap"><table id="tablaGenoma"></table></div>
     <div class="insight" id="insightGenoma"></div>
+    <div class="bloqueado" id="sinImputar" style="margin-top:16px;display:none"></div>
 
     <div class="bloqueado" style="margin-top:16px">
       <h4>Cómo se arma este bloque</h4>
       <p><b>El tamaño de cada identidad</b> sale de la pestaña <code>identidades</code> del Sheet, que se carga a mano cada 15 días leyendo el atributo extendido <i>Identidad</i> del grupo <b>Genoma IA</b> en WooWup. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
-      <p><b>El rendimiento</b> se arma cruzando las campañas contra el nombre del segmento: toda campaña cuyo segmento nombre una identidad se le imputa a esa identidad. Por eso los segmentos de envío tienen que llevar el nombre de la identidad adentro — es lo que hace que esta tabla se arme sola.</p>
+      <p><b>El rendimiento</b> se arma cruzando las campañas contra <code>CONFIG.mapaSegmentos</code>: se buscan las palabras de cada identidad primero en el nombre del segmento y, si ahí no hay ninguna, en el de la campaña. Ignora mayúsculas y tildes. Lo que no matchea con nada queda listado en el panel <b>Sin imputar</b>, con su ingreso: esa lista es exactamente la guía de qué agregar al mapa. No hace falta renombrar segmentos en WooWup.</p>
+      <p><b>La variación</b> compara contra el período inmediatamente anterior de igual duración, imputado con el mismo criterio. Si una identidad no tiene ingreso en el período anterior, la variación queda en <code>—</code> en vez de mostrar un porcentaje sin sentido.</p>
       <p><b>Reposición de lácteos tiene un KPI que se autodestruye:</b> si el cliente compra queso, sale del segmento, y el denominador se achica justo cuando la campaña funciona. Para medirla hay que usar la copia congelada <code>KPI · Reposición base 06-10</code>, tomada en el momento cero.</p>
     </div>
   </section>
 
-  <section>
+  <section id="secRfm">
     <p class="kicker">Valor del cliente</p>
     <h2>Escalamiento entre grupos RFM</h2>
     <p class="bajada">Composición de la base por Grupo de Valor, quincena a quincena. El momento cero del plan es octubre 2026: de ahí en adelante se mide el escalamiento.</p>
@@ -411,6 +414,36 @@ const CONFIG = {
   // Las cuatro identidades del Genoma, en el orden en que se muestran.
   // Tienen que escribirse igual que en el atributo Identidad de WooWup.
   identidades: ['Picada del finde','Quesero','Reposición de lácteos','D70','Sin clasificar'],
+
+  // ── Cómo se imputa una campaña a una identidad ───────────────────────
+  // Se busca cada una de estas palabras dentro del nombre del segmento y,
+  // si ahí no aparece ninguna, dentro del nombre de la campaña. La primera
+  // identidad que matchea gana, así que el orden importa: poné arriba la
+  // más específica.
+  //
+  // No hace falta renombrar nada en WooWup: alcanza con agregar acá el
+  // pedazo de nombre que ya usan tus segmentos. Ignora mayúsculas y tildes.
+  //
+  // Lo que no matchea con nada queda listado abajo del bloque, en "Sin
+  // imputar": esa lista es la guía de qué falta agregar a este mapa.
+  // ⚠ Cuidado con las palabras genéricas: tienen que ser inequívocas. "finde"
+  // parece buena para Picada del finde, pero matchea con "Promosfinde", que
+  // son las bancarias; "lacteos" matchea con el nombre de la marca. Una
+  // palabra de más imputa plata a la identidad equivocada, y eso es peor que
+  // dejarla sin imputar — por eso esta lista arranca corta a propósito.
+  mapaSegmentos: {
+    'Picada del finde':      ['picada','picadas','fiambre'],
+    'Quesero':               ['quesero','queso','quesos'],
+    'Reposición de lácteos': ['reposicion','reposición'],
+    'D70':                   ['d70','d-70','d 70'],
+    'Sin clasificar':        ['sin clasificar','sin identidad']
+  },
+
+  // Bloques que se muestran. Poné true para volver a encenderlos.
+  mostrarRfm: false,
+
+  // El mix de canales se oculta solo mientras haya un único canal activo:
+  // el día que se prenda WhatsApp vuelve a aparecer sin tocar nada.
 
   // true = ignora el Sheet y usa los datos embebidos
   modoEmbebido: false
@@ -671,6 +704,7 @@ function rfmSerie(){
 }
 
 function renderRfm(){
+  if(!CONFIG.mostrarRfm) return;
   const rr=document.getElementById('rangoRfm');
   if(rr) rr.textContent = (RFM&&RFM.meses&&RFM.meses.length)
     ? nomMes(RFM.meses[0]+'-01')+' → '+nomMes(RFM.meses[RFM.meses.length-1]+'-01')
@@ -794,74 +828,88 @@ function renderSucursales(a,b){
     cob.textContent='Ampliá el rango de fechas para ver el desglose.';
     return;
   }
-  const sum=(f)=>rows.filter(f).reduce((o,r)=>({t:o.t+r.tickets,r:o.r+r.ingresos}),{t:0,r:0});
-  const D=sum(r=>r.digital), F=sum(r=>!r.digital);
-  const tot=D.r+F.r||1;
 
-  cont.innerHTML=[
-    ['E-commerce', D.r, D.r/tot, D.t],
-    ['Tiendas físicas', F.r, F.r/tot, F.t],
-    ['Ticket prom. online', D.t?D.r/D.t:0, null, null],
-    ['Ticket prom. en local', F.t?F.r/F.t:0, null, null]
-  ].map(([rot,val,share,tk])=>`<div class="kpi"><div class="rot">${rot}</div>
-      <div class="val">${money(val)}</div>
-      <div class="delta flat">${share!==null?`${pct(share)} del ingreso · ${num(tk)} tickets`:'&nbsp;'}</div></div>`).join('');
-
-  document.getElementById('stackSuc').innerHTML=
-    `<div style="width:${D.r/tot*100}%;background:#E8551F">${D.r/tot>.1?pct(D.r/tot):''}</div>
-     <div style="width:${F.r/tot*100}%;background:#2E9E5B">${F.r/tot>.1?pct(F.r/tot):''}</div>`;
-  document.getElementById('leyendaSuc').innerHTML=
-    `<span><i style="background:#E8551F"></i>E-commerce · ${money(D.r)}</span>
-     <span><i style="background:#2E9E5B"></i>Tiendas físicas · ${money(F.r)}</span>`;
-
-  // Tabla por sucursal
+  // Agregado por sucursal
   const porSuc={};
-  rows.forEach(r=>{const o=porSuc[r.sucursal]=porSuc[r.sucursal]||{t:0,r:0,dig:r.digital,camps:new Set()};
+  rows.forEach(r=>{const o=porSuc[r.sucursal]=porSuc[r.sucursal]||{t:0,r:0,camps:new Set()};
     o.t+=r.tickets; o.r+=r.ingresos; o.camps.add(r.campania);});
   const lista=Object.entries(porSuc).sort((x,y)=>y[1].r-x[1].r);
+  const tot=lista.reduce((s,[,o])=>s+o.r,0)||1;
+  const tickets=lista.reduce((s,[,o])=>s+o.t,0);
+
+  // KPIs: plata, no canales
+  const top=lista[0];
+  const top5=lista.slice(0,5).reduce((s,[,o])=>s+o.r,0);
+  cont.innerHTML=[
+    ['Ingreso en sucursales', money(tot), `${num(tickets)} tickets`],
+    ['Ticket promedio', tickets?money(tot/tickets):'—', '&nbsp;'],
+    ['Sucursales con venta', num(lista.length), `de 28 locales`],
+    ['Concentración top 5', pct(top5/tot), `${nfDec.format(top5/tot*100)}% en 5 de ${lista.length}`]
+  ].map(([rot,val,sub])=>`<div class="kpi"><div class="rot">${rot}</div>
+      <div class="val">${val}</div><div class="delta flat"><small>${sub}</small></div></div>`).join('');
+
+  // Barra apilada: las sucursales que más pesan, no el canal
+  const PAL=['#E8551F','#B23F12','#F0916A','#2E9E5B','#8A7A6E'];
+  const ocho=lista.slice(0,5);
+  const resto=lista.slice(5).reduce((s,[,o])=>s+o.r,0);
+  const piezas=ocho.map(([n,o],i)=>({n,r:o.r,c:PAL[i]}));
+  const nOtras=lista.length-5;
+  if(resto>0) piezas.push({n: nOtras===1 ? lista[5][0] : `Otras ${nOtras}`, r:resto, c:'#ECDFD3'});
+
+  document.getElementById('stackSuc').innerHTML=piezas.map(p=>{
+    const w=Math.max(0,p.r)/tot*100;
+    return `<div style="width:${w}%;background:${p.c}" title="${p.n}">${w>9?nfDec.format(w)+'%':''}</div>`;
+  }).join('');
+  document.getElementById('leyendaSuc').innerHTML=piezas.map(p=>
+    `<span><i style="background:${p.c}"></i>${p.n} · ${money(p.r)}</span>`).join('');
+
+  // Tabla por sucursal
   document.getElementById('tablaSuc').innerHTML=`
-    <thead><tr><th class="izq">Sucursal</th><th class="izq">Tipo</th><th>Campañas con venta</th>
+    <thead><tr><th class="izq">Sucursal</th><th>Campañas con venta</th>
       <th>Tickets</th><th>Ingreso</th><th>% del total</th><th>Ticket promedio</th></tr></thead>
     <tbody>${lista.map(([n,o])=>`<tr>
       <td class="izq">${n}</td>
-      <td class="izq"><span class="pill ${o.dig?'':'auto'}">${o.dig?'Digital':'Física'}</span></td>
       <td>${o.camps.size}</td><td>${num(o.t)}</td>
       <td class="${o.r<0?'down':''}">${money(o.r)}</td><td>${pct(o.r/tot)}</td>
       <td>${o.t?money(o.r/o.t):'—'}</td></tr>`).join('')}</tbody>
-    <tfoot><tr><td colspan="3">Total</td><td>${num(D.t+F.t)}</td><td>${money(tot)}</td><td>100,0%</td>
-      <td>${money(tot/(D.t+F.t))}</td></tr></tfoot>`;
+    <tfoot><tr><td colspan="2">Total</td><td>${num(tickets)}</td><td>${money(tot)}</td><td>100,0%</td>
+      <td>${tickets?money(tot/tickets):'—'}</td></tr></tfoot>`;
 
-  // Tabla por campaña
+  // Tabla por campaña: dónde se concentró cada una
   const porCamp={};
-  rows.forEach(r=>{const o=porCamp[r.campania]=porCamp[r.campania]||{fecha:r.fecha,canal:r.canal,dig:0,fis:0};
-    if(r.digital) o.dig+=r.ingresos; else o.fis+=r.ingresos;});
-  const camps=Object.entries(porCamp).map(([n,o])=>({n,...o,tot:o.dig+o.fis}))
-    .sort((x,y)=>(y.tot?y.fis/y.tot:0)-(x.tot?x.fis/x.tot:0));
-  document.getElementById('tablaSucCamp').innerHTML=`
-    <thead><tr><th class="izq">Campaña</th><th class="izq">Fecha</th><th>E-commerce</th><th>Físico</th>
-      <th>Total</th><th>% físico</th></tr></thead>
-    <tbody>${camps.map(c=>{
-      const p=c.tot?c.fis/c.tot:0;
-      const cl=p>=0.5?'up':p>=0.25?'':'flat';
-      return `<tr><td class="izq">${c.n}</td><td class="izq">${nomDia(c.fecha)}</td>
-        <td>${money(c.dig)}</td><td>${money(c.fis)}</td><td>${money(c.tot)}</td>
-        <td class="${cl}"><b>${pct(p)}</b></td></tr>`;}).join('')}</tbody>`;
+  rows.forEach(r=>{const o=porCamp[r.campania]=porCamp[r.campania]||{fecha:r.fecha,r:0,t:0,sucs:{}};
+    o.r+=r.ingresos; o.t+=r.tickets;
+    o.sucs[r.sucursal]=(o.sucs[r.sucursal]||0)+r.ingresos;});
+  const camps=Object.entries(porCamp).map(([n,o])=>{
+    const ord=Object.entries(o.sucs).sort((x,y)=>y[1]-x[1]);
+    return {n, fecha:o.fecha, r:o.r, t:o.t, nSucs:ord.length,
+            topN:ord.length?ord[0][0]:'—', topR:ord.length?ord[0][1]:0};
+  }).sort((x,y)=>y.r-x.r);
 
-  // Insight
-  const soloFis=camps.filter(c=>c.dig===0&&c.fis>0);
+  document.getElementById('tablaSucCamp').innerHTML=`
+    <thead><tr><th class="izq">Campaña</th><th class="izq">Fecha</th><th>Sucursales</th>
+      <th>Tickets</th><th>Ingreso</th><th class="izq">Sucursal que más vendió</th><th>Su peso</th></tr></thead>
+    <tbody>${camps.map(c=>{
+      const p=c.r?c.topR/c.r:0;
+      return `<tr><td class="izq">${c.n}</td><td class="izq">${nomDia(c.fecha)}</td>
+        <td>${c.nSucs}</td><td>${num(c.t)}</td><td>${money(c.r)}</td>
+        <td class="izq">${c.topN}</td>
+        <td class="${p>=0.5?'down':''}"><b>${pct(p)}</b></td></tr>`;}).join('')}</tbody>`;
+
+  // Insight: concentración y devoluciones
   let extra='';
-  if(soloFis.length) extra=` ${soloFis.length===1?'Una campaña vendió':'Hay '+soloFis.length+' campañas que vendieron'} exclusivamente en local (${soloFis.map(c=>c.n.split('_')[0]).join(', ')}): son piezas de afinidad de producto que el e-commerce no capturó.`;
+  const conc=camps.filter(c=>c.r>0 && c.topR/c.r>=0.5);
+  if(conc.length) extra=` ${conc.length===1?'Hay una campaña que concentró':'Hay '+conc.length+' campañas que concentraron'} más de la mitad de su venta en un solo local: puede ser afinidad real de esa zona, o que el resto de las sucursales no estén registrando bien el ticket.`;
   const neg=lista.filter(([,o])=>o.r<0);
   if(neg.length) extra+=` ${neg.map(([n])=>n).join(', ')} figura con ingreso negativo, lo que indica devoluciones netas en el período.`;
   document.getElementById('insightSuc').innerHTML=`<div class="ico">🏬</div><div class="txt">
-    <b style="color:var(--naranja-osc)">${pct(F.r/tot)} del ingreso atribuido se cobró en tienda física</b>
-    ${num(F.t)} de los ${num(D.t+F.t)} tickets se cerraron en local, con un ticket promedio de ${money(F.t?F.r/F.t:0)} contra ${money(D.t?D.r/D.t:0)} online.${extra}</div>`;
+    <b style="color:var(--naranja-osc)">${top[0]} es la sucursal que más vendió: ${money(top[1].r)}, el ${pct(top[1].r/tot)} del total</b>
+    Vendieron ${lista.length} de los 28 locales, con un ticket promedio general de ${money(tickets?tot/tickets:0)}.${extra}</div>`;
 
-  const nCamps=camps.length;
-  cob.innerHTML=`El desglose cubre <b>${nCamps} campañas puntuales</b> del período, que suman ${money(tot)} de ingreso atribuido. Se trae con <code>get_campaign_report(campaign_id, sections=["branches"])</code>, una llamada por campaña.`;
+  cob.innerHTML=`El desglose cubre <b>${camps.length} campañas puntuales</b> del período, que suman ${money(tot)} de ingreso atribuido. Se trae con <code>get_campaign_report(campaign_id, sections=["branches"])</code>, una llamada por campaña.`;
 }
 
-/* ---------------- Canales ---------------- */
+
 function renderCanales(rows,prevRows){
   const por={}, prev={};
   rows.forEach(c=>{ (por[c.canal]=por[c.canal]||[]).push(c); });
@@ -917,17 +965,23 @@ function renderSegmentos(rows){
 /* ---------------- Genoma: identidades ---------------- */
 let vistaGenoma='ingresos';
 
-/* Imputa una campaña a una identidad mirando el nombre del segmento.
-   Si el segmento no nombra ninguna, la campaña queda fuera del bloque:
-   preferimos no imputar antes que imputar mal. */
-function identidadDe(seg){
-  const s=String(seg||'').toLowerCase();
-  for(const id of CONFIG.identidades){
-    const clave=id.toLowerCase();
-    if(s.includes(clave)) return id;
-    // "Reposición de lácteos" también matchea un segmento que diga sólo "Reposición"
-    const primera=clave.split(' ')[0];
-    if(primera.length>4 && s.includes(primera)) return id;
+/* Saca tildes y mayúsculas para que "Reposición" matchee con "reposicion". */
+const plano = s => String(s||'').toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+/* Imputa una campaña a una identidad buscando las palabras de
+   CONFIG.mapaSegmentos, primero en el nombre del segmento y después en el de
+   la campaña. Si no matchea nada devuelve null: preferimos no imputar antes
+   que imputar mal, y lo no imputado se lista aparte para que se vea. */
+function identidadDe(seg, campania){
+  const mapa=CONFIG.mapaSegmentos||{};
+  const donde=[plano(seg), plano(campania)];
+  for(const texto of donde){
+    if(!texto) continue;
+    for(const id of CONFIG.identidades){
+      const claves=(mapa[id]||[]).concat([id]).map(plano);
+      if(claves.some(k=>k && texto.includes(k))) return id;
+    }
   }
   return null;
 }
@@ -943,28 +997,53 @@ function baseGenoma(){
   return o;
 }
 
-function renderGenoma(rows){
+function renderGenoma(rows, prevRows){
   const base=baseGenoma();
-  const por={};
-  CONFIG.identidades.forEach(id=>{ por[id]=[]; });
-  rows.forEach(c=>{ const id=identidadDe(c.segmento); if(id) por[id].push(c); });
+  const por={}, prev={}, sinImputar=[], sinImputarSegs={};
+  CONFIG.identidades.forEach(id=>{ por[id]=[]; prev[id]=0; });
+
+  rows.forEach(c=>{
+    const id=identidadDe(c.segmento, c.campania);
+    if(id) por[id].push(c);
+    else {
+      sinImputar.push(c);
+      const k=c.segmento||c.campania||'(sin segmento)';
+      sinImputarSegs[k]=(sinImputarSegs[k]||0)+c.ingresos;
+    }
+  });
+  (prevRows||[]).forEach(c=>{
+    const id=identidadDe(c.segmento, c.campania);
+    if(id) prev[id]+=c.ingresos;
+  });
 
   const lista=CONFIG.identidades.map(id=>{
     const d=agregar(por[id]);
     const b=base[id]||{};
-    return {id, d, clientes:b.clientes||0, conKpi:b.conKpi||0, campanias:por[id].length};
+    const p=prev[id]||0;
+    return {id, d, clientes:b.clientes||0, campanias:por[id].length,
+            prev:p, varia: p>0 ? (d.ingresos-p)/p : null};
   });
 
-  // KPIs: una tarjeta por identidad con su tamaño de base
-  const totalBase=lista.reduce((s,x)=>s+x.clientes,0);
-  document.getElementById('kpisGenoma').innerHTML=lista.map(x=>`
-    <div class="kpi">
+  // KPIs: la plata de cada identidad y cuánto se movió
+  const hayPrev = !!(prevRows && prevRows.length);
+  document.getElementById('kpisGenoma').innerHTML=lista.map(x=>{
+    let dh='<small>sin envíos en el período</small>';
+    if(x.d.ingresos>0){
+      if(x.varia===null) dh = hayPrev ? '<small>sin base de comparación</small>'
+                                      : '<small>&nbsp;</small>';
+      else {
+        const cl=Math.abs(x.varia)<0.005?'flat':x.varia>0?'up':'down';
+        const fl=cl==='flat'?'=':cl==='up'?'▲':'▼';
+        dh=`<span class="${cl}">${fl} ${(x.varia>=0?'+':'')+nfDec.format(x.varia*100)}%</span> <small>vs. período anterior</small>`;
+      }
+    }
+    return `<div class="kpi">
       <div class="rot">${x.id}</div>
-      <div class="val">${x.clientes?num(x.clientes):'—'}</div>
-      <div class="delta flat"><small>${x.clientes&&totalBase?nfDec.format(x.clientes/totalBase*100)+'% de la base':'esperando el primer corte'}</small></div>
-    </div>`).join('');
+      <div class="val" style="font-size:22px">${x.d.ingresos?money(x.d.ingresos):'—'}</div>
+      <div class="delta">${dh}</div>
+    </div>`;}).join('');
 
-  // Barras: ingreso atribuido o tamaño de base, según la pestaña elegida
+  // Barras
   const campo = vistaGenoma==='ingresos' ? (x=>x.d.ingresos) : (x=>x.clientes);
   const orden=[...lista].sort((a,b)=>campo(b)-campo(a));
   const max=campo(orden[0])||1;
@@ -979,41 +1058,75 @@ function renderGenoma(rows){
     </div>`).join('')
     : '<div class="vacio">Todavía no hay datos cargados para este bloque</div>';
 
-  // Tabla
+  // Tabla: plata y variación, sin métricas de envío
+  const varHtml = x => {
+    if(!x.d.ingresos) return '<span class="flat">—</span>';
+    if(x.varia===null) return '<span class="flat">—</span>';
+    const cl=Math.abs(x.varia)<0.005?'flat':x.varia>0?'up':'down';
+    const fl=cl==='flat'?'=':cl==='up'?'▲':'▼';
+    return `<span class="${cl}">${fl} ${(x.varia>=0?'+':'')+nfDec.format(x.varia*100)}%</span>`;
+  };
   document.getElementById('tablaGenoma').innerHTML=`
-    <thead><tr><th class="izq">Identidad</th><th>Clientes</th><th>Campañas</th><th>Envíos</th>
-      <th>Apertura</th><th>Conversiones</th><th>Ingreso atribuido</th>
-      <th>Ingreso por envío</th><th>Ingreso por cliente</th></tr></thead>
+    <thead><tr><th class="izq">Identidad</th><th>Clientes</th><th>Campañas</th><th>Ventas</th>
+      <th>Ingreso del período</th><th>Período anterior</th><th>Variación</th>
+      <th>Ingreso por cliente</th><th>Ticket promedio</th></tr></thead>
     <tbody>${lista.map(x=>`<tr>
       <td class="izq">${x.id}</td>
       <td>${x.clientes?num(x.clientes):'—'}</td>
       <td>${x.campanias||'—'}</td>
-      <td>${x.d.enviados?num(x.d.enviados):'—'}</td>
-      <td>${x.d.enviados?pct(x.d.apertura):'—'}</td>
       <td>${x.d.conversiones?num(x.d.conversiones):'—'}</td>
-      <td>${x.d.ingresos?money(x.d.ingresos):'—'}</td>
-      <td>${x.d.enviados?'<b>'+money(x.d.rpe)+'</b>':'—'}</td>
+      <td><b>${x.d.ingresos?money(x.d.ingresos):'—'}</b></td>
+      <td>${x.prev?money(x.prev):'—'}</td>
+      <td>${varHtml(x)}</td>
       <td>${x.clientes&&x.d.ingresos?money(x.d.ingresos/x.clientes):'—'}</td>
+      <td>${x.d.conversiones?money(x.d.ticket):'—'}</td>
     </tr>`).join('')}</tbody>`;
 
-  // Insight: la identidad con mejor ingreso por envío, y las que no recibieron nada
-  const act=lista.filter(x=>x.d.enviados>0);
-  const sin=lista.filter(x=>!x.d.enviados).map(x=>x.id);
+  // Insight: crecimiento, y sobre todo qué quedó sin imputar
+  const act=lista.filter(x=>x.d.ingresos>0);
   const ico=document.getElementById('insightGenoma');
+  const totalPeriodo=agregar(rows).ingresos;
+  const sinR=agregar(sinImputar).ingresos;
+
+  let t='';
   if(!act.length){
-    ico.innerHTML=`<div class="ico">◷</div><div class="txt"><b>Todavía no hay envíos imputados a ninguna identidad</b>
-      Cuando los segmentos de envío lleven el nombre de la identidad en el título, esta tabla se arma sola.</div>`;
+    t='<b>Todavía no hay ingreso imputado a ninguna identidad</b>';
   } else {
-    const mejor=act.reduce((a,b)=>b.d.rpe>a.d.rpe?b:a);
-    const peor=act.length>1?act.reduce((a,b)=>b.d.rpe<a.d.rpe?b:a):null;
-    let t=`<b>${mejor.id} es la identidad que mejor rinde por envío: ${money(mejor.d.rpe)}</b>`;
-    if(peor && peor.id!==mejor.id && peor.d.rpe>0){
-      t+=` Contra ${money(peor.d.rpe)} de ${peor.id}, la diferencia es de ${nfDec.format(mejor.d.rpe/peor.d.rpe)}×: el mismo esfuerzo de envío vale muy distinto según a quién le hablamos.`;
+    const conVar=act.filter(x=>x.varia!==null);
+    if(conVar.length){
+      const mejor=conVar.reduce((a,b)=>b.varia>a.varia?b:a);
+      const fl=mejor.varia>=0?'creció':'cayó';
+      t=`<b>${mejor.id} es la identidad que más ${fl}: ${(mejor.varia>=0?'+':'')+nfDec.format(mejor.varia*100)}% contra el período anterior</b>`;
+      t+=` Pasó de ${money(mejor.prev)} a ${money(mejor.d.ingresos)}.`;
+      const cayeron=conVar.filter(x=>x.varia<-0.005);
+      if(cayeron.length) t+=` ${cayeron.length===1?'Cayó':'Cayeron'}: ${cayeron.map(x=>x.id+' ('+nfDec.format(x.varia*100)+'%)').join(', ')}.`;
+    } else {
+      const mejor=act.reduce((a,b)=>b.d.ingresos>a.d.ingresos?b:a);
+      t=`<b>${mejor.id} es la identidad que más factura: ${money(mejor.d.ingresos)}</b>`;
+      t+=` Todavía no hay período anterior con datos para comparar.`;
     }
-    if(sin.length) t+=` ${sin.length===1?'Queda sin recibir nada':'Quedan sin recibir nada'}: ${sin.join(', ')}.`;
-    ico.innerHTML=`<div class="ico">▲</div><div class="txt">${t}</div>`;
+  }
+  ico.innerHTML=`<div class="ico">▲</div><div class="txt">${t}</div>`;
+
+  // Panel de lo no imputado: es la guía de qué agregar a CONFIG.mapaSegmentos
+  const panel=document.getElementById('sinImputar');
+  if(!sinImputar.length){
+    panel.innerHTML='';
+    panel.style.display='none';
+  } else {
+    panel.style.display='';
+    const segs=Object.entries(sinImputarSegs).sort((a,b)=>b[1]-a[1]).slice(0,15);
+    panel.innerHTML=`
+      <h4>Sin imputar · ${money(sinR)} (${pct(totalPeriodo?sinR/totalPeriodo:0)} del ingreso del período)</h4>
+      <p>Estos segmentos no matchearon con ninguna identidad, así que su plata no entra en el bloque de arriba. Para que entren, agregá un pedazo de cada nombre a <code>CONFIG.mapaSegmentos</code> — no hace falta renombrar nada en WooWup.</p>
+      <div class="tabla-wrap" style="margin-top:10px;background:#fff">
+        <table style="min-width:420px"><thead><tr><th class="izq">Segmento o campaña</th><th>Ingreso</th></tr></thead>
+        <tbody>${segs.map(([n,v])=>`<tr><td class="izq">${n}</td><td>${money(v)}</td></tr>`).join('')}</tbody></table>
+      </div>
+      ${Object.keys(sinImputarSegs).length>15?`<p style="margin-top:8px">Se muestran los 15 de mayor ingreso, de ${Object.keys(sinImputarSegs).length} en total.</p>`:''}`;
   }
 }
+
 
 /* ---------------- Tabla de campañas ---------------- */
 const COLS=[
@@ -1080,6 +1193,18 @@ function renderCampanias(rows){
 }
 
 /* ---------------- Orquestación ---------------- */
+/* Dos bloques se ocultan solos mientras no tengan nada que mostrar:
+   · el mix de canales, mientras haya un único canal activo — el día que se
+     prenda WhatsApp vuelve a aparecer sin tocar nada;
+   · el escalamiento RFM, apagado a mano desde CONFIG.mostrarRfm. */
+function ocultarBloquesVacios(rows){
+  const canales=new Set(rows.map(r=>r.canal).filter(Boolean));
+  const sc=document.getElementById('secCanales');
+  if(sc) sc.style.display = canales.size>1 ? '' : 'none';
+  const sr=document.getElementById('secRfm');
+  if(sr) sr.style.display = CONFIG.mostrarRfm ? '' : 'none';
+}
+
 function render(){
   const a=ST.desde,b=ST.hasta;
   document.getElementById('rangoInfo').textContent=
@@ -1099,8 +1224,9 @@ function render(){
   renderSucursales(a,b);
   renderCanales(rows,prevRows);
   renderSegmentos(rows);
-  renderGenoma(rows);
+  renderGenoma(rows, prevRows);
   renderRfm();
+  ocultarBloquesVacios(rows);
   renderCampanias(rows);
 }
 
@@ -1381,10 +1507,12 @@ async function iniciar(){
       if(f.length) SUCURSALES=f; else avisos.push('la pestaña de sucursales está vacía');
     }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
 
-    try{
-      const f=normalizarRfm(await leerPestania('rfm'));
-      if(f) RFM=f; else avisos.push('la pestaña de RFM está vacía');
-    }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
+    if(CONFIG.mostrarRfm){
+      try{
+        const f=normalizarRfm(await leerPestania('rfm'));
+        if(f) RFM=f; else avisos.push('la pestaña de RFM está vacía');
+      }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
+    }
 
     try{
       const f=normalizarIdentidades(await leerPestania('identidades'));
@@ -1392,7 +1520,8 @@ async function iniciar(){
     }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
 
     // Si todas fallaron por red, es un solo problema, no cuatro
-    if(tipos.length===4 && tipos.every(t=>t==='red')){
+    const esperadas=CONFIG.mostrarRfm?4:3;
+    if(tipos.length===esperadas && tipos.every(t=>t==='red')){
       avisos.length=0; diagnostico='red';
     } else if(tipos.includes('permiso')){
       diagnostico='permiso';
