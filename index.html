@@ -261,9 +261,31 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
     <div class="insight" id="insightGenoma"></div>
     <div class="bloqueado" id="sinImputar" style="margin-top:16px;display:none"></div>
 
+    <div id="bloqueSalud" style="display:none">
+      <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:28px 0 4px;text-transform:uppercase;letter-spacing:.06em">Composición RFM dentro de cada identidad</h4>
+      <p class="bajada" id="ventanaSalud" style="margin-bottom:12px"></p>
+      <div class="panel" style="margin-bottom:14px"><div class="barra-lista" id="barrasSalud"></div>
+        <div class="leyenda" id="leyendaSalud" style="padding-bottom:6px"></div></div>
+      <div class="panel-head">
+        <div class="tabs" id="tabsSalud" role="tablist">
+          <button class="tab" data-v="clientes" aria-selected="true">Clientes</button>
+          <button class="tab" data-v="ingresos" aria-selected="false">Venta del segmento</button>
+        </div>
+      </div>
+      <div class="tabla-wrap" style="margin-bottom:14px"><table id="tablaSalud" style="min-width:1050px"></table></div>
+      <div class="insight" id="insightSalud"></div>
+    </div>
+
+    <div id="bloqueObjetivos" style="display:none">
+      <h4 style="font-size:12.5px;color:var(--naranja-osc);margin:28px 0 4px;text-transform:uppercase;letter-spacing:.06em">Objetivos · momento cero → meta → real</h4>
+      <p class="bajada" id="ventanaObjetivos" style="margin-bottom:12px"></p>
+      <div class="tabla-wrap"><table id="tablaObjetivos"></table></div>
+      <div class="insight" id="insightObjetivos"></div>
+    </div>
+
     <div class="bloqueado" style="margin-top:16px">
       <h4>Cómo se arma este bloque</h4>
-      <p><b>El tamaño de cada identidad</b> sale de la pestaña <code>identidades</code> del Sheet, que se carga a mano cada 15 días leyendo el atributo extendido <i>Identidad</i> del grupo <b>Genoma IA</b> en WooWup. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
+      <p><b>El tamaño de cada identidad</b> sale de <code>rfm_identidad</code>, sumando sus 10 grupos de valor. La pestaña <code>identidades</code> quedó como alternativa para quien no cargue el detalle RFM: si existe, tiene prioridad. Conviene usar una sola de las dos — con las dos cargadas es fácil que digan números distintos y no haya forma de saber cuál vale. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
       <p><b>El rendimiento</b> se arma cruzando las campañas contra <code>CONFIG.mapaSegmentos</code>: se buscan las palabras de cada identidad primero en el nombre del segmento y, si ahí no hay ninguna, en el de la campaña. Ignora mayúsculas y tildes. Lo que no matchea con nada queda listado en el panel <b>Sin imputar</b>, con su ingreso: esa lista es exactamente la guía de qué agregar al mapa. No hace falta renombrar segmentos en WooWup.</p>
       <p><b>La variación</b> compara contra el período inmediatamente anterior de igual duración, imputado con el mismo criterio. Si una identidad no tiene ingreso en el período anterior, la variación queda en <code>—</code> en vez de mostrar un porcentaje sin sentido.</p>
       <p><b>Reposición de lácteos tiene un KPI que se autodestruye:</b> si el cliente compra queso, sale del segmento, y el denominador se achica justo cuando la campaña funciona. Para medirla hay que usar la copia congelada <code>KPI · Reposición base 06-10</code>, tomada en el momento cero.</p>
@@ -362,10 +384,20 @@ join por campaign id</pre>
       <pre>campanias     fecha | campania | canal | segmento | tipo | enviados | aperturas | clicks | conversiones | ingresos
 sucursales    fecha | campania | sucursal | digital | tickets | ingresos
 rfm           fecha | grupo | contactos | ingresos
-identidades   fecha | identidad | clientes | con_kpi</pre>
+identidades   fecha | identidad | clientes | con_kpi        (opcional)
+objetivos     identidad | desde | hasta | clientes_cero | clientes_meta | ingreso_cero | ingreso_meta
+              | activos_cero | activos_meta | atribuido_cero | atribuido_meta
+rfm_identidad fecha | identidad | grupo | clientes | ingresos</pre>
+      <p><b><code>rfm_identidad</code> es opcional y se carga a mano en cada corte</b>, copiando el Dashboard RFM de WoowUp filtrado por el segmento de cada identidad: una fila por identidad y grupo de valor, con sus clientes y su plata. Son 10 filas por identidad. El <b>momento cero es el primer corte cargado</b>, no hay que configurarlo en ningún lado, y cada corte nuevo se compara contra él y contra el corte anterior.</p>
+      <p><b>La plata de esta pestaña es venta total del segmento, no ingreso atribuido a campañas.</b> Son dos números de naturaleza distinta y conviven en el dashboard sin mezclarse: el bloque de identidades mide lo que generaron las campañas, este mide el tamaño del negocio de cada identidad. No los sumes ni los dividas entre sí sin chequear que cubran la misma ventana de tiempo — la foto de WoowUp y el rango del Sheet no tienen por qué coincidir.</p>
+      <p>Con un solo corte cargado se ve la composición pero no el movimiento: el escalamiento necesita dos fotos. Y mide <b>movimiento neto</b>, no migración individual — se ve que Campeones creció, no quiénes subieron, porque eso necesitaría el historial de pertenencia por cliente, que no está en ningún lado.</p>
+      <p>Las columnas <code>activos_cero</code> y <code>activos_meta</code> de <code>objetivos</code> son opcionales y aceptan <code>0,62</code> o <code>62</code> indistintamente.</p>
+      <p><b>La pestaña <code>objetivos</code> es opcional y se carga una sola vez por trimestre.</b> Si no existe, el bloque de objetivos simplemente no aparece y nada más se rompe. Una fila por identidad: <code>desde</code> y <code>hasta</code> delimitan la ventana de la meta, y el bloque calcula el real de ingreso sobre esa ventana sin importar el período elegido arriba — si siguiera al selector, el cumplimiento cambiaría cada vez que alguien toca el filtro.</p>
+      <p><b>Hay dos metas de plata y miden cosas distintas.</b> <code>ingreso_cero</code> e <code>ingreso_meta</code> son la <b>venta total del segmento</b>: el real sale de <code>rfm_identidad</code>, sumando los 10 grupos. <code>atribuido_cero</code> y <code>atribuido_meta</code> son el <b>ingreso atribuido a campañas</b>: el real sale de la pestaña <code>campanias</code>, dentro de la ventana de la meta.</p>
+      <p>La diferencia importa al leer el resultado: la venta del segmento se mueve por estacionalidad, precios y locales nuevos, así que cumplir esa meta no prueba que el CRM haya hecho nada. El atribuido sí es trabajo de las campañas, pero es un número mucho más chico — en El Puente, del orden de los cientos de millones contra miles de millones de venta total. <b>Nunca los compares entre sí ni los sumes:</b> están en escalas distintas y cubren ventanas distintas.</p>
       <ul>
         <li>Números: acepta formato argentino con moneda (<code>$650.300,00</code>, <code>-$76.000,00</code>) o números planos. No hace falta desformatear las celdas.</li>
-        <li><code>fecha</code> en formato <code>AAAA-MM-DD</code>. En <code>rfm</code> y en <code>identidades</code>, el día del corte: 1 o 16.</li>
+        <li><code>fecha</code> en formato <code>AAAA-MM-DD</code>. En <code>rfm</code>, <code>identidades</code> y <code>rfm_identidad</code>, el día del corte.</li>
         <li>En <code>rfm</code>, la columna <code>ingresos</code> sólo hace falta en el último mes: alimenta el share de revenue por grupo.</li>
         <li>En <code>identidades</code>, <code>identidad</code> tiene que escribirse <b>igual</b> que en <code>CONFIG.identidades</code> y que en el atributo <i>Identidad</i> de WooWup. Si no coincide, la fila no se muestra.</li>
         <li><code>tipo</code> en <code>campanias</code>: <code>custom</code> es envío puntual, cualquier otro valor cuenta como automatización.</li>
@@ -399,17 +431,17 @@ const CONFIG = {
   // Estando cargados, el dashboard va derecho al CSV y saltea el paso de
   // descubrimiento automático, que es el más frágil de la cadena.
   // ⚠ PASO 3: pegar los cuatro gids. Si quedan vacíos, los descubre solo.
-  gids: {campanias:'', sucursales:'', rfm:'', identidades:''},
+  gids: {campanias:'', sucursales:'', rfm:'', identidades:'', objetivos:'', rfm_identidad:''},
 
   // Alternativa: URLs completas de cada pestaña publicada como CSV.
   // Si están cargadas, tienen prioridad sobre todo lo anterior.
-  urlsPublicadas: {campanias:'', sucursales:'', rfm:'', identidades:''},
+  urlsPublicadas: {campanias:'', sucursales:'', rfm:'', identidades:'', objetivos:'', rfm_identidad:''},
 
   // Último recurso: ID del Sheet privado + nombres de pestaña (suele fallar
   // por restricciones del navegador; queda como fallback).
   // ⚠ PASO 1: pegar acá el id del Sheet (lo que va entre /d/ y /edit).
   sheetId:      '1nxcjcucnBYXwnIs2_tLIyLDmHvXpuLkmOOehPevwyCY',
-  pestanias:    {campanias:'campanias', sucursales:'sucursales', rfm:'rfm', identidades:'identidades'},
+  pestanias:    {campanias:'campanias', sucursales:'sucursales', rfm:'rfm', identidades:'identidades', objetivos:'objetivos', rfm_identidad:'rfm_identidad'},
 
   // Las cuatro identidades del Genoma, en el orden en que se muestran.
   // Tienen que escribirse igual que en el atributo Identidad de WooWup.
@@ -432,9 +464,14 @@ const CONFIG = {
   // palabra de más imputa plata a la identidad equivocada, y eso es peor que
   // dejarla sin imputar — por eso esta lista arranca corta a propósito.
   mapaSegmentos: {
-    'Picada del finde':      ['picada','picadas','fiambre'],
+    // Ojo: muchos segmentos siguen nombrados con los ARQUETIPOS VIEJOS, no
+    // con las identidades del Genoma. "ARQ · 08 Yogur-Lechero" es gente de
+    // Reposición de lácteos; "Armador de Picadas" es Picada del finde. Por eso
+    // las claves son los nombres viejos además de los nuevos.
+    // 'picad' (sin la a final) atrapa picada, picadas y picadita.
+    'Picada del finde':      ['picad','armador de picadas','fiambre'],
     'Quesero':               ['quesero','queso','quesos'],
-    'Reposición de lácteos': ['reposicion','reposición'],
+    'Reposición de lácteos': ['lechero','yogur-lechero','reposicion','reposición'],
     'D70':                   ['d70','d-70','d 70'],
     'Sin clasificar':        ['sin clasificar','sin identidad']
   },
@@ -453,6 +490,8 @@ const DATOS_EMBEBIDOS = [];
 let SUCURSALES = [];
 let RFM = null;
 let IDENTIDADES = [];
+let OBJETIVOS = [];
+let SALUD = [];
 const EXTRAIDO_EL = null;   // El Puente no lleva foto embebida: todo sale del Sheet
 
 /* ---------------- Utilidades ---------------- */
@@ -986,9 +1025,19 @@ function identidadDe(seg, campania){
   return null;
 }
 
-/* Última foto del tamaño de cada identidad, desde la pestaña identidades. */
+/* Última foto del tamaño de cada identidad.
+   Sale de la pestaña identidades si está cargada; si no, de rfm_identidad,
+   que tiene la misma foto desagregada por grupo de valor. Preferimos una
+   sola fuente: mantener las dos invita a que digan cosas distintas. */
 function baseGenoma(){
-  if(!IDENTIDADES.length) return {};
+  if(!IDENTIDADES.length){
+    if(!SALUD.length) return {};
+    const C=cortesSalud(), o={};
+    Object.keys(C.actual).forEach(function(id){
+      o[id]={clientes:C.actual[id].clientes, conKpi:0, fecha:C.ult};
+    });
+    return o;
+  }
   const ult=IDENTIDADES.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
   const o={};
   IDENTIDADES.filter(r=>r.fecha===ult).forEach(r=>{
@@ -1128,6 +1177,244 @@ function renderGenoma(rows, prevRows){
 }
 
 
+/* ---------------- Composición RFM por identidad ---------------- */
+let vistaSalud='clientes';
+
+/* Arma, por identidad y corte, el total de cada bloque y la plata.
+   El momento cero es el primer corte cargado: no hace falta configurarlo. */
+function cortesSalud(){
+  const fechas=[...new Set(SALUD.map(r=>r.fecha))].sort();
+  const cero=fechas[0], ult=fechas[fechas.length-1], ant=fechas[fechas.length-2];
+
+  const resumir=f=>{
+    const o={};
+    SALUD.filter(r=>r.fecha===f).forEach(r=>{
+      const x=o[r.identidad]=o[r.identidad]||{activo:0,riesgo:0,dormido:0,
+        clientes:0, ingresos:0, grupos:{}};
+      x[r.bloque]+=r.clientes; x.clientes+=r.clientes; x.ingresos+=r.ingresos;
+      x.grupos[r.grupo]={clientes:r.clientes, ingresos:r.ingresos, rango:r.rango};
+    });
+    Object.values(o).forEach(x=>{ x.pctActivos = x.clientes? x.activo/x.clientes : 0; });
+    return o;
+  };
+  return {cero, ult, ant, nCortes:fechas.length,
+          momentoCero:resumir(cero), actual:resumir(ult),
+          previo:ant?resumir(ant):{}};
+}
+
+/* Los 10 grupos en el orden de valor de WooWup, de mejor a peor.
+   Va como función y no como const porque RANGO_MAP se declara más abajo:
+   evaluarlo acá arriba rompe el archivo entero por zona muerta temporal. */
+let _ord=null;
+const gruposOrdenados = () => _ord || (_ord=Object.keys(RANGO_MAP).sort((a,b)=>RANGO_MAP[b]-RANGO_MAP[a]));
+
+function renderSalud(){
+  const cont=document.getElementById('bloqueSalud');
+  if(!SALUD.length){ cont.style.display='none'; return; }
+  cont.style.display='';
+
+  const C=cortesSalud();
+  const lista=CONFIG.identidades.map(id=>({id, a:C.actual[id]})).filter(x=>x.a);
+  if(!lista.length){ cont.style.display='none'; return; }
+
+  document.getElementById('ventanaSalud').innerHTML = C.nCortes>1
+    ? `Momento cero: ${fechaLarga(C.cero)} · último corte: ${fechaLarga(C.ult)} (${C.nCortes} cortes cargados). Mide el <b>movimiento neto</b> de cada grupo, no quiénes se movieron.`
+    : `Momento cero: ${fechaLarga(C.cero)}. <b>Hace falta un segundo corte para ver movimiento</b> — con una sola foto se ve la composición, pero no el escalamiento.`;
+
+  // ── Barras: composición por bloque, con el movimiento contra el momento cero
+  const COL={activo:'#2E9E5B', riesgo:'#E8551F', dormido:'#8A7A6E'};
+  document.getElementById('barrasSalud').innerHTML=lista.map(({id,a})=>{
+    const z=C.momentoCero[id], p=C.previo[id];
+    const linea=(rot,base)=>{
+      if(!base) return '';
+      const d=a.pctActivos-base.pctActivos;
+      const cl=Math.abs(d)<0.002?'flat':d>0?'up':'down';
+      return `<small style="display:block"><span class="${cl}">${cl==='flat'?'=':cl==='up'?'▲':'▼'} ${pp(d)}</span> ${rot}</small>`;
+    };
+    const seg=k=>{const w=a[k]/a.clientes*100;
+      return `<div style="width:${w}%;background:${COL[k]}">${w>11?nfDec.format(w)+'%':''}</div>`;};
+    return `<div class="barra-fila" style="grid-template-columns:205px 1fr 165px">
+      <div class="nom">${id}
+        <small style="display:block;font-weight:400;color:var(--nota)">${num(a.clientes)} clientes · ${money(a.ingresos)}</small></div>
+      <div class="stack" style="height:28px">${seg('activo')}${seg('riesgo')}${seg('dormido')}</div>
+      <div class="barra-val">${pct(a.pctActivos)} activos
+        ${C.nCortes>1 ? linea('vs. corte anterior', p) + linea('vs. momento cero', z)
+                      : '<small>momento cero</small>'}</div>
+    </div>`;}).join('');
+
+  document.getElementById('leyendaSalud').innerHTML=
+    `<span><i style="background:${COL.activo}"></i>Activos</span>
+     <span><i style="background:${COL.riesgo}"></i>En riesgo</span>
+     <span><i style="background:${COL.dormido}"></i>Hibernando</span>
+     <span style="color:var(--nota);font-style:italic">La plata es venta total del segmento, no ingreso atribuido a campañas</span>`;
+
+  // ── Matriz: identidad × grupo, con el delta contra el momento cero
+  const usados=gruposOrdenados().filter(g=>lista.some(({a})=>a.grupos[g]));
+  const val=(x,g)=> x && x.grupos[g] ? x.grupos[g][vistaSalud] : null;
+  const fmt = vistaSalud==='clientes' ? num : money;
+
+  document.getElementById('tablaSalud').innerHTML=`
+    <thead><tr><th class="izq">Identidad</th>${usados.map(g=>`<th>${g}</th>`).join('')}<th>Total</th></tr></thead>
+    <tbody>${lista.map(({id,a})=>{
+      const z=C.momentoCero[id];
+      return `<tr><td class="izq">${id}</td>${usados.map(g=>{
+        const v=val(a,g); if(v===null) return '<td>—</td>';
+        const v0=val(z,g);
+        let d='';
+        if(C.nCortes>1 && v0!==null && v0!==v){
+          const dd=v-v0, cl=dd>0?'up':'down';
+          d=`<small style="display:block" class="${cl}">${dd>0?'+':''}${fmt(dd)}</small>`;
+        }
+        return `<td>${fmt(v)}${d}</td>`;}).join('')}
+        <td><b>${fmt(a[vistaSalud==='clientes'?'clientes':'ingresos'])}</b></td></tr>`;}).join('')}</tbody>`;
+
+  // ── Insight
+  const ico=document.getElementById('insightSalud');
+  const d=id=>C.momentoCero[id] ? C.actual[id].pctActivos-C.momentoCero[id].pctActivos : null;
+  const conMov=lista.filter(({id})=>d(id)!==null && C.nCortes>1);
+  if(!conMov.length){
+    const mejor=lista.reduce((x,y)=>y.a.pctActivos>x.a.pctActivos?y:x);
+    const peor=lista.reduce((x,y)=>y.a.pctActivos<x.a.pctActivos?y:x);
+    let t=`<b>${mejor.id} es la identidad más sana: ${pct(mejor.a.pctActivos)} de activos</b>`;
+    if(peor!==mejor) t+=` La más deteriorada es ${peor.id}, con ${pct(peor.a.pctActivos)} — ${num(peor.a.riesgo+peor.a.dormido)} de sus ${num(peor.a.clientes)} clientes están en riesgo o hibernando.`;
+    t+=` Esta es la foto del momento cero: con el próximo corte ya se lee hacia dónde se mueven.`;
+    ico.innerHTML=`<div class="ico">◷</div><div class="txt">${t}</div>`;
+  } else {
+    const sube=conMov.reduce((x,y)=>d(y.id)>d(x.id)?y:x);
+    const baja=conMov.reduce((x,y)=>d(y.id)<d(x.id)?y:x);
+    let t = d(sube.id)>0.002
+      ? `<b>${sube.id} es la que más escaló desde el momento cero: ${pp(d(sube.id))} de activos</b>`
+      : `<b>Ninguna identidad escaló desde el momento cero</b>`;
+    if(d(baja.id)<-0.002){
+      const z=C.momentoCero[baja.id];
+      t+=` ${baja.id} se deterioró ${pp(d(baja.id))}: son ${num(Math.abs(baja.a.activo-z.activo))} clientes que salieron de activos.`;
+    }
+    ico.innerHTML=`<div class="ico">▲</div><div class="txt">${t}</div>`;
+  }
+}
+
+/* ---------------- Objetivos del trimestre ---------------- */
+
+/* El "real" de clientes es la última foto de la pestaña identidades.
+   El de ingreso se calcula sobre la ventana que declara la propia fila,
+   no sobre el período elegido arriba. */
+function renderObjetivos(){
+  const cont=document.getElementById('bloqueObjetivos');
+  if(!OBJETIVOS.length){ cont.style.display='none'; return; }
+  cont.style.display='';
+
+  const base=baseGenoma();
+  const filas=[];
+  let desdeMin='', hastaMax='';
+
+  OBJETIVOS.forEach(o=>{
+    if(o.desde && (!desdeMin || o.desde<desdeMin)) desdeMin=o.desde;
+    if(o.hasta && o.hasta>hastaMax) hastaMax=o.hasta;
+
+    const enVentana = (o.desde&&o.hasta)
+      ? DATOS.filter(r=>enRango(r.fecha,o.desde,o.hasta) && identidadDe(r.segmento,r.campania)===o.identidad)
+      : [];
+    // null = no hay dato cargado, distinto de cero. Sin esto, un real
+    // ausente se toma como 0 y el cumplimiento sale en -650%.
+    const realIngreso=(o.desde&&o.hasta) ? agregar(enVentana).ingresos : null;
+    const realClientes=base[o.identidad] ? base[o.identidad].clientes : null;
+
+    if(o.clientesMeta) filas.push({id:o.identidad, met:'Clientes',
+      cero:o.clientesCero, meta:o.clientesMeta, real:realClientes, fmt:num});
+    // Venta total del segmento: la foto más reciente de rfm_identidad
+    if(o.ingresoMeta){
+      const s=cortesSalud().actual[o.identidad];
+      filas.push({id:o.identidad, met:'Venta del segmento',
+        cero:o.ingresoCero, meta:o.ingresoMeta,
+        real:s?s.ingresos:null, fmt:money});
+    }
+
+    // Ingreso atribuido a campañas: sólo lo que el CRM movió
+    if(o.atribMeta) filas.push({id:o.identidad, met:'Ingreso atribuido',
+      cero:o.atribCero, meta:o.atribMeta, real:realIngreso, fmt:money});
+
+    // El % de activos sale de la última foto de rfm_identidad
+    if(o.activosMeta){
+      const s=cortesSalud().actual[o.identidad];
+      filas.push({id:o.identidad, met:'% de activos (RFM)',
+        cero:o.activosCero, meta:o.activosMeta, real:s?s.pctActivos:null, fmt:pct});
+    }
+  });
+
+  if(!filas.length){ cont.style.display='none'; return; }
+
+  document.getElementById('ventanaObjetivos').innerHTML =
+    (desdeMin&&hastaMax)
+      ? `Ventana de la meta: del ${fechaLarga(desdeMin)} al ${fechaLarga(hastaMax)}. <b>Este bloque no sigue al selector de arriba</b>, porque la meta es de un período fijo.`
+      : 'Cargá <code>desde</code> y <code>hasta</code> en la pestaña <code>objetivos</code> para que se calcule el real de ingreso.';
+
+  /* Cumplimiento = cuánto del camino planificado se recorrió.
+     Con meta igual al momento cero no hay camino, así que no se calcula. */
+  const avance = f => {
+    if(f.real===null || f.meta===f.cero) return null;
+    const a=(f.real-f.cero)/(f.meta-f.cero);
+    /* Un negativo mínimo casi siempre es el redondeo del momento cero cargado
+       a mano — 35% escrito contra 34,98% real — y no un retroceso. Marcarlo
+       como "retrocedió" en la primera foto asusta sin motivo. */
+    return (a<0 && a>-0.02) ? 0 : a;
+  };
+  /* Un cumplimiento de cinco cifras es ilegible y además es señal de que la
+     meta quedó mal puesta. Arriba de 3x se muestra como múltiplo. */
+  /* Un negativo significa que se retrocedió respecto del momento cero.
+     Mostrarlo como "-99,9%" se lee como un error de cálculo, así que se
+     nombra: es un estado distinto de "0% de avance". */
+  const fmtAvance = a => a===null ? '—'
+                       : a<0      ? 'retrocedió'
+                       : a>3      ? nfDec.format(a)+'× la meta'
+                       : nfDec.format(a*100)+'%';
+
+  document.getElementById('tablaObjetivos').innerHTML=`
+    <thead><tr><th class="izq">Identidad</th><th class="izq">Métrica</th>
+      <th>Momento cero</th><th>Meta</th><th>Real</th><th>Falta</th>
+      <th class="izq" style="width:170px">Cumplimiento</th></tr></thead>
+    <tbody>${filas.map(f=>{
+      const a=avance(f);
+      // Un cumplimiento de cinco cifras es ilegible y además es señal de que
+      // la meta quedó mal puesta. Arriba de 3x lo mostramos como múltiplo.
+      const pcts = fmtAvance(a);
+      const w=a===null?0:Math.max(0,Math.min(100,a*100));
+      const col=a===null?'var(--nota)':a>=1?'var(--pos)':a>=0.6?'var(--naranja)':'var(--neg)';
+      const falta=f.meta-f.real;
+      return `<tr>
+        <td class="izq">${f.id}</td><td class="izq">${f.met}</td>
+        <td>${f.fmt(f.cero)}</td><td>${f.fmt(f.meta)}</td>
+        <td><b>${f.real===null?'—':f.fmt(f.real)}</b></td>
+        <td class="${f.real===null?'':falta>0?'':'up'}">${f.real===null?'—':falta>0?f.fmt(falta):'cumplida'}</td>
+        <td class="izq">
+          <div class="barra-track" style="height:16px"><div style="height:100%;width:${w}%;background:${col};border-radius:5px;transition:width .4s"></div></div>
+          <small style="color:${col};font-weight:600">${pcts}</small>
+        </td></tr>`;}).join('')}</tbody>`;
+
+  const conAvance=filas.filter(f=>avance(f)!==null && f.real!==null);
+  const ico=document.getElementById('insightObjetivos');
+  if(!conAvance.length){
+    ico.innerHTML=`<div class="ico">◷</div><div class="txt"><b>Todavía no hay datos reales contra las metas</b>
+      El real de clientes sale de la pestaña <code>identidades</code>; el de ingreso, de las campañas imputadas dentro de la ventana de la meta.</div>`;
+  } else {
+    const mejor=conAvance.reduce((a,b)=>avance(b)>avance(a)?b:a);
+    const peor=conAvance.reduce((a,b)=>avance(b)<avance(a)?b:a);
+    let t=`<b>${mejor.id} · ${mejor.met} es lo que mejor va: ${fmtAvance(avance(mejor))}</b>`;
+    if(peor!==mejor) t+=` Lo más atrasado es ${peor.id} · ${peor.met}, con ${fmtAvance(avance(peor))}: faltan ${peor.fmt(peor.meta-peor.real)}.`;
+    const desbordadas=conAvance.filter(f=>avance(f)>3);
+    if(desbordadas.length){
+      t+=` <span style="font-weight:700">Ojo:</span> ${desbordadas.length===1?'una meta se superó':desbordadas.length+' metas se superaron'} por más de 3× (${desbordadas.map(f=>f.id+' · '+f.met).join(', ')}). Antes de mostrarlo como logro, conviene revisar que la meta esté bien puesta: un cumplimiento así casi siempre es un error de carga, no un resultado.`;
+    }
+    const hayVenta=filas.some(f=>f.met==='Venta del segmento');
+    const hayAtrib=filas.some(f=>f.met==='Ingreso atribuido');
+    if(hayVenta && !hayAtrib){
+      t+=` <span style="font-weight:700">Ojo con la lectura:</span> la venta del segmento se mueve por todo — estacionalidad, precios, locales nuevos — así que su cumplimiento no es mérito del CRM. Para medir lo que las campañas movieron hacen falta las columnas <code>atribuido_cero</code> y <code>atribuido_meta</code>.`;
+    } else if(hayVenta && hayAtrib){
+      t+=` <span style="font-weight:700">Son dos escalas distintas:</span> la venta del segmento incluye todo lo que pasó en el negocio; el atribuido es sólo lo que movieron las campañas. No los compares entre sí.`;
+    }
+    ico.innerHTML=`<div class="ico">◎</div><div class="txt">${t}</div>`;
+  }
+}
+
 /* ---------------- Tabla de campañas ---------------- */
 const COLS=[
   {k:'fecha',rot:'Fecha',izq:true,f:v=>v?nomDia(v):'—'},
@@ -1225,6 +1512,8 @@ function render(){
   renderCanales(rows,prevRows);
   renderSegmentos(rows);
   renderGenoma(rows, prevRows);
+  renderSalud();
+  renderObjetivos();
   renderRfm();
   ocultarBloquesVacios(rows);
   renderCampanias(rows);
@@ -1459,6 +1748,42 @@ function normalizarSucursales(filas){
     digital:String(r.digital).toUpperCase()==='TRUE'||r.sucursal==='E-commerce',
     tickets:numAR(r.tickets), ingresos:numAR(r.ingresos)}));
 }
+/* La pestaña objetivos se carga UNA vez por trimestre, a mano. Lleva su
+   propia ventana de fechas porque la meta es de un período fijo: si el
+   "real" se moviera con el selector de arriba, el cumplimiento cambiaría
+   cada vez que alguien toca el filtro y dejaría de significar nada. */
+/* Composición RFM dentro de cada identidad, una foto por corte.
+   Son tres bloques y no los diez grupos: diez metas por identidad son
+   cincuenta metas y nadie las mira. Lo que se sigue es el % de activos. */
+/* Acepta 0,62 o 62: arriba de 1 se asume que vino en porcentaje. */
+const aFraccion = v => { const n=numAR(v); return n>1 ? n/100 : n; };
+
+function normalizarSalud(filas){
+  return filas.filter(r=>r.fecha&&r.identidad&&r.grupo).map(r=>({
+    fecha:String(r.fecha).slice(0,10),
+    identidad:String(r.identidad).trim(),
+    grupo:String(r.grupo).trim(),
+    bloque:BLOQUE_MAP[String(r.grupo).trim()]||'activo',
+    rango:RANGO_MAP[String(r.grupo).trim()] ?? 0,
+    clientes:numAR(r.clientes), ingresos:numAR(r.ingresos)}));
+}
+
+
+function normalizarObjetivos(filas){
+  return filas.filter(r=>r.identidad).map(r=>({
+    identidad:String(r.identidad).trim(),
+    desde:String(r.desde||'').slice(0,10),
+    hasta:String(r.hasta||'').slice(0,10),
+    clientesCero:numAR(r.clientes_cero), clientesMeta:numAR(r.clientes_meta),
+    // ingreso_* es la VENTA TOTAL del segmento, que sale de rfm_identidad.
+    // atribuido_* es lo que generaron las campañas, que sale del Sheet de
+    // campañas. Son dos escalas distintas y no se mezclan.
+    ingresoCero:numAR(r.ingreso_cero),   ingresoMeta:numAR(r.ingreso_meta),
+    atribCero:numAR(r.atribuido_cero),   atribMeta:numAR(r.atribuido_meta),
+    // % de activos: se acepta 0,62 o 62 — arriba de 1 se asume porcentaje
+    activosCero:aFraccion(r.activos_cero), activosMeta:aFraccion(r.activos_meta)}));
+}
+
 function normalizarIdentidades(filas){
   return filas.filter(r=>r.fecha&&r.identidad).map(r=>({
     fecha:String(r.fecha).slice(0,10), identidad:String(r.identidad).trim(),
@@ -1514,13 +1839,20 @@ async function iniciar(){
       }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
     }
 
-    try{
-      const f=normalizarIdentidades(await leerPestania('identidades'));
-      if(f.length) IDENTIDADES=f; else avisos.push('la pestaña de identidades está vacía');
-    }catch(e){ avisos.push(e.message); tipos.push(e.tipo); }
+    // Opcional: si no está, el tamaño de cada identidad sale de rfm_identidad.
+    try{ IDENTIDADES=normalizarIdentidades(await leerPestania('identidades')); }
+    catch(e){ IDENTIDADES=[]; }
+
+    // Opcional: si la pestaña no existe, el bloque de objetivos se oculta y
+    // no se avisa nada. No es un error, es que todavía no se cargaron metas.
+    try{ OBJETIVOS=normalizarObjetivos(await leerPestania('objetivos')); }
+    catch(e){ OBJETIVOS=[]; }
+
+    try{ SALUD=normalizarSalud(await leerPestania('rfm_identidad')); }
+    catch(e){ SALUD=[]; }
 
     // Si todas fallaron por red, es un solo problema, no cuatro
-    const esperadas=CONFIG.mostrarRfm?4:3;
+    const esperadas=CONFIG.mostrarRfm?3:2;
     if(tipos.length===esperadas && tipos.every(t=>t==='red')){
       avisos.length=0; diagnostico='red';
     } else if(tipos.includes('permiso')){
@@ -1588,6 +1920,14 @@ async function iniciar(){
       <p>Esos bloques quedan vacíos hasta que la pestaña se pueda leer.${diagnostico==='permiso'?' Revisá que el Sheet esté publicado como <b>Documento completo</b> y que los gids de <code>CONFIG.gids</code> coincidan con los del Sheet.':''}</p>`+bitacoraHtml();
     document.getElementById('secKpis').before(d);
   }
+
+  document.querySelectorAll('#tabsSalud .tab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      vistaSalud=b.dataset.v;
+      document.querySelectorAll('#tabsSalud .tab').forEach(o=>o.setAttribute('aria-selected',String(o===b)));
+      render();
+    });
+  });
 
   document.querySelectorAll('#tabsGenoma .tab').forEach(b=>{
     b.addEventListener('click',()=>{
