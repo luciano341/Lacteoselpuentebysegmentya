@@ -202,6 +202,7 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
         <option value="14">Últimos 14 días</option>
         <option value="30" selected>Últimos 30 días</option>
         <option value="mes">Este mes</option>
+        <option value="trim">Trimestre de la meta</option>
         <option value="mesant">Mes anterior</option>
         <option value="todo">Todo el histórico</option>
         <option value="custom">Personalizado</option>
@@ -274,8 +275,8 @@ details.setup h4{margin:16px 0 6px;font-size:12.5px;color:var(--naranja-osc)}
     <div class="bloqueado" style="margin-top:16px">
       <h4>Cómo se arma este bloque</h4>
       <p><b>El tamaño de cada identidad</b> sale de <code>rfm_identidad</code>, sumando sus 10 grupos de valor. La pestaña <code>identidades</code> quedó como alternativa para quien no cargue el detalle RFM: si existe, tiene prioridad. Conviene usar una sola de las dos — con las dos cargadas es fácil que digan números distintos y no haya forma de saber cuál vale. La identidad es monovaluada: un cliente pertenece a una sola, y entre 3 y 5 de cada 10 cambian de identidad en el año.</p>
-      <p><b>El rendimiento</b> se arma cruzando las campañas contra <code>CONFIG.mapaSegmentos</code>: se buscan las palabras de cada identidad primero en el nombre del segmento y, si ahí no hay ninguna, en el de la campaña. Ignora mayúsculas y tildes. Lo que no matchea con nada queda listado en el panel <b>Sin imputar</b>, con su ingreso: esa lista es exactamente la guía de qué agregar al mapa. No hace falta renombrar segmentos en WooWup.</p>
-      <p><b>La variación</b> compara contra el período inmediatamente anterior de igual duración, imputado con el mismo criterio. Si una identidad no tiene ingreso en el período anterior, la variación queda en <code>—</code> en vez de mostrar un porcentaje sin sentido.</p>
+      <p><b>El rendimiento</b> se imputa por contenido: se buscan las palabras de <code>CONFIG.mapaContenido</code> en el nombre de la campaña (queso, fontina, mar del plata, yogur, picada…), así una pieza de quesos cuenta para Quesero aunque haya salido a un segmento amplio. Si el nombre no dice nada, se usa <code>CONFIG.mapaSegmentos</code> como respaldo. Ignora mayúsculas, tildes, espacios y guiones. Lo que no matchea con nada queda listado en el panel <b>Sin imputar</b>, con su ingreso: esa lista es exactamente la guía de qué agregar al mapa. No hace falta renombrar segmentos en WooWup.</p>
+      <p><b>La variación</b> compara mes contra mes cuando el período arranca un día 1 (1–27/10 contra 1–27/9; un mes completo contra el mes anterior completo). Cualquier otro rango se compara con los mismos días inmediatamente antes. Siempre imputado con el mismo criterio. Si una identidad no tiene ingreso en el período anterior, la variación queda en <code>—</code> en vez de mostrar un porcentaje sin sentido.</p>
       <p><b>Reposición de lácteos tiene un KPI que se autodestruye:</b> si el cliente compra queso, sale del segmento, y el denominador se achica justo cuando la campaña funciona. Para medirla hay que usar la copia congelada <code>KPI · Reposición base 06-10</code>, tomada en el momento cero.</p>
     </div>
   </section>
@@ -460,7 +461,7 @@ rfm_identidad fecha | identidad | grupo | clientes | ingresos</pre>
       <p><b>La plata de esta pestaña es venta total del segmento, no ingreso atribuido a campañas.</b> Son dos números de naturaleza distinta y conviven en el dashboard sin mezclarse: el bloque de identidades mide lo que generaron las campañas, este mide el tamaño del negocio de cada identidad. No los sumes ni los dividas entre sí sin chequear que cubran la misma ventana de tiempo — la foto de WoowUp y el rango del Sheet no tienen por qué coincidir.</p>
       <p>Con un solo corte cargado se ve la composición pero no el movimiento: el escalamiento necesita dos fotos. Y mide <b>movimiento neto</b>, no migración individual — se ve que Campeones creció, no quiénes subieron, porque eso necesitaría el historial de pertenencia por cliente, que no está en ningún lado.</p>
       <p>Las columnas <code>activos_cero</code> y <code>activos_meta</code> de <code>objetivos</code> son opcionales y aceptan <code>0,62</code> o <code>62</code> indistintamente.</p>
-      <p><b>La pestaña <code>objetivos</code> es opcional y se carga una sola vez por trimestre.</b> Si no existe, el bloque de objetivos simplemente no aparece y nada más se rompe. Una fila por identidad: <code>desde</code> y <code>hasta</code> delimitan la ventana de la meta, y el bloque calcula el real de ingreso sobre esa ventana sin importar el período elegido arriba — si siguiera al selector, el cumplimiento cambiaría cada vez que alguien toca el filtro.</p>
+      <p><b>La pestaña <code>objetivos</code> es opcional y se carga una sola vez por trimestre.</b> Si no existe, el bloque de objetivos simplemente no aparece y nada más se rompe. Una fila por identidad: <code>desde</code> y <code>hasta</code> delimitan la ventana de la meta, y sirven para saber de cuántos días es el trimestre. El bloque sigue al período elegido arriba: el ingreso atribuido se suma en el período y se compara contra la meta prorrateada por días; clientes, venta y % de activos toman la última foto cargada hasta el cierre del período. Para ver el trimestre entero, elegí <b>Trimestre de la meta</b> en el selector.</p>
       <p><b>Hay dos metas de plata y miden cosas distintas.</b> <code>ingreso_cero</code> e <code>ingreso_meta</code> son la <b>venta total del segmento</b>: el real sale de <code>rfm_identidad</code>, sumando los 10 grupos. <code>atribuido_cero</code> y <code>atribuido_meta</code> son el <b>ingreso atribuido a campañas</b>: el real sale de la pestaña <code>campanias</code>, dentro de la ventana de la meta.</p>
       <p>La diferencia importa al leer el resultado: la venta del segmento se mueve por estacionalidad, precios y locales nuevos, así que cumplir esa meta no prueba que el CRM haya hecho nada. El atribuido sí es trabajo de las campañas, pero es un número mucho más chico — en El Puente, del orden de los cientos de millones contra miles de millones de venta total. <b>Nunca los compares entre sí ni los sumes:</b> están en escalas distintas y cubren ventanas distintas.</p>
       <ul>
@@ -516,32 +517,47 @@ const CONFIG = {
   identidades: ['Picada del finde','Quesero','Reposición de lácteos','D70','Sin clasificar'],
 
   // ── Cómo se imputa una campaña a una identidad ───────────────────────
-  // Se busca cada una de estas palabras dentro del nombre del segmento y,
-  // si ahí no aparece ninguna, dentro del nombre de la campaña. La primera
-  // identidad que matchea gana, así que el orden importa: poné arriba la
-  // más específica.
+  // Se imputa por CONTENIDO: primero se buscan las palabras de mapaContenido
+  // en el nombre de la campaña. Así una pieza de quesos cuenta para Quesero
+  // aunque haya salido a un segmento amplio. Si el nombre no dice nada, se usa
+  // mapaSegmentos como respaldo: primero sobre el nombre del segmento y
+  // después sobre el de la campaña. La primera identidad que matchea gana,
+  // en el orden de CONFIG.identidades: una "picada con quesos" va a Picada.
   //
-  // No hace falta renombrar nada en WooWup: alcanza con agregar acá el
-  // pedazo de nombre que ya usan tus segmentos. Ignora mayúsculas y tildes.
+  // Ignora mayúsculas, tildes, espacios, guiones y guiones bajos: "mar del
+  // plata" matchea con "MardelPlata" y con "mar_del_plata".
   //
   // Lo que no matchea con nada queda listado abajo del bloque, en "Sin
-  // imputar": esa lista es la guía de qué falta agregar a este mapa.
-  // ⚠ Cuidado con las palabras genéricas: tienen que ser inequívocas. "finde"
-  // parece buena para Picada del finde, pero matchea con "Promosfinde", que
-  // son las bancarias; "lacteos" matchea con el nombre de la marca. Una
-  // palabra de más imputa plata a la identidad equivocada, y eso es peor que
-  // dejarla sin imputar — por eso esta lista arranca corta a propósito.
+  // imputar": esa lista es la guía de qué falta agregar.
+  // ⚠ Las palabras tienen que ser inequívocas. "finde" matchea con
+  // "Promosfinde" (bancarias), "lacteos" con el nombre de la marca y "brie"
+  // con "abrieron". Una palabra de más imputa plata a la identidad
+  // equivocada, y eso es peor que dejarla sin imputar.
+  mapaContenido: {
+    // 'picad' atrapa picada, picadas, picadita y armadorpicadas.
+    'Picada del finde':      ['picad','fiambre','salame'],
+    // 'mdp' = Mar del Plata (p. ej. "Semana del mdp"). Si en algún envío
+    // significa otra cosa, sacalo de acá.
+    'Quesero':               ['queso','quesero','mar del plata','mdp','fontina','reggianito',
+                              'sardo','parmesano','horma','gouda','provolone','pategras',
+                              'cremoso','tybo'],
+    // 'ddl' = dulce de leche ("Destacado DDL").
+    'Reposición de lácteos': ['yogur','leche','manteca','ddl','reposicion'],
+    'D70':                   ['d70'],
+    'Sin clasificar':        []
+  },
+  // Respaldo cuando el nombre de la campaña no dice de qué es. Sólo segmentos
+  // propios de una identidad: un segmento amplio (DDQ24, Openers, Base con
+  // app) no dice nada del contenido y no tiene que imputar.
   mapaSegmentos: {
-    // Ojo: muchos segmentos siguen nombrados con los ARQUETIPOS VIEJOS, no
-    // con las identidades del Genoma. "ARQ · 08 Yogur-Lechero" es gente de
-    // Reposición de lácteos; "Armador de Picadas" es Picada del finde. Por eso
-    // las claves son los nombres viejos además de los nuevos.
-    // 'picad' (sin la a final) atrapa picada, picadas y picadita.
+    // Muchos segmentos siguen con los nombres de los ARQUETIPOS VIEJOS:
+    // "ARQ · 08 Yogur-Lechero" es Reposición de lácteos; "Armador de Picadas"
+    // es Picada del finde.
     'Picada del finde':      ['picad','armador de picadas','fiambre'],
-    'Quesero':               ['quesero','queso','quesos','cremoso','ddq24'],
-    'Reposición de lácteos': ['lechero','yogur-lechero','reposicion','reposición'],
-    'D70':                   ['d70','d-70','d 70'],
-    'Sin clasificar':        ['sin clasificar','sin identidad','almacen', 'almacén', 'credicoop', 'macro', 'ciudad', 'mercado pago' ]
+    'Quesero':               ['quesero','queso','quesos','cremoso'],
+    'Reposición de lácteos': ['lechero','yogur-lechero','reposicion'],
+    'D70':                   ['d70'],
+    'Sin clasificar':        ['sin clasificar','sin identidad','almacen','credicoop','macro','ciudad','mercado pago']
   },
 
   // Bloques que se muestran. Poné true para volver a encenderlos.
@@ -649,9 +665,35 @@ function agregar(rows){
   };
 }
 function periodoAnterior(a,b){
-  const dias=Math.round((dObj(b)-dObj(a))/86400000)+1;
-  return [iso(addDays(dObj(a),-dias)), iso(addDays(dObj(a),-1))];
+  /* Si el período arranca un día 1, se compara mes contra mes y cortado en
+     el mismo día: 1–27/10 contra 1–27/9, no contra septiembre completo,
+     que haría ver peor a cualquier mes en curso. Si termina a fin de mes,
+     se compara contra el/los meses anteriores completos. Cualquier otro
+     rango se compara con los mismos días inmediatamente antes. */
+  const A=dObj(a), B=dObj(b);
+  if(A.getDate()===1){
+    const meses=(B.getFullYear()-A.getFullYear())*12+B.getMonth()-A.getMonth()+1;
+    const ini=new Date(A.getFullYear(),A.getMonth()-meses,1);
+    const finDeMes=new Date(B.getFullYear(),B.getMonth()+1,0).getDate()===B.getDate();
+    let fin;
+    if(finDeMes) fin=new Date(A.getFullYear(),A.getMonth(),0);
+    else {
+      const ult=new Date(B.getFullYear(),B.getMonth()-meses+1,0);
+      fin=new Date(ult.getFullYear(),ult.getMonth(),Math.min(B.getDate(),ult.getDate()));
+    }
+    return [iso(ini), iso(fin)];
+  }
+  const dias=Math.round((B-A)/86400000)+1;
+  return [iso(addDays(A,-dias)), iso(addDays(A,-1))];
 }
+const diasEntre=(a,b)=>Math.round((dObj(b)-dObj(a))/86400000)+1;
+const rangoCorto=(a,b)=>{
+  const A=dObj(a), B=dObj(b), m=d=>d.toLocaleDateString('es-AR',{month:'long'});
+  if(a===b) return `${A.getDate()} de ${m(A)}`;
+  return A.getMonth()===B.getMonth()&&A.getFullYear()===B.getFullYear()
+    ? `${A.getDate()}–${B.getDate()} de ${m(A)}`
+    : `${A.getDate()} de ${m(A)} – ${B.getDate()} de ${m(B)}`;
+};
 
 /* ---------------- KPIs ---------------- */
 const KPI_DEFS=[
@@ -1076,17 +1118,25 @@ let vistaGenoma='ingresos';
 const plano = s => String(s||'').toLowerCase()
   .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 
-/* Imputa una campaña a una identidad buscando las palabras de
-   CONFIG.mapaSegmentos, primero en el nombre del segmento y después en el de
-   la campaña. Si no matchea nada devuelve null: preferimos no imputar antes
-   que imputar mal, y lo no imputado se lista aparte para que se vea. */
+/* Para comparar se sacan además espacios y signos: "mar del plata" tiene que
+   matchear con "MardelPlata", "Mar-del-Plata" y "mar_del_plata". */
+const compacto = s => plano(s).replace(/[^a-z0-9]/g,'');
+
+/* Imputa una campaña a una identidad, por contenido:
+   1) palabras de CONFIG.mapaContenido en el nombre de la campaña;
+   2) si no, CONFIG.mapaSegmentos en el nombre del segmento;
+   3) si no, CONFIG.mapaSegmentos en el nombre de la campaña.
+   Si nada matchea devuelve null: preferimos no imputar antes que imputar
+   mal, y lo no imputado se lista aparte para que se vea. */
 function identidadDe(seg, campania){
-  const mapa=CONFIG.mapaSegmentos||{};
-  const donde=[plano(seg), plano(campania)];
-  for(const texto of donde){
-    if(!texto) continue;
+  const pasos=[[CONFIG.mapaContenido, campania],
+               [CONFIG.mapaSegmentos, seg],
+               [CONFIG.mapaSegmentos, campania]];
+  for(const [mapa, nombre] of pasos){
+    const texto=compacto(nombre);
+    if(!mapa || !texto) continue;
     for(const id of CONFIG.identidades){
-      const claves=(mapa[id]||[]).concat([id]).map(plano);
+      const claves=(mapa[id]||[]).concat([id]).map(compacto);
       if(claves.some(k=>k && texto.includes(k))) return id;
     }
   }
@@ -1097,17 +1147,19 @@ function identidadDe(seg, campania){
    Sale de la pestaña identidades si está cargada; si no, de rfm_identidad,
    que tiene la misma foto desagregada por grupo de valor. Preferimos una
    sola fuente: mantener las dos invita a que digan cosas distintas. */
-function baseGenoma(){
+function baseGenoma(hasta){
   if(!IDENTIDADES.length){
     if(!SALUD.length) return {};
-    const C=cortesSalud(), o={};
+    const C=cortesSalud(hasta), o={};
     Object.keys(C.actual).forEach(function(id){
       o[id]={clientes:C.actual[id].clientes, conKpi:0, fecha:C.ult};
     });
     return o;
   }
-  const ult=IDENTIDADES.reduce((m,r)=>r.fecha>m?r.fecha:m,'');
+  // La foto vigente al cierre del período: la última cargada hasta esa fecha
+  const ult=IDENTIDADES.reduce((m,r)=>(r.fecha>m && (!hasta||r.fecha<=hasta))?r.fecha:m,'');
   const o={};
+  if(!ult) return o;
   IDENTIDADES.filter(r=>r.fecha===ult).forEach(r=>{
     o[r.identidad]={clientes:r.clientes, conKpi:r.conKpi, fecha:r.fecha};
   });
@@ -1115,7 +1167,7 @@ function baseGenoma(){
 }
 
 function renderGenoma(rows, prevRows){
-  const base=baseGenoma();
+  const base=baseGenoma(ST.hasta);
   const por={}, prev={}, sinImputar=[], sinImputarSegs={};
   CONFIG.identidades.forEach(id=>{ por[id]=[]; prev[id]=0; });
 
@@ -1124,7 +1176,7 @@ function renderGenoma(rows, prevRows){
     if(id) por[id].push(c);
     else {
       sinImputar.push(c);
-      const k=c.segmento||c.campania||'(sin segmento)';
+      const k=(c.campania||'(sin nombre)')+(c.segmento?' · '+c.segmento:'');
       sinImputarSegs[k]=(sinImputarSegs[k]||0)+c.ingresos;
     }
   });
@@ -1225,7 +1277,7 @@ function renderGenoma(rows, prevRows){
   }
   ico.innerHTML=`<div class="ico">▲</div><div class="txt">${t}</div>`;
 
-  // Panel de lo no imputado: es la guía de qué agregar a CONFIG.mapaSegmentos
+  // Panel de lo no imputado: es la guía de qué agregar a CONFIG.mapaContenido
   const panel=document.getElementById('sinImputar');
   if(!sinImputar.length){
     panel.innerHTML='';
@@ -1235,9 +1287,9 @@ function renderGenoma(rows, prevRows){
     const segs=Object.entries(sinImputarSegs).sort((a,b)=>b[1]-a[1]).slice(0,15);
     panel.innerHTML=`
       <h4>Sin imputar · ${money(sinR)} (${pct(totalPeriodo?sinR/totalPeriodo:0)} del ingreso del período)</h4>
-      <p>Estos segmentos no matchearon con ninguna identidad, así que su plata no entra en el bloque de arriba. Para que entren, agregá un pedazo de cada nombre a <code>CONFIG.mapaSegmentos</code> — no hace falta renombrar nada en WooWup.</p>
+      <p>Ni el nombre de estas campañas ni su segmento dicen a qué identidad apuntan, así que su plata no entra en el bloque de arriba. Si alguna es de un producto, agregá la palabra a <code>CONFIG.mapaContenido</code> — no hace falta renombrar nada en WooWup.</p>
       <div class="tabla-wrap" style="margin-top:10px;background:#fff">
-        <table style="min-width:420px"><thead><tr><th class="izq">Segmento o campaña</th><th>Ingreso</th></tr></thead>
+        <table style="min-width:420px"><thead><tr><th class="izq">Campaña · segmento</th><th>Ingreso</th></tr></thead>
         <tbody>${segs.map(([n,v])=>`<tr><td class="izq">${n}</td><td>${money(v)}</td></tr>`).join('')}</tbody></table>
       </div>
       ${Object.keys(sinImputarSegs).length>15?`<p style="margin-top:8px">Se muestran los 15 de mayor ingreso, de ${Object.keys(sinImputarSegs).length} en total.</p>`:''}`;
@@ -1250,8 +1302,9 @@ let vistaSalud='clientes';
 
 /* Arma, por identidad y corte, el total de cada bloque y la plata.
    El momento cero es el primer corte cargado: no hace falta configurarlo. */
-function cortesSalud(){
-  const fechas=[...new Set(SALUD.map(r=>r.fecha))].sort();
+function cortesSalud(hasta){
+  // Sólo los cortes cargados hasta el cierre del período elegido
+  const fechas=[...new Set(SALUD.map(r=>r.fecha))].filter(f=>!hasta||f<=hasta).sort();
   const cero=fechas[0], ult=fechas[fechas.length-1], ant=fechas[fechas.length-2];
 
   const resumir=f=>{
@@ -1281,7 +1334,7 @@ function renderSalud(){
   if(!SALUD.length){ cont.style.display='none'; return; }
   cont.style.display='';
 
-  const C=cortesSalud();
+  const C=cortesSalud(ST.hasta);
   const lista=CONFIG.identidades.map(id=>({id, a:C.actual[id]})).filter(x=>x.a);
   if(!lista.length){ cont.style.display='none'; return; }
 
@@ -1372,68 +1425,88 @@ function transcurrido(desde, hasta){
   return Math.max(0, Math.min(1, (hoy-a)/total));
 }
 
-function renderPortada(){
+function renderPortada(a,b,pa,pb){
   const cont=document.getElementById('portada');
   const conMeta=OBJETIVOS.filter(o=>o.atribMeta>0 && o.desde && o.hasta);
   if(!conMeta.length){ cont.style.display='none'; return; }
   cont.style.display='';
 
-  const desde=conMeta[0].desde, hasta=conMeta[0].hasta;
-  const t=transcurrido(desde, hasta);
-  const dias=Math.max(0, Math.round((dObj(hasta)-new Date())/86400000));
+  /* La meta es trimestral; el período elegido puede ser cualquiera. Para que
+     se puedan comparar, la meta se prorratea por días: un período de 27 días
+     en un trimestre de 92 tiene 27/92 de la meta. Así el cumplimiento se lee
+     siempre igual — 100% es ir al ritmo de la meta — elijas el período que
+     elijas, y el número coincide con el resto del dashboard. */
+  const dSel=diasEntre(a,b);
+  const tq=conMeta[0];
+  const dTrim=diasEntre(tq.desde,tq.hasta);
+  const f=dSel/dTrim;
 
+  document.getElementById('portadaTitulo').textContent='Cómo viene el período contra la meta';
   document.getElementById('portadaVentana').textContent =
-    `${fechaLarga(desde)} → ${fechaLarga(hasta)}`;
-  document.getElementById('tiempoFill').style.width = (t===null?0:t*100)+'%';
-  document.getElementById('tiempoRot').innerHTML = t===null ? ''
-    : `<b>${nfDec.format(t*100)}%</b> del trimestre · quedan ${dias} días`;
+    `${fechaLarga(a)} → ${fechaLarga(b)}`;
+  document.getElementById('tiempoFill').style.width = Math.min(100,f*100)+'%';
+  document.getElementById('tiempoRot').innerHTML =
+    `${dSel} días = <b>${nfDec.format(f*100)}%</b> del trimestre · meta prorrateada en la misma proporción`;
 
-  /* Sólo el ingreso atribuido se compara contra el calendario: es un flujo
-     que se acumula. La venta del segmento y el % de activos son fotos de un
-     momento, y medirles "ritmo" no significa nada. */
   const filas=conMeta.map(o=>{
-    const rows=DATOS.filter(r=>enRango(r.fecha,o.desde,o.hasta)
-      && identidadDe(r.segmento,r.campania)===o.identidad);
+    const fo=dSel/diasEntre(o.desde,o.hasta);
+    const deId=r=>identidadDe(r.segmento,r.campania)===o.identidad;
+    const rows=filtrar(DATOS,a,b).filter(deId);
     const real=agregar(rows).ingresos;
-    const av=o.atribMeta ? (real-o.atribCero)/(o.atribMeta-o.atribCero) : null;
-    return {id:o.identidad, real, meta:o.atribMeta, av, envios:rows.length};
+    const meta=o.atribMeta*fo;
+    const prevRows=(ST.comparar&&pa)?filtrar(DATOS,pa,pb).filter(deId):[];
+    const prev=agregar(prevRows).ingresos;
+    return {id:o.identidad, real, meta, metaTrim:o.atribMeta,
+            av: meta ? real/meta : null, envios:rows.length,
+            prev, varia: prev>0 ? (real-prev)/prev : null};
   });
 
   const VERDE='#2E9E5B', NARANJA='#E8551F', GRIS='#B9ADA3';
-  document.getElementById('portadaIds').innerHTML=filas.map(f=>{
-    let col=GRIS, estado='sin envíos todavía', cls='flat';
-    if(f.envios){
-      const d = (t===null) ? 0 : f.av - t;
-      if(d > 0.05){ col=VERDE; estado='adelantada'; cls='up'; }
-      else if(d < -0.05){ col=NARANJA; estado='atrasada'; cls='down'; }
-      else { col=NARANJA; estado='en ritmo'; cls='flat'; }
+  const etqAnt = pa ? rangoCorto(pa,pb) : '';
+  document.getElementById('portadaIds').innerHTML=filas.map(x=>{
+    let col=GRIS, estado='sin envíos en el período', cls='flat';
+    if(x.envios){
+      if(x.av>=1.05){ col=VERDE; estado='arriba de la meta'; cls='up'; }
+      else if(x.av<0.95){ col=NARANJA; estado='abajo de la meta'; cls='down'; }
+      else { col=NARANJA; estado='en la meta'; cls='flat'; }
     }
-    const w=Math.max(0, Math.min(100, (f.av||0)*100));
+    let vs='';
+    if(ST.comparar && pa){
+      if(x.varia===null) vs=`<small>sin ingreso en ${etqAnt}</small>`;
+      else {
+        const c=Math.abs(x.varia)<0.005?'flat':x.varia>0?'up':'down';
+        vs=`<small><span class="${c}">${c==='flat'?'=':c==='up'?'▲':'▼'} ${(x.varia>=0?'+':'')+nfDec.format(x.varia*100)}%</span> vs. ${etqAnt}</small>`;
+      }
+    }
+    const w=Math.max(0, Math.min(100, (x.av||0)*100));
     return `<div class="id-card">
-      <div class="nom">${f.id}</div>
-      <div class="plata">${money(f.real)}</div>
-      <div class="de">de ${money(f.meta)}</div>
+      <div class="nom">${x.id}</div>
+      <div class="plata">${money(x.real)}</div>
+      <div class="de">de ${money(x.meta)} <span title="Meta del trimestre">· trim. ${money(x.metaTrim)}</span></div>
       <div class="pace">
         <div class="barra" style="width:${w}%;background:${col}"></div>
-        ${t===null?'':`<div class="hoy" style="left:${t*100}%" title="hoy"></div>`}
       </div>
-      <div class="veredicto ${cls}">${f.av===null?'—':nfDec.format(f.av*100)+'% de la meta'}
-        <small>${estado}</small></div>
+      <div class="veredicto ${cls}">${x.av===null?'—':(x.av>3?nfDec.format(x.av)+'× la meta':nfDec.format(x.av*100)+'% de la meta')}
+        <small>${estado}</small>${vs}</div>
     </div>`;}).join('');
 
-  // Una sola conclusión, la que cambia qué hacer el lunes
-  const sinEnvios=filas.filter(f=>!f.envios);
-  const atrasadas=filas.filter(f=>f.envios && t!==null && f.av-t < -0.05);
-  const total=filas.reduce((s,f)=>s+f.real,0);
-  const metaTot=filas.reduce((s,f)=>s+f.meta,0);
-  let pie=`El CRM lleva <b>${money(total)}</b> atribuidos a las identidades, sobre ${money(metaTot)} comprometidos para el trimestre.`;
+  const sinEnvios=filas.filter(x=>!x.envios);
+  const abajo=filas.filter(x=>x.envios && x.av<0.95);
+  const total=filas.reduce((t,x)=>t+x.real,0);
+  const metaTot=filas.reduce((t,x)=>t+x.meta,0);
+  const prevTot=filas.reduce((t,x)=>t+x.prev,0);
+  let pie=`En el período el CRM lleva <b>${money(total)}</b> atribuidos a las identidades, sobre ${money(metaTot)} de meta prorrateada (${metaTot?nfDec.format(total/metaTot*100):'—'}%).`;
+  if(ST.comparar && pa && prevTot>0){
+    const v=(total-prevTot)/prevTot;
+    pie+=` Contra ${etqAnt}: ${money(prevTot)}, ${(v>=0?'+':'')+nfDec.format(v*100)}%.`;
+  }
   if(sinEnvios.length){
-    pie+=` ${sinEnvios.length===1?'Una identidad no recibió ninguna campaña':sinEnvios.length+' identidades no recibieron ninguna campaña'}: <b>${sinEnvios.map(f=>f.id).join(', ')}</b>.`;
+    pie+=` ${sinEnvios.length===1?'Una identidad no recibió ninguna campaña':sinEnvios.length+' identidades no recibieron ninguna campaña'}: <b>${sinEnvios.map(x=>x.id).join(', ')}</b>.`;
   }
-  if(atrasadas.length){
-    pie+=` ${atrasadas.length===1?'Va atrasada':'Van atrasadas'} respecto del calendario: <b>${atrasadas.map(f=>f.id).join(', ')}</b>.`;
+  if(abajo.length){
+    pie+=` ${abajo.length===1?'Queda abajo de la meta':'Quedan abajo de la meta'}: <b>${abajo.map(x=>x.id).join(', ')}</b>.`;
   }
-  if(!sinEnvios.length && !atrasadas.length) pie+=` Las cuatro van al día o adelantadas.`;
+  if(!sinEnvios.length && !abajo.length) pie+=` Las cuatro están en la meta o arriba.`;
   document.getElementById('portadaPie').innerHTML=pie;
 }
 
@@ -1442,119 +1515,131 @@ function renderPortada(){
 /* El "real" de clientes es la última foto de la pestaña identidades.
    El de ingreso se calcula sobre la ventana que declara la propia fila,
    no sobre el período elegido arriba. */
-function renderObjetivos(){
+function renderObjetivos(a,b,pa,pb){
   const cont=document.getElementById('bloqueObjetivos');
   if(!OBJETIVOS.length){ cont.style.display='none'; return; }
   cont.style.display='';
 
-  const base=baseGenoma();
+  /* Todo sigue al período elegido arriba:
+     · el ingreso atribuido es un flujo: se suma dentro del período y se
+       compara contra la meta trimestral prorrateada por días;
+     · clientes, venta del segmento y % de activos son fotos: se toma la
+       última carga hasta el cierre del período (y, para comparar, la última
+       hasta el cierre del período anterior). Su meta es el estado al que hay
+       que llegar a fin de trimestre, así que no se prorratea. */
+  const comp = ST.comparar && pa;
+  const base=baseGenoma(b), baseAnt=comp?baseGenoma(pb):{};
+  const C=cortesSalud(b), Cant=comp?cortesSalud(pb):{actual:{}};
+  const dSel=diasEntre(a,b);
   const filas=[];
-  let desdeMin='', hastaMax='';
+  let fotoFecha='';
 
   OBJETIVOS.forEach(o=>{
-    if(o.desde && (!desdeMin || o.desde<desdeMin)) desdeMin=o.desde;
-    if(o.hasta && o.hasta>hastaMax) hastaMax=o.hasta;
+    const deId=r=>identidadDe(r.segmento,r.campania)===o.identidad;
 
-    const enVentana = (o.desde&&o.hasta)
-      ? DATOS.filter(r=>enRango(r.fecha,o.desde,o.hasta) && identidadDe(r.segmento,r.campania)===o.identidad)
-      : [];
-    // null = no hay dato cargado, distinto de cero. Sin esto, un real
-    // ausente se toma como 0 y el cumplimiento sale en -650%.
-    const realIngreso=(o.desde&&o.hasta) ? agregar(enVentana).ingresos : null;
-    const realClientes=base[o.identidad] ? base[o.identidad].clientes : null;
-
-    if(o.clientesMeta) filas.push({id:o.identidad, met:'Clientes',
-      cero:o.clientesCero, meta:o.clientesMeta, real:realClientes, fmt:num});
-    // Venta total del segmento: la foto más reciente de rfm_identidad
-    if(o.ingresoMeta){
-      const s=cortesSalud().actual[o.identidad];
-      filas.push({id:o.identidad, met:'Venta del segmento',
-        cero:o.ingresoCero, meta:o.ingresoMeta,
-        real:s?s.ingresos:null, fmt:money});
+    if(o.clientesMeta){
+      const r=base[o.identidad], p=baseAnt[o.identidad];
+      if(r&&r.fecha) fotoFecha=r.fecha;
+      filas.push({id:o.identidad, met:'Clientes', tipo:'foto',
+        cero:o.clientesCero, meta:o.clientesMeta,
+        real:r?r.clientes:null, ant:p?p.clientes:null, fmt:num});
     }
-
-    // Ingreso atribuido a campañas: sólo lo que el CRM movió
-    if(o.atribMeta) filas.push({id:o.identidad, met:'Ingreso atribuido',
-      cero:o.atribCero, meta:o.atribMeta, real:realIngreso, fmt:money});
-
-    // El % de activos sale de la última foto de rfm_identidad
+    if(o.ingresoMeta){
+      const r=C.actual[o.identidad], p=Cant.actual[o.identidad];
+      filas.push({id:o.identidad, met:'Venta del segmento', tipo:'foto',
+        cero:o.ingresoCero, meta:o.ingresoMeta,
+        real:r?r.ingresos:null, ant:p?p.ingresos:null, fmt:money});
+    }
+    if(o.atribMeta){
+      const fo=(o.desde&&o.hasta) ? dSel/diasEntre(o.desde,o.hasta) : null;
+      const real=agregar(filtrar(DATOS,a,b).filter(deId)).ingresos;
+      const ant=comp ? agregar(filtrar(DATOS,pa,pb).filter(deId)).ingresos : null;
+      filas.push({id:o.identidad, met:'Ingreso atribuido', tipo:'flujo',
+        cero:0, meta: fo===null?null:o.atribMeta*fo, metaTrim:o.atribMeta,
+        real, ant, fmt:money});
+    }
     if(o.activosMeta){
-      const s=cortesSalud().actual[o.identidad];
-      filas.push({id:o.identidad, met:'% de activos (RFM)',
-        cero:o.activosCero, meta:o.activosMeta, real:s?s.pctActivos:null, fmt:pct});
+      const r=C.actual[o.identidad], p=Cant.actual[o.identidad];
+      filas.push({id:o.identidad, met:'% de activos (RFM)', tipo:'foto', pp:true,
+        cero:o.activosCero, meta:o.activosMeta,
+        real:r?r.pctActivos:null, ant:p?p.pctActivos:null, fmt:pct});
     }
   });
 
   if(!filas.length){ cont.style.display='none'; return; }
 
   document.getElementById('ventanaObjetivos').innerHTML =
-    (desdeMin&&hastaMax)
-      ? `Ventana de la meta: del ${fechaLarga(desdeMin)} al ${fechaLarga(hastaMax)}. <b>Este bloque no sigue al selector de arriba</b>, porque la meta es de un período fijo.`
-      : 'Cargá <code>desde</code> y <code>hasta</code> en la pestaña <code>objetivos</code> para que se calcule el real de ingreso.';
+    `Período: del ${fechaLarga(a)} al ${fechaLarga(b)}${comp?` · comparado con ${rangoCorto(pa,pb)}`:''}. ` +
+    `El <b>ingreso atribuido</b> se suma en el período y se mide contra la meta trimestral prorrateada a ${dSel} días. ` +
+    `<b>Clientes, venta del segmento y % de activos</b> son fotos: se toma la última carga hasta el ${fechaLarga(b)}` +
+    `${C.ult?` (corte del ${fechaLarga(C.ult)})`:''} y se miden contra la meta de fin de trimestre.`;
 
   /* Cumplimiento = cuánto del camino planificado se recorrió.
      Con meta igual al momento cero no hay camino, así que no se calcula. */
   const avance = f => {
-    if(f.real===null || f.meta===f.cero) return null;
-    const a=(f.real-f.cero)/(f.meta-f.cero);
+    if(f.real===null || f.meta===null || f.meta===f.cero) return null;
+    const x=(f.real-f.cero)/(f.meta-f.cero);
     /* Un negativo mínimo casi siempre es el redondeo del momento cero cargado
-       a mano — 35% escrito contra 34,98% real — y no un retroceso. Marcarlo
-       como "retrocedió" en la primera foto asusta sin motivo. */
-    return (a<0 && a>-0.02) ? 0 : a;
+       a mano — 35% escrito contra 34,98% real — y no un retroceso. */
+    return (x<0 && x>-0.02) ? 0 : x;
   };
-  /* Un cumplimiento de cinco cifras es ilegible y además es señal de que la
-     meta quedó mal puesta. Arriba de 3x se muestra como múltiplo. */
-  /* Un negativo significa que se retrocedió respecto del momento cero.
-     Mostrarlo como "-99,9%" se lee como un error de cálculo, así que se
-     nombra: es un estado distinto de "0% de avance". */
-  const fmtAvance = a => a===null ? '—'
-                       : a<0      ? 'retrocedió'
-                       : a>3      ? nfDec.format(a)+'× la meta'
-                       : nfDec.format(a*100)+'%';
+  const fmtAvance = x => x===null ? '—'
+                       : x<0      ? 'retrocedió'
+                       : x>3      ? nfDec.format(x)+'× la meta'
+                       : nfDec.format(x*100)+'%';
+  const variacion = f => {
+    if(f.real===null || f.ant===null || f.ant===undefined) return '<span class="flat">—</span>';
+    if(f.pp){
+      const d=f.real-f.ant, c=Math.abs(d)<0.002?'flat':d>0?'up':'down';
+      return `<span class="${c}">${c==='flat'?'=':c==='up'?'▲':'▼'} ${pp(d)}</span>`;
+    }
+    if(!f.ant) return '<span class="flat">—</span>';
+    const v=(f.real-f.ant)/f.ant, c=Math.abs(v)<0.005?'flat':v>0?'up':'down';
+    return `<span class="${c}">${c==='flat'?'=':c==='up'?'▲':'▼'} ${(v>=0?'+':'')+nfDec.format(v*100)}%</span>`;
+  };
 
   document.getElementById('tablaObjetivos').innerHTML=`
     <thead><tr><th class="izq">Identidad</th><th class="izq">Métrica</th>
       <th>Momento cero</th><th>Meta</th><th>Real</th><th>Falta</th>
-      <th class="izq" style="width:170px">Cumplimiento</th></tr></thead>
+      <th class="izq" style="width:170px">Cumplimiento</th>
+      ${comp?'<th>Período anterior</th><th>Variación</th>':''}</tr></thead>
     <tbody>${filas.map(f=>{
-      const a=avance(f);
-      // Un cumplimiento de cinco cifras es ilegible y además es señal de que
-      // la meta quedó mal puesta. Arriba de 3x lo mostramos como múltiplo.
-      const pcts = fmtAvance(a);
-      const w=a===null?0:Math.max(0,Math.min(100,a*100));
-      const col=a===null?'var(--nota)':a>=1?'var(--pos)':a>=0.6?'var(--naranja)':'var(--neg)';
-      const falta=f.meta-f.real;
+      const x=avance(f);
+      const w=x===null?0:Math.max(0,Math.min(100,x*100));
+      const col=x===null?'var(--nota)':x>=1?'var(--pos)':x>=0.6?'var(--naranja)':'var(--neg)';
+      const falta=(f.meta===null||f.real===null)?null:f.meta-f.real;
+      const metaTxt = f.meta===null ? '—'
+        : f.tipo==='flujo' ? `${f.fmt(f.meta)}<small style="display:block;color:var(--nota);font-weight:400">de ${f.fmt(f.metaTrim)} trim.</small>`
+        : f.fmt(f.meta);
       return `<tr>
         <td class="izq">${f.id}</td><td class="izq">${f.met}</td>
-        <td>${f.fmt(f.cero)}</td><td>${f.fmt(f.meta)}</td>
+        <td>${f.tipo==='flujo'?'—':f.fmt(f.cero)}</td><td>${metaTxt}</td>
         <td><b>${f.real===null?'—':f.fmt(f.real)}</b></td>
-        <td class="${f.real===null?'':falta>0?'':'up'}">${f.real===null?'—':falta>0?f.fmt(falta):'cumplida'}</td>
+        <td class="${falta===null||falta>0?'':'up'}">${falta===null?'—':falta>0?f.fmt(falta):'cumplida'}</td>
         <td class="izq">
           <div class="barra-track" style="height:16px"><div style="height:100%;width:${w}%;background:${col};border-radius:5px;transition:width .4s"></div></div>
-          <small style="color:${col};font-weight:600">${pcts}</small>
-        </td></tr>`;}).join('')}</tbody>`;
+          <small style="color:${col};font-weight:600">${fmtAvance(x)}</small>
+        </td>
+        ${comp?`<td>${f.ant===null||f.ant===undefined?'—':f.fmt(f.ant)}</td><td>${variacion(f)}</td>`:''}</tr>`;}).join('')}</tbody>`;
 
-  const conAvance=filas.filter(f=>avance(f)!==null && f.real!==null);
+  const conAvance=filas.filter(f=>avance(f)!==null);
   const ico=document.getElementById('insightObjetivos');
   if(!conAvance.length){
-    ico.innerHTML=`<div class="ico">◷</div><div class="txt"><b>Todavía no hay datos reales contra las metas</b>
-      El real de clientes sale de la pestaña <code>identidades</code>; el de ingreso, de las campañas imputadas dentro de la ventana de la meta.</div>`;
+    ico.innerHTML=`<div class="ico">◷</div><div class="txt"><b>Todavía no hay datos reales contra las metas en este período</b>
+      El real de clientes y RFM sale de la última carga hasta el cierre del período; el de ingreso, de las campañas imputadas dentro del período.</div>`;
   } else {
-    const mejor=conAvance.reduce((a,b)=>avance(b)>avance(a)?b:a);
-    const peor=conAvance.reduce((a,b)=>avance(b)<avance(a)?b:a);
+    const mejor=conAvance.reduce((p,q)=>avance(q)>avance(p)?q:p);
+    const peor=conAvance.reduce((p,q)=>avance(q)<avance(p)?q:p);
     let t=`<b>${mejor.id} · ${mejor.met} es lo que mejor va: ${fmtAvance(avance(mejor))}</b>`;
     if(peor!==mejor) t+=` Lo más atrasado es ${peor.id} · ${peor.met}, con ${fmtAvance(avance(peor))}: faltan ${peor.fmt(peor.meta-peor.real)}.`;
+    const fotosQuietas=filas.filter(f=>f.tipo==='foto' && f.real!==null && f.real===f.cero);
+    if(fotosQuietas.length) t+=` <span style="font-weight:700">Ojo:</span> ${fotosQuietas.length} métrica${fotosQuietas.length>1?'s de foto siguen':' de foto sigue'} igual al momento cero: probablemente falta cargar un corte posterior en <code>rfm_identidad</code> o <code>identidades</code>.`;
     const desbordadas=conAvance.filter(f=>avance(f)>3);
     if(desbordadas.length){
-      t+=` <span style="font-weight:700">Ojo:</span> ${desbordadas.length===1?'una meta se superó':desbordadas.length+' metas se superaron'} por más de 3× (${desbordadas.map(f=>f.id+' · '+f.met).join(', ')}). Antes de mostrarlo como logro, conviene revisar que la meta esté bien puesta: un cumplimiento así casi siempre es un error de carga, no un resultado.`;
+      t+=` <span style="font-weight:700">Ojo:</span> ${desbordadas.length===1?'una meta se superó':desbordadas.length+' metas se superaron'} por más de 3× (${desbordadas.map(f=>f.id+' · '+f.met).join(', ')}). Antes de mostrarlo como logro, conviene revisar que la meta esté bien puesta.`;
     }
-    const hayVenta=filas.some(f=>f.met==='Venta del segmento');
-    const hayAtrib=filas.some(f=>f.met==='Ingreso atribuido');
-    if(hayVenta && !hayAtrib){
-      t+=` <span style="font-weight:700">Ojo con la lectura:</span> la venta del segmento se mueve por todo — estacionalidad, precios, locales nuevos — así que su cumplimiento no es mérito del CRM. Para medir lo que las campañas movieron hacen falta las columnas <code>atribuido_cero</code> y <code>atribuido_meta</code>.`;
-    } else if(hayVenta && hayAtrib){
+    if(filas.some(f=>f.met==='Venta del segmento') && filas.some(f=>f.met==='Ingreso atribuido'))
       t+=` <span style="font-weight:700">Son dos escalas distintas:</span> la venta del segmento incluye todo lo que pasó en el negocio; el atribuido es sólo lo que movieron las campañas. No los compares entre sí.`;
-    }
     ico.innerHTML=`<div class="ico">◎</div><div class="txt">${t}</div>`;
   }
 }
@@ -1638,14 +1723,15 @@ function ocultarBloquesVacios(rows){
 
 function render(){
   const a=ST.desde,b=ST.hasta;
+  const [pa,pb]=periodoAnterior(a,b);
   document.getElementById('rangoInfo').textContent=
-    `Del ${fechaLarga(a)} al ${fechaLarga(b)} · ${Math.round((dObj(b)-dObj(a))/86400000)+1} días`;
+    `Del ${fechaLarga(a)} al ${fechaLarga(b)} · ${diasEntre(a,b)} días`
+    + (ST.comparar ? ` · comparado con ${rangoCorto(pa,pb)}` : '');
 
   const rows=filtrar(DATOS,a,b);
   const act=agregar(rows);
   let prev=null,prevRows=null;
   if(ST.comparar){
-    const [pa,pb]=periodoAnterior(a,b);
     prevRows=filtrar(DATOS,pa,pb);
     if(prevRows.length) prev=agregar(prevRows); else prevRows=null;
   }
@@ -1656,9 +1742,9 @@ function render(){
   renderCanales(rows,prevRows);
   renderSegmentos(rows);
   renderGenoma(rows, prevRows);
-  renderPortada();
+  renderPortada(a,b,ST.comparar?pa:null,ST.comparar?pb:null);
   renderSalud();
-  renderObjetivos();
+  renderObjetivos(a,b,ST.comparar?pa:null,ST.comparar?pb:null);
   renderRfm();
   ocultarBloquesVacios(rows);
   renderCampanias(rows);
@@ -1676,6 +1762,11 @@ function aplicarPreset(v){
   else if(v==='mesant'){ a=iso(new Date(hoy.getFullYear(),hoy.getMonth()-1,1));
     b=iso(new Date(hoy.getFullYear(),hoy.getMonth(),0)); }
   else if(v==='todo') a=minF;
+  else if(v==='trim'){
+    const o=OBJETIVOS.find(x=>x.desde&&x.hasta);
+    if(o){ a=o.desde; b = o.hasta<maxF ? o.hasta : maxF; }
+    else a=iso(new Date(hoy.getFullYear(),Math.floor(hoy.getMonth()/3)*3,1));
+  }
   else a=iso(addDays(hoy,-(Number(v)-1)));
   // Sólo recortamos al primer día con datos si hay datos: sin filas, minF es
   // hoy y el recorte dejaba cualquier período en 1 día.
@@ -2037,7 +2128,7 @@ async function iniciar(){
   }
 
   document.getElementById('pie').innerHTML=
-    `Dashboard preparado por Segmentya · Fuente: WooWup, cuenta ${CONFIG.cuenta}. Los ingresos son atribuidos por WooWup y siguen acumulándose días después del envío, por lo que las campañas más recientes están subrepresentadas. Importes en pesos argentinos. Las variaciones comparan contra el período inmediatamente anterior de igual duración.`;
+    `Dashboard preparado por Segmentya · Fuente: WooWup, cuenta ${CONFIG.cuenta}. Los ingresos son atribuidos por WooWup y siguen acumulándose días después del envío, por lo que las campañas más recientes están subrepresentadas. Importes en pesos argentinos. Las variaciones comparan mes contra mes (cortado en el mismo día) cuando el período arranca un día 1, y si no contra los mismos días inmediatamente antes. Las metas trimestrales se prorratean por días al período elegido.`;
 
   const bitacoraHtml = () => BITACORA.length
     ? `<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:600;font-size:12px;color:var(--naranja)">Ver detalle técnico de las peticiones</summary>
